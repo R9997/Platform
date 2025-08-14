@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { User, Settings, BarChart, Shield, ArrowRight, Sparkles } from "lucide-react"
+import Link from "next/link"
 
 const features = [
   {
@@ -36,15 +37,15 @@ export function PersonalizedSection() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
-            <div className="flex items-center space-x-2 px-4 py-2 rounded-full bg-primary/10 neon-border-cyan border">
+            <div className="flex items-center space-x-2 px-4 py-2 rounded-full bg-primary/10 soft-border border">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium neon-text-cyan">Персональный опыт</span>
+              <span className="text-sm font-medium soft-text">Персональный опыт</span>
             </div>
           </div>
 
           <h2 className="text-3xl md:text-5xl font-serif font-black mb-6 leading-tight">
-            <span className="neon-text-cyan">Ваше путешествие</span> <span className="text-foreground">в мир ИИ</span>{" "}
-            <span className="neon-text-purple">начинается здесь</span>
+            <span className="soft-text">Ваше путешествие</span> <span className="text-foreground">в мир ИИ</span>{" "}
+            <span className="soft-text-blue">начинается здесь</span>
           </h2>
 
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
@@ -56,9 +57,9 @@ export function PersonalizedSection() {
           {features.map((feature, index) => {
             const Icon = feature.icon
             const isEven = index % 2 === 0
-            const glowClass = isEven ? "neon-glow-cyan" : "neon-glow-purple"
-            const textClass = isEven ? "neon-text-cyan" : "neon-text-purple"
-            const borderClass = isEven ? "neon-border-cyan" : "neon-border-purple"
+            const glowClass = isEven ? "soft-glow" : "soft-glow-blue"
+            const textClass = isEven ? "soft-text" : "soft-text-blue"
+            const borderClass = isEven ? "soft-border" : "soft-border-blue"
 
             return (
               <Card
@@ -82,24 +83,31 @@ export function PersonalizedSection() {
         </div>
 
         <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-8 neon-border-purple border mb-8">
-            <h3 className="text-2xl font-serif font-bold mb-4 neon-text-purple">Готовы начать?</h3>
+          <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-8 soft-border-blue border mb-8">
+            <h3 className="text-2xl font-serif font-bold mb-4 soft-text-blue">Готовы начать?</h3>
             <p className="text-muted-foreground mb-6">
               Создайте аккаунт или войдите в существующий, чтобы получить доступ к полному спектру наших ИИ решений и
               персональным рекомендациям.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 neon-glow-cyan text-lg px-8 py-6">
-                Создать аккаунт
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="neon-border-purple hover:bg-accent/10 text-lg px-8 py-6 bg-transparent"
-              >
-                Войти в кабинет
-              </Button>
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 soft-glow text-lg px-8 py-6 w-full sm:w-auto"
+                >
+                  Создать аккаунт
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="soft-border-blue hover:bg-accent/10 text-lg px-8 py-6 bg-transparent w-full sm:w-auto"
+                >
+                  Войти в кабинет
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { Home } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -18,29 +18,33 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // Имитация API вызова
     setTimeout(() => {
-      // Перенаправление в личный кабинет
       window.location.href = "/dashboard"
     }, 1000)
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-dark-bg)] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10"></div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Link
+        href="/"
+        className="fixed top-4 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-lg border soft-border hover:soft-glow transition-all duration-300"
+      >
+        <Home className="h-4 w-4" />
+        <span className="text-sm font-medium">На главную</span>
+      </Link>
 
-      <Card className="w-full max-w-md bg-[var(--color-dark-surface)] border-[var(--color-dark-border)] neon-border relative z-10">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
+
+      <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border soft-border relative z-10">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold neon-text">Вход в систему</CardTitle>
-          <CardDescription className="text-[var(--color-text-secondary)]">
-            Войдите в свой аккаунт Рефрейм Бюро
-          </CardDescription>
+          <CardTitle className="text-2xl font-serif font-bold soft-text">Вход в систему</CardTitle>
+          <CardDescription className="text-muted-foreground">Войдите в свой аккаунт Рефрейм Бюро</CardDescription>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[var(--color-text-primary)]">
+              <Label htmlFor="email" className="text-foreground font-medium">
                 Email
               </Label>
               <Input
@@ -48,13 +52,14 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-[var(--color-dark-bg)] border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-cyan-500"
+                className="bg-background border-border focus:border-primary focus:ring-primary/20"
+                placeholder="your@email.com"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[var(--color-text-primary)]">
+              <Label htmlFor="password" className="text-foreground font-medium">
                 Пароль
               </Label>
               <Input
@@ -62,22 +67,23 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-[var(--color-dark-bg)] border-[var(--color-dark-border)] text-[var(--color-text-primary)] focus:border-cyan-500"
+                className="bg-background border-border focus:border-primary focus:ring-primary/20"
+                placeholder="••••••••"
                 required
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold neon-glow"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold soft-glow"
               disabled={isLoading}
             >
               {isLoading ? "Вход..." : "Войти"}
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
-            <Link href="/register" className="text-cyan-400 hover:text-cyan-300 text-sm">
+          <div className="mt-6 text-center space-y-2">
+            <Link href="/register" className="text-primary hover:text-primary/80 text-sm font-medium transition-colors">
               Нет аккаунта? Зарегистрироваться
             </Link>
           </div>
