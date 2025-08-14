@@ -4,9 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Menu, Zap, Home } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const handleMobileMenuClick = () => {
+    setIsMenuOpen(false)
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,6 +43,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center space-x-4">
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" className="hidden md:inline-flex hover:text-cyan-400">
               Войти
@@ -48,7 +54,13 @@ export function Header() {
               Начать работу
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Открыть меню"
+          >
             <Menu className="h-5 w-5" />
           </Button>
         </div>
@@ -61,29 +73,49 @@ export function Header() {
             <Link
               href="/"
               className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors flex items-center"
+              onClick={handleMobileMenuClick}
             >
               <Home className="w-4 h-4 mr-2" />
               Главная
             </Link>
-            <Link href="/about" className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors">
+            <Link
+              href="/about"
+              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              onClick={handleMobileMenuClick}
+            >
               О нас
             </Link>
-            <Link href="/services" className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors">
+            <Link
+              href="/services"
+              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              onClick={handleMobileMenuClick}
+            >
               Услуги
             </Link>
-            <Link href="/contact" className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors">
+            <Link
+              href="/contact"
+              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              onClick={handleMobileMenuClick}
+            >
               Контакты
             </Link>
-            <Link href="/dashboard" className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors">
+            <Link
+              href="/dashboard"
+              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              onClick={handleMobileMenuClick}
+            >
               Личный кабинет
             </Link>
             <div className="pt-2 space-y-2">
-              <Link href="/login" className="block">
+              <div className="flex justify-center py-2">
+                <ThemeToggle />
+              </div>
+              <Link href="/login" className="block" onClick={handleMobileMenuClick}>
                 <Button variant="ghost" className="w-full justify-start">
                   Войти
                 </Button>
               </Link>
-              <Link href="/register" className="block">
+              <Link href="/register" className="block" onClick={handleMobileMenuClick}>
                 <Button className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white">
                   Начать работу
                 </Button>

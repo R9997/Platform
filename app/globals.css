@@ -4,6 +4,56 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Light theme colors */
+  --background: oklch(0.98 0 0); /* Light background */
+  --foreground: oklch(0.15 0 0); /* Dark text for light theme */
+  --card: oklch(0.95 0 0); /* Light card background */
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(0.95 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+  /* Softer cyan for light theme */
+  --primary: oklch(0.5 0.2 195); /* Darker cyan for light theme */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.9 0 0);
+  --secondary-foreground: oklch(0.15 0 0);
+  --muted: oklch(0.92 0 0);
+  --muted-foreground: oklch(0.45 0 0); /* Darker muted text for light theme */
+  /* Softer blue accent for light theme */
+  --accent: oklch(0.45 0.2 220); /* Darker blue for light theme */
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.5 0.25 15); /* Darker red for light theme */
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.85 0 0); /* Light borders */
+  --input: oklch(0.95 0 0);
+  --ring: oklch(0.5 0.2 195); /* Darker focus ring for light theme */
+  /* Updated chart colors for light theme */
+  --chart-1: oklch(0.5 0.2 195); /* Darker cyan */
+  --chart-2: oklch(0.45 0.2 220); /* Darker blue */
+  --chart-3: oklch(0.4 0.2 200); /* Darker light blue */
+  --chart-4: oklch(0.45 0.2 180); /* Darker aqua */
+  --chart-5: oklch(0.4 0.2 210); /* Darker deep blue */
+  --radius: 0.625rem;
+  --sidebar: oklch(0.95 0 0);
+  --sidebar-foreground: oklch(0.15 0 0);
+  --sidebar-primary: oklch(0.5 0.2 195);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0 0);
+  --sidebar-accent-foreground: oklch(0.15 0 0);
+  --sidebar-border: oklch(0.85 0 0);
+  --sidebar-ring: oklch(0.5 0.2 195);
+  /* Custom variables for light theme */
+  --color-light-bg: oklch(0.98 0 0);
+  --color-light-surface: oklch(0.95 0 0);
+  --color-light-border: oklch(0.85 0 0);
+  --color-text-primary-light: oklch(0.15 0 0);
+  --color-text-secondary-light: oklch(0.45 0 0);
+  /* Softer glow effects for light theme */
+  --soft-glow-cyan-light: 0 0 8px oklch(0.5 0.2 195 / 0.2), 0 0 16px oklch(0.5 0.2 195 / 0.1);
+  --soft-glow-blue-light: 0 0 8px oklch(0.45 0.2 220 / 0.2), 0 0 16px oklch(0.45 0.2 220 / 0.1);
+}
+
+.dark {
+  /* Dark theme colors (existing) */
   --background: oklch(0.08 0 0); /* Lighter dark background for better readability */
   --foreground: oklch(0.92 0 0); /* Softer white text, less harsh */
   --card: oklch(0.12 0 0); /* More visible card background */
@@ -31,7 +81,6 @@
   --chart-3: oklch(0.5 0.15 200); /* Light blue */
   --chart-4: oklch(0.55 0.15 180); /* Soft aqua */
   --chart-5: oklch(0.5 0.15 210); /* Soft deep blue */
-  --radius: 0.625rem;
   --sidebar: oklch(0.12 0 0);
   --sidebar-foreground: oklch(0.92 0 0);
   --sidebar-primary: oklch(0.6 0.15 195);
@@ -49,42 +98,6 @@
   /* Much softer glow effects */
   --soft-glow-cyan: 0 0 8px oklch(0.6 0.15 195 / 0.3), 0 0 16px oklch(0.6 0.15 195 / 0.1);
   --soft-glow-blue: 0 0 8px oklch(0.55 0.15 220 / 0.3), 0 0 16px oklch(0.55 0.15 220 / 0.1);
-}
-
-.dark {
-  --background: oklch(0.05 0 0); /* Slightly lighter than before */
-  --foreground: oklch(0.92 0 0);
-  --card: oklch(0.09 0 0);
-  --card-foreground: oklch(0.92 0 0);
-  --popover: oklch(0.09 0 0);
-  --popover-foreground: oklch(0.92 0 0);
-  --primary: oklch(0.65 0.18 195); /* Softer cyan in dark mode */
-  --primary-foreground: oklch(0.05 0 0);
-  --secondary: oklch(0.12 0 0);
-  --secondary-foreground: oklch(0.92 0 0);
-  --muted: oklch(0.1 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.6 0.18 220); /* Softer blue in dark mode */
-  --accent-foreground: oklch(0.05 0 0);
-  --destructive: oklch(0.6 0.22 15);
-  --destructive-foreground: oklch(0.05 0 0);
-  --border: oklch(0.2 0 0);
-  --input: oklch(0.1 0 0);
-  --ring: oklch(0.65 0.18 195);
-  /* Updated dark mode chart colors to be softer */
-  --chart-1: oklch(0.65 0.18 195);
-  --chart-2: oklch(0.6 0.18 220);
-  --chart-3: oklch(0.55 0.18 200);
-  --chart-4: oklch(0.6 0.18 180);
-  --chart-5: oklch(0.55 0.18 210);
-  --sidebar: oklch(0.09 0 0);
-  --sidebar-foreground: oklch(0.92 0 0);
-  --sidebar-primary: oklch(0.65 0.18 195);
-  --sidebar-primary-foreground: oklch(0.05 0 0);
-  --sidebar-accent: oklch(0.1 0 0);
-  --sidebar-accent-foreground: oklch(0.92 0 0);
-  --sidebar-border: oklch(0.2 0 0);
-  --sidebar-ring: oklch(0.65 0.18 195);
 }
 
 @theme inline {
@@ -133,51 +146,83 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
-  /* Updated utility classes for softer appearance */
+  /* Updated utility classes to work with both themes */
   .soft-glow {
-    box-shadow: var(--soft-glow-cyan);
+    box-shadow: var(--soft-glow-cyan, var(--soft-glow-cyan-light));
   }
   .soft-glow-blue {
-    box-shadow: var(--soft-glow-blue);
+    box-shadow: var(--soft-glow-blue, var(--soft-glow-blue-light));
   }
   .soft-text {
     color: oklch(0.6 0.15 195);
     text-shadow: 0 0 4px oklch(0.6 0.15 195 / 0.3);
   }
+  .dark .soft-text {
+    color: oklch(0.6 0.15 195);
+    text-shadow: 0 0 4px oklch(0.6 0.15 195 / 0.3);
+  }
   .soft-text-blue {
+    color: oklch(0.45 0.2 220);
+    text-shadow: 0 0 4px oklch(0.45 0.2 220 / 0.3);
+  }
+  .dark .soft-text-blue {
     color: oklch(0.55 0.15 220);
     text-shadow: 0 0 4px oklch(0.55 0.15 220 / 0.3);
   }
   .soft-border {
+    border-color: oklch(0.5 0.2 195);
+    box-shadow: 0 0 4px oklch(0.5 0.2 195 / 0.2);
+  }
+  .dark .soft-border {
     border-color: oklch(0.6 0.15 195);
     box-shadow: 0 0 4px oklch(0.6 0.15 195 / 0.2);
   }
   .soft-border-blue {
+    border-color: oklch(0.45 0.2 220);
+    box-shadow: 0 0 4px oklch(0.45 0.2 220 / 0.2);
+  }
+  .dark .soft-border-blue {
     border-color: oklch(0.55 0.15 220);
     box-shadow: 0 0 4px oklch(0.55 0.15 220 / 0.2);
   }
-  /* Legacy neon classes for backward compatibility, but softer */
+  /* Legacy neon classes for backward compatibility, but softer and theme-aware */
   .neon-glow {
-    box-shadow: var(--soft-glow-cyan);
+    box-shadow: var(--soft-glow-cyan, var(--soft-glow-cyan-light));
   }
   .neon-glow-blue {
-    box-shadow: var(--soft-glow-blue);
+    box-shadow: var(--soft-glow-blue, var(--soft-glow-blue-light));
   }
   .neon-text {
+    color: oklch(0.5 0.2 195);
+    text-shadow: 0 0 4px oklch(0.5 0.2 195 / 0.3);
+  }
+  .dark .neon-text {
     color: oklch(0.6 0.15 195);
     text-shadow: 0 0 4px oklch(0.6 0.15 195 / 0.3);
   }
   .neon-text-blue {
+    color: oklch(0.45 0.2 220);
+    text-shadow: 0 0 4px oklch(0.45 0.2 220 / 0.3);
+  }
+  .dark .neon-text-blue {
     color: oklch(0.55 0.15 220);
     text-shadow: 0 0 4px oklch(0.55 0.15 220 / 0.3);
   }
   .neon-border {
+    border-color: oklch(0.5 0.2 195);
+    box-shadow: 0 0 4px oklch(0.5 0.2 195 / 0.2);
+  }
+  .dark .neon-border {
     border-color: oklch(0.6 0.15 195);
     box-shadow: 0 0 4px oklch(0.6 0.15 195 / 0.2);
   }
   .neon-border-blue {
+    border-color: oklch(0.45 0.2 220);
+    box-shadow: 0 0 4px oklch(0.45 0.2 220 / 0.2);
+  }
+  .dark .neon-border-blue {
     border-color: oklch(0.55 0.15 220);
     box-shadow: 0 0 4px oklch(0.55 0.15 220 / 0.2);
   }
