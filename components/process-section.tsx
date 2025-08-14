@@ -39,28 +39,39 @@ export function ProcessSection() {
   ]
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-            Путь клиента
+          <h2 className="text-4xl md:text-5xl font-serif font-black mb-6">
+            <span className="soft-text-blue">Путь</span> <span className="soft-text">клиента</span>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <div key={index} className="relative">
-              <div className="bg-card/50 backdrop-blur-sm border border-cyan-500/20 rounded-xl p-6 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4 neon-glow">
-                    {step.number}
+          {steps.map((step, index) => {
+            const isEven = index % 2 === 0
+            const glowClass = isEven ? "soft-glow" : "soft-glow-blue"
+            const textClass = isEven ? "soft-text" : "soft-text-blue"
+            const borderClass = isEven ? "soft-border" : "soft-border-blue"
+
+            return (
+              <div key={index} className="relative">
+                <div
+                  className={`bg-card/50 backdrop-blur-sm border ${borderClass} rounded-xl p-6 hover:${glowClass} transition-all duration-300 group`}
+                >
+                  <div className="flex items-center mb-4">
+                    <div
+                      className={`w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg mr-4 ${glowClass} group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {step.number}
+                    </div>
                   </div>
+                  <h3 className={`text-xl font-serif font-bold ${textClass} mb-3 leading-tight`}>{step.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
-                <h3 className="text-xl font-bold text-cyan-400 mb-3 leading-tight">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>

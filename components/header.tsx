@@ -17,50 +17,50 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 neon-glow flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent soft-glow flex items-center justify-center">
             <Zap className="h-5 w-5 text-white" />
           </div>
-          <span className="font-serif font-black text-xl neon-text">Рефрейм Бюро</span>
+          <span className="font-serif font-black text-xl soft-text">Рефрейм Бюро</span>
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-sm font-medium hover:text-cyan-400 transition-colors flex items-center">
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link href="/" className="text-sm font-medium hover:text-primary transition-colors flex items-center py-2">
             <Home className="w-4 h-4 mr-1" />
             Главная
           </Link>
-          <Link href="/about" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+          <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors py-2">
             О нас
           </Link>
-          <Link href="/services" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+          <Link href="/services" className="text-sm font-medium hover:text-primary transition-colors py-2">
             Услуги
           </Link>
-          <Link href="/solutions" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+          <Link href="/solutions" className="text-sm font-medium hover:text-primary transition-colors py-2">
             Наши решения
           </Link>
-          <Link href="/contact" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+          <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors py-2">
             Контакты
           </Link>
-          <Link href="/dashboard" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+          <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors py-2">
             Личный кабинет
           </Link>
         </nav>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <ThemeToggle />
-          <Link href="/login">
-            <Button variant="ghost" className="hidden md:inline-flex hover:text-cyan-400">
+          <Link href="/login" className="hidden sm:inline-flex">
+            <Button variant="ghost" className="hover:text-primary hover:bg-primary/10 transition-all duration-300">
               Войти
             </Button>
           </Link>
           <Link href="/register">
-            <Button className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white neon-glow">
+            <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground soft-glow transition-all duration-300">
               Начать работу
             </Button>
           </Link>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden hover:bg-primary/10"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Открыть меню"
           >
@@ -69,64 +69,63 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur border-t border-border/50">
-          <nav className="container mx-auto px-4 py-4 space-y-2">
+        <div className="md:hidden bg-background/95 backdrop-blur border-t border-border/50 animate-in slide-in-from-top-2 duration-200">
+          <nav className="container mx-auto px-4 py-4 space-y-1">
             <Link
               href="/"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors flex items-center"
+              className="flex items-center py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
-              <Home className="w-4 h-4 mr-2" />
+              <Home className="w-4 h-4 mr-3" />
               Главная
             </Link>
             <Link
               href="/about"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              className="block py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
               О нас
             </Link>
             <Link
               href="/services"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              className="block py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
               Услуги
             </Link>
             <Link
               href="/solutions"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              className="block py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
               Наши решения
             </Link>
             <Link
               href="/contact"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              className="block py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
               Контакты
             </Link>
             <Link
               href="/dashboard"
-              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              className="block py-3 px-2 text-sm font-medium hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
               onClick={handleMobileMenuClick}
             >
               Личный кабинет
             </Link>
-            <div className="pt-2 space-y-2">
+            <div className="pt-4 border-t border-border/50 space-y-3">
               <div className="flex justify-center py-2">
                 <ThemeToggle />
               </div>
               <Link href="/login" className="block" onClick={handleMobileMenuClick}>
-                <Button variant="ghost" className="w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start hover:bg-primary/10">
                   Войти
                 </Button>
               </Link>
               <Link href="/register" className="block" onClick={handleMobileMenuClick}>
-                <Button className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white">
+                <Button className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground soft-glow">
                   Начать работу
                 </Button>
               </Link>

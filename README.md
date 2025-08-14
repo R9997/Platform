@@ -1,30 +1,81 @@
-# Modern landing page design
+# Рефрейм Бюро - ИИ Портал
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Современный многостраничный портал для компании Рефрейм Бюро с интеграцией ИИ-инструментов.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/rsshakhverdov-1458s-projects/v0-modern-landing-page-design)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/ewkDiE0kWfr)
+## Возможности
 
-## Overview
+- 🎨 Современный дизайн с поддержкой светлой и темной тем
+- 📱 Полная адаптивность под мобильные устройства
+- 🤖 Интеграция с ИИ (OpenAI GPT и GigaChat)
+- 📊 Личный кабинет с аналитикой и графиками
+- 💬 Интерактивный чат-виджет с ИИ-ассистентом
+- 🔐 Система аутентификации
+- 📄 Многостраничная структура
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## Структура проекта
 
-## Deployment
+\`\`\`
+├── app/
+│   ├── about/          # Страница "О нас"
+│   ├── api/chat/       # API для ИИ-чата
+│   ├── contact/        # Страница контактов
+│   ├── dashboard/      # Личный кабинет
+│   ├── login/          # Страница входа
+│   ├── platform/       # Платформа с чатом
+│   ├── register/       # Страница регистрации
+│   ├── services/       # Страница услуг
+│   ├── solutions/      # Страница решений
+│   └── page.tsx        # Главная страница
+├── components/
+│   ├── ui/             # UI компоненты (shadcn/ui)
+│   ├── chat-widget.tsx # Чат-виджет
+│   ├── header.tsx      # Навигация
+│   ├── footer.tsx      # Подвал
+│   └── ...             # Другие компоненты
+└── public/             # Статические файлы
+\`\`\`
 
-Your project is live at:
+## Настройка
 
-**[https://vercel.com/rsshakhverdov-1458s-projects/v0-modern-landing-page-design](https://vercel.com/rsshakhverdov-1458s-projects/v0-modern-landing-page-design)**
+1. Клонируйте репозиторий
+2. Установите зависимости: `npm install`
+3. Скопируйте `.env.example` в `.env.local`
+4. Добавьте ваши API ключи:
+   \`\`\`env
+   OPENAI_API_KEY=your_openai_api_key
+   GIGACHAT_API_KEY=your_gigachat_api_key
+   \`\`\`
+5. Запустите проект: `npm run dev`
 
-## Build your app
+## API Интеграция
 
-Continue building your app on:
+### OpenAI GPT
+Для использования OpenAI GPT добавьте ваш API ключ в переменную окружения `OPENAI_API_KEY`.
 
-**[https://v0.app/chat/projects/ewkDiE0kWfr](https://v0.app/chat/projects/ewkDiE0kWfr)**
+### GigaChat (Сбер)
+Для использования GigaChat добавьте ваш API ключ в переменную окружения `GIGACHAT_API_KEY`.
 
-## How It Works
+### Переключение провайдеров
+Пользователи могут переключаться между OpenAI и GigaChat прямо в интерфейсе чата.
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Технологии
+
+- **Next.js 14** - React фреймворк
+- **TypeScript** - Типизация
+- **Tailwind CSS** - Стилизация
+- **shadcn/ui** - UI компоненты
+- **Recharts** - Графики и диаграммы
+- **Lucide React** - Иконки
+- **next-themes** - Поддержка тем
+
+## Развертывание
+
+Проект готов для развертывания на Vercel:
+
+1. Подключите репозиторий к Vercel
+2. Добавьте переменные окружения в настройках проекта
+3. Разверните проект
+
+## Поддержка
+
+Для вопросов и поддержки обращайтесь к команде Рефрейм Бюро.

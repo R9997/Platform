@@ -1,6 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Star, Quote } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const testimonials = [
   {
@@ -61,18 +63,18 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="py-20 bg-gradient-to-b from-background to-muted/20">
+    <section id="testimonials" className="py-16 md:py-20 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="font-serif font-bold text-3xl md:text-5xl mb-4 soft-text">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="font-serif font-bold text-3xl md:text-4xl lg:text-5xl mb-4 soft-text">
             Доверие <span className="text-primary">тысяч</span> клиентов
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Узнайте, что говорят наши клиенты о работе с ИИ-решениями Рефрейм Бюро
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {testimonials.map((testimonial, index) => (
             <Card
               key={index}
@@ -88,10 +90,12 @@ export function TestimonialsSection() {
                   <Quote className="h-6 w-6 text-primary/30" />
                 </div>
 
-                <blockquote className="text-foreground mb-6 leading-relaxed flex-1">"{testimonial.quote}"</blockquote>
+                <blockquote className="text-foreground mb-6 leading-relaxed flex-1 text-sm md:text-base">
+                  "{testimonial.quote}"
+                </blockquote>
 
                 <div className="flex items-center space-x-4">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
                     <Image
                       src={testimonial.avatar || "/placeholder.svg"}
                       alt={testimonial.author}
@@ -99,10 +103,12 @@ export function TestimonialsSection() {
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <div className="font-semibold text-foreground">{testimonial.author}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                    <div className="text-xs text-primary font-medium">{testimonial.company}</div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-foreground text-sm md:text-base truncate">
+                      {testimonial.author}
+                    </div>
+                    <div className="text-xs md:text-sm text-muted-foreground truncate">{testimonial.role}</div>
+                    <div className="text-xs text-primary font-medium truncate">{testimonial.company}</div>
                   </div>
                 </div>
               </CardContent>
@@ -110,24 +116,29 @@ export function TestimonialsSection() {
           ))}
         </div>
 
-        <div className="text-center mt-16">
+        <div className="text-center mt-12 md:mt-16">
           <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border soft-border max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-serif font-bold soft-text mb-4">Присоединяйтесь к успешным компаниям</h3>
-              <p className="text-muted-foreground mb-6">
+            <CardContent className="p-6 md:p-8">
+              <h3 className="text-xl md:text-2xl font-serif font-bold soft-text mb-4">
+                Присоединяйтесь к успешным компаниям
+              </h3>
+              <p className="text-sm md:text-base text-muted-foreground mb-6">
                 Более 1000 компаний уже используют наши ИИ-решения для трансформации своего бизнеса
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/contact" className="inline-block">
-                  <button className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg soft-glow transition-all duration-300">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+                <Link href="/contact">
+                  <Button className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground soft-glow transition-all duration-300">
                     Получить консультацию
-                  </button>
-                </a>
-                <a href="/solutions" className="inline-block">
-                  <button className="px-6 py-3 border soft-border hover:soft-glow bg-transparent text-foreground font-semibold rounded-lg transition-all duration-300">
+                  </Button>
+                </Link>
+                <Link href="/solutions">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto soft-border hover:soft-glow bg-transparent transition-all duration-300"
+                  >
                     Изучить решения
-                  </button>
-                </a>
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
