@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { Home } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -43,13 +44,16 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Link
-        href="/"
-        className="fixed top-4 left-4 z-20 flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-lg border soft-border hover:soft-glow transition-all duration-300"
-      >
-        <Home className="h-4 w-4" />
-        <span className="text-sm font-medium">На главную</span>
-      </Link>
+      <div className="fixed top-4 left-4 right-4 z-20 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-lg border soft-border hover:soft-glow transition-all duration-300"
+        >
+          <Home className="h-4 w-4" />
+          <span className="text-sm font-medium">На главную</span>
+        </Link>
+        <ThemeToggle />
+      </div>
 
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
 

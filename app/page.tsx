@@ -6,6 +6,7 @@ import { PersonalizedSection } from "@/components/personalized-section"
 import { SolutionsSection } from "@/components/solutions-section"
 import { ApproachSection } from "@/components/approach-section"
 import { ProcessSection } from "@/components/process-section"
+import { TestimonialsSection } from "@/components/testimonials-section"
 import { Footer } from "@/components/footer"
 import { ChatWidget } from "@/components/chat-widget"
 
@@ -20,6 +21,7 @@ export default function HomePage() {
         <ProcessSection />
         <AIToolsSection />
         <AboutSection />
+        <TestimonialsSection />
         <PersonalizedSection />
       </main>
       <Footer />

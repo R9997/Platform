@@ -34,6 +34,9 @@ export function Header() {
           <Link href="/services" className="text-sm font-medium hover:text-cyan-400 transition-colors">
             Услуги
           </Link>
+          <Link href="/solutions" className="text-sm font-medium hover:text-cyan-400 transition-colors">
+            Наши решения
+          </Link>
           <Link href="/contact" className="text-sm font-medium hover:text-cyan-400 transition-colors">
             Контакты
           </Link>
@@ -91,6 +94,13 @@ export function Header() {
               onClick={handleMobileMenuClick}
             >
               Услуги
+            </Link>
+            <Link
+              href="/solutions"
+              className="block py-2 text-sm font-medium hover:text-cyan-400 transition-colors"
+              onClick={handleMobileMenuClick}
+            >
+              Наши решения
             </Link>
             <Link
               href="/contact"
