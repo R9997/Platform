@@ -1,14 +1,14 @@
 "use client"
 
 import { Textarea } from "@/components/ui/textarea"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -33,25 +33,34 @@ import {
   FileText,
   Brain,
   Rocket,
-  DollarSign,
   CheckCircle,
   Plus,
   ArrowRight,
   Lightbulb,
   Briefcase,
   Calendar,
-  Star,
+  Sparkles,
+  ChevronRight,
+  Menu,
+  Bell,
+  Search,
 } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { DataAnalyzer } from "@/components/ai-tools/data-analyzer"
 import { ProcessAutomation } from "@/components/ai-tools/process-automation"
+import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
+import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
+import { FloatingActionMenu } from "@/components/interactive/floating-action-menu"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const [activeToolTab, setActiveToolTab] = useState("content-generator")
   const [chatMessage, setChatMessage] = useState("")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [notifications, setNotifications] = useState(3)
   const [chatHistory, setChatHistory] = useState([
     {
       id: 1,
@@ -60,6 +69,18 @@ export default function DashboardPage() {
     },
   ])
 
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
   const businessMetrics = {
     monthlyRevenue: 450000,
     revenueGrowth: 23,
@@ -67,6 +88,8 @@ export default function DashboardPage() {
     timeSaved: 156,
     aiEfficiency: 94,
     activeProjects: 8,
+    completedTasks: 1247,
+    clientSatisfaction: 98,
   }
 
   const aiTools = [
@@ -81,6 +104,10 @@ export default function DashboardPage() {
       category: "Маркетинг",
       icon: FileText,
       component: "content-generator",
+      color: "from-blue-500/20 to-blue-600/10",
+      borderColor: "border-blue-500/30",
+      textColor: "text-blue-600",
+      isRunning: true,
     },
     {
       id: 2,
@@ -93,6 +120,10 @@ export default function DashboardPage() {
       category: "Аналитика",
       icon: BarChart3,
       component: "data-analyzer",
+      color: "from-green-500/20 to-green-600/10",
+      borderColor: "border-green-500/30",
+      textColor: "text-green-600",
+      isRunning: false,
     },
     {
       id: 3,
@@ -105,6 +136,10 @@ export default function DashboardPage() {
       category: "Операции",
       icon: Zap,
       component: "process-automation",
+      color: "from-purple-500/20 to-purple-600/10",
+      borderColor: "border-purple-500/30",
+      textColor: "text-purple-600",
+      isRunning: true,
     },
     {
       id: 4,
@@ -117,6 +152,10 @@ export default function DashboardPage() {
       category: "Продуктивность",
       icon: Brain,
       component: "personal-assistant",
+      color: "from-orange-500/20 to-orange-600/10",
+      borderColor: "border-orange-500/30",
+      textColor: "text-orange-600",
+      isRunning: false,
     },
   ]
 
@@ -232,50 +271,151 @@ export default function DashboardPage() {
     }
   }
 
+  const NavigationMenu = ({ onItemClick }: { onItemClick?: () => void }) => (
+    <div className="space-y-2">
+      {[
+        { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
+        {
+          key: "tools",
+          icon: Rocket,
+          label: "ИИ-инструменты",
+          badge: aiTools.filter((t) => t.status === "active").length,
+        },
+        { key: "projects", icon: Target, label: "Активные проекты", badge: activeProjects.length },
+        { key: "chat", icon: MessageSquare, label: "ИИ-консультант", badge: null },
+        { key: "settings", icon: Settings, label: "Настройки", badge: null },
+      ].map((item) => (
+        <Button
+          key={item.key}
+          variant={activeTab === item.key ? "default" : "ghost"}
+          className={`w-full justify-start transition-all duration-300 group ${
+            activeTab === item.key
+              ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]"
+              : "text-foreground hover:bg-accent/50 hover:text-accent-foreground hover:scale-[1.01]"
+          }`}
+          onClick={() => {
+            setActiveTab(item.key)
+            onItemClick?.()
+          }}
+        >
+          <item.icon className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
+          <span className="flex-1 text-left">{item.label}</span>
+          {item.badge && (
+            <Badge variant="secondary" className="ml-2 text-xs bg-background/50">
+              {item.badge}
+            </Badge>
+          )}
+          <ChevronRight
+            className={`w-4 h-4 ml-2 transition-transform ${activeTab === item.key ? "rotate-90" : "group-hover:translate-x-1"}`}
+          />
+        </Button>
+      ))}
+    </div>
+  )
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card/90 backdrop-blur-md border-b border-border/50 sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <header className="bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 shadow-lg shadow-primary/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                <Home className="h-5 w-5 text-primary" />
-                <h1 className="text-xl font-bold text-foreground">Рефрейм Бюро</h1>
+              {/* Mobile menu trigger */}
+              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80 p-0">
+                  <div className="p-6">
+                    <div className="flex items-center space-x-2 mb-6">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Home className="h-5 w-5 text-primary" />
+                      </div>
+                      <h2 className="text-xl font-bold text-foreground">Рефрейм Бюро</h2>
+                    </div>
+                    <NavigationMenu onItemClick={() => setIsMobileMenuOpen(false)} />
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-all duration-300 group">
+                <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                  <Home className="h-5 w-5 text-primary" />
+                </div>
+                <h1 className="text-xl font-bold text-foreground hidden sm:block">Рефрейм Бюро</h1>
               </Link>
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+              <Badge
+                variant="secondary"
+                className="bg-gradient-to-r from-primary/20 to-accent/20 text-primary border-primary/30 shadow-sm hidden sm:flex"
+              >
+                <Sparkles className="w-3 h-3 mr-1" />
                 Бизнес-платформа
               </Badge>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Search - hidden on mobile */}
+              <div className="relative hidden md:block">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Поиск..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64 bg-background/50 border-border/50 focus:border-primary/50"
+                />
+              </div>
+
+              {/* Notifications */}
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                {notifications > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
+                    {notifications}
+                  </Badge>
+                )}
+              </Button>
+
               <ThemeToggle />
-              <span className="text-foreground font-medium hidden md:inline">Добро пожаловать, Пользователь</span>
+
+              <div className="hidden md:flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                  <span className="text-xs font-bold text-white">П</span>
+                </div>
+                <span className="text-foreground font-medium">Пользователь</span>
+              </div>
+
               <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 bg-transparent"
+                className="border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 bg-transparent hover:shadow-md"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Выйти
+                <LogOut className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Выйти</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
           <Breadcrumb>
-            <BreadcrumbList>
+            <BreadcrumbList className="flex-wrap">
               {getBreadcrumbs().map((crumb, index) => (
                 <div key={index} className="flex items-center">
-                  {index > 0 && <BreadcrumbSeparator />}
+                  {index > 0 && <BreadcrumbSeparator className="text-muted-foreground/50 mx-1" />}
                   <BreadcrumbItem>
                     {index === getBreadcrumbs().length - 1 ? (
-                      <BreadcrumbPage className="text-foreground">{crumb.label}</BreadcrumbPage>
+                      <BreadcrumbPage className="text-foreground font-medium text-sm sm:text-base">
+                        {crumb.label}
+                      </BreadcrumbPage>
                     ) : (
-                      <BreadcrumbLink href={crumb.href} className="text-muted-foreground hover:text-foreground">
+                      <BreadcrumbLink
+                        href={crumb.href}
+                        className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base"
+                      >
                         {crumb.label}
                       </BreadcrumbLink>
                     )}
@@ -286,190 +426,102 @@ export default function DashboardPage() {
           </Breadcrumb>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1">
-            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+          {/* Desktop sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5 sticky top-24">
               <CardHeader className="pb-4">
-                <CardTitle className="text-foreground font-bold text-lg">Управление бизнесом</CardTitle>
+                <CardTitle className="text-foreground font-bold text-lg flex items-center">
+                  <div className="p-2 bg-primary/10 rounded-lg mr-3">
+                    <Briefcase className="w-5 h-5 text-primary" />
+                  </div>
+                  Управление бизнесом
+                </CardTitle>
                 <CardDescription className="text-muted-foreground text-sm">Ваша ИИ-платформа роста</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant={activeTab === "overview" ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 ${
-                    activeTab === "overview"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                  }`}
-                  onClick={() => setActiveTab("overview")}
-                >
-                  <Briefcase className="w-4 h-4 mr-2" />
-                  Обзор бизнеса
-                </Button>
-
-                <Button
-                  variant={activeTab === "tools" ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 ${
-                    activeTab === "tools"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                  }`}
-                  onClick={() => setActiveTab("tools")}
-                >
-                  <Rocket className="w-4 h-4 mr-2" />
-                  ИИ-инструменты
-                  <Badge variant="secondary" className="ml-auto text-xs">
-                    {aiTools.filter((t) => t.status === "active").length}
-                  </Badge>
-                </Button>
-
-                <Button
-                  variant={activeTab === "projects" ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 ${
-                    activeTab === "projects"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                  }`}
-                  onClick={() => setActiveTab("projects")}
-                >
-                  <Target className="w-4 h-4 mr-2" />
-                  Активные проекты
-                  <Badge variant="secondary" className="ml-auto text-xs">
-                    {activeProjects.length}
-                  </Badge>
-                </Button>
-
-                <Button
-                  variant={activeTab === "chat" ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 ${
-                    activeTab === "chat"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                  }`}
-                  onClick={() => setActiveTab("chat")}
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  ИИ-консультант
-                </Button>
-
-                <Button
-                  variant={activeTab === "settings" ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 ${
-                    activeTab === "settings"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                      : "text-foreground hover:bg-accent/50 hover:text-accent-foreground"
-                  }`}
-                  onClick={() => setActiveTab("settings")}
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Настройки
-                </Button>
+              <CardContent>
+                <NavigationMenu />
               </CardContent>
             </Card>
           </div>
 
-          <div className="lg:col-span-3">
+          {/* Main content */}
+          <div className="col-span-1 lg:col-span-3">
             {activeTab === "overview" && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                  <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Месячная выручка</p>
-                          <p className="text-2xl font-bold text-green-600">
-                            {businessMetrics.monthlyRevenue.toLocaleString()} ₽
-                          </p>
-                          <p className="text-xs text-green-600 flex items-center mt-1">
-                            <TrendingUp className="w-3 h-3 mr-1" />+{businessMetrics.revenueGrowth}% к прошлому месяцу
-                          </p>
-                        </div>
-                        <DollarSign className="h-8 w-8 text-green-500/60" />
-                      </div>
-                    </CardContent>
-                  </Card>
+              <div className="space-y-6 sm:space-y-8">
+                <AnimatedMetrics />
 
-                  <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Автоматизированные процессы</p>
-                          <p className="text-2xl font-bold text-blue-600">{businessMetrics.automatedProcesses}</p>
-                          <p className="text-xs text-blue-600 flex items-center mt-1">
-                            <Zap className="w-3 h-3 mr-1" />
-                            Экономия {businessMetrics.timeSaved}ч/месяц
-                          </p>
-                        </div>
-                        <Rocket className="h-8 w-8 text-blue-500/60" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">ИИ эффективность</p>
-                          <p className="text-2xl font-bold text-purple-600">{businessMetrics.aiEfficiency}%</p>
-                          <p className="text-xs text-purple-600 flex items-center mt-1">
-                            <Star className="w-3 h-3 mr-1" />
-                            Отличный результат
-                          </p>
-                        </div>
-                        <Brain className="h-8 w-8 text-purple-500/60" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Быстрые действия */}
-                <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
                   <CardHeader>
-                    <CardTitle className="text-foreground font-bold flex items-center">
-                      <Lightbulb className="w-5 h-5 mr-2 text-primary" />
+                    <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
+                      <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg mr-3">
+                        <Lightbulb className="w-5 h-5 text-primary" />
+                      </div>
                       Рекомендации для роста
+                      <Badge variant="secondary" className="ml-3 bg-primary/10 text-primary">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        ИИ-анализ
+                      </Badge>
                     </CardTitle>
                     <CardDescription>Персональные предложения на основе анализа вашего бизнеса</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg hover:bg-primary/10 transition-all duration-300">
-                        <div className="flex items-start space-x-3">
-                          <div className="p-2 bg-primary/10 rounded-lg">
-                            <TrendingUp className="h-4 w-4 text-primary" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                      <div className="p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/20 rounded-xl hover:bg-primary/10 transition-all duration-300 group cursor-pointer">
+                        <div className="flex items-start space-x-3 sm:space-x-4">
+                          <div className="p-2 sm:p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+                            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary group-hover:scale-110 transition-transform" />
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-foreground">Запустить прогнозирование продаж</h4>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Увеличьте выручку на 40% с помощью ИИ-прогнозов
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground mb-2 text-sm sm:text-base">
+                              Запустить прогнозирование продаж
+                            </h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+                              Увеличьте выручку на 40% с помощью ИИ-прогнозов и аналитики трендов
                             </p>
-                            <Button size="sm" className="mt-2" onClick={() => activateAITool(5)}>
-                              Активировать
-                              <ArrowRight className="w-3 h-3 ml-1" />
-                            </Button>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                              <Button
+                                size="sm"
+                                className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 w-full sm:w-auto"
+                                onClick={() => activateAITool(5)}
+                              >
+                                Активировать
+                                <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                              </Button>
+                              <Badge variant="outline" className="text-xs self-start sm:self-auto">
+                                ROI +40%
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg hover:bg-blue-500/10 transition-all duration-300">
-                        <div className="flex items-start space-x-3">
-                          <div className="p-2 bg-blue-500/10 rounded-lg">
-                            <Users className="h-4 w-4 text-blue-600" />
+                      <div className="p-4 sm:p-6 bg-gradient-to-br from-blue-500/5 via-blue-500/3 to-transparent border border-blue-500/20 rounded-xl hover:bg-blue-500/10 transition-all duration-300 group cursor-pointer">
+                        <div className="flex items-start space-x-3 sm:space-x-4">
+                          <div className="p-2 sm:p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
+                            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 group-hover:scale-110 transition-transform" />
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-foreground">Добавить клиентский сервис-бот</h4>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Автоматизируйте поддержку и увеличьте удовлетворенность
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground mb-2 text-sm sm:text-base">
+                              Добавить клиентский сервис-бот
+                            </h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+                              Автоматизируйте поддержку 24/7 и увеличьте удовлетворенность клиентов
                             </p>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="mt-2 bg-transparent"
-                              onClick={() => activateAITool(6)}
-                            >
-                              Подключить
-                              <ArrowRight className="w-3 h-3 ml-1" />
-                            </Button>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="bg-transparent hover:bg-blue-500/10 border-blue-500/30 w-full sm:w-auto"
+                                onClick={() => activateAITool(6)}
+                              >
+                                Подключить
+                                <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                              </Button>
+                              <Badge variant="outline" className="text-xs self-start sm:self-auto">
+                                ROI +25%
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -480,48 +532,48 @@ export default function DashboardPage() {
                 {/* Последняя активность */}
                 <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-foreground font-bold flex items-center">
+                    <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
                       <Activity className="w-5 h-5 mr-2 text-primary" />
                       Последняя активность
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3 p-3 bg-background/50 rounded-lg border border-border/30">
-                        <div className="p-2 bg-green-500/10 rounded-lg">
-                          <CheckCircle className="h-4 w-4 text-green-600" />
+                    <div className="space-y-3 sm:space-y-4">
+                      {[
+                        {
+                          icon: CheckCircle,
+                          color: "green",
+                          title: "Генератор контента создал 15 постов для соцсетей",
+                          time: "2 часа назад",
+                        },
+                        {
+                          icon: BarChart3,
+                          color: "blue",
+                          title: "Анализатор данных обработал отчет по продажам",
+                          time: "4 часа назад",
+                        },
+                        {
+                          icon: Zap,
+                          color: "purple",
+                          title: "Автоматизация обработала 45 заявок клиентов",
+                          time: "6 часов назад",
+                        },
+                      ].map((activity, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-3 p-3 bg-background/50 rounded-lg border border-border/30 hover:bg-background/70 transition-colors"
+                        >
+                          <div className={`p-2 bg-${activity.color}-500/10 rounded-lg flex-shrink-0`}>
+                            <activity.icon className={`h-4 w-4 text-${activity.color}-600`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate sm:whitespace-normal">
+                              {activity.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{activity.time}</p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">
-                            Генератор контента создал 15 постов для соцсетей
-                          </p>
-                          <p className="text-xs text-muted-foreground">2 часа назад</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-3 p-3 bg-background/50 rounded-lg border border-border/30">
-                        <div className="p-2 bg-blue-500/10 rounded-lg">
-                          <BarChart3 className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">
-                            Анализатор данных обработал отчет по продажам
-                          </p>
-                          <p className="text-xs text-muted-foreground">4 часа назад</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-3 p-3 bg-background/50 rounded-lg border border-border/30">
-                        <div className="p-2 bg-purple-500/10 rounded-lg">
-                          <Zap className="h-4 w-4 text-purple-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">
-                            Автоматизация обработала 45 заявок клиентов
-                          </p>
-                          <p className="text-xs text-muted-foreground">6 часов назад</p>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -529,33 +581,44 @@ export default function DashboardPage() {
             )}
 
             {activeTab === "tools" && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-bold text-foreground">ИИ-инструменты</h2>
-                    <p className="text-muted-foreground">Управляйте своими ИИ-решениями для бизнеса</p>
-                  </div>
-                </div>
+              <div className="space-y-6 sm:space-y-8">
+                <AIToolsShowcase />
 
-                <div className="flex space-x-2 mb-6 overflow-x-auto">
-                  {aiTools
-                    .filter((tool) => tool.status === "active")
-                    .map((tool) => (
-                      <Button
-                        key={tool.component}
-                        variant={activeToolTab === tool.component ? "default" : "outline"}
-                        className={`flex-shrink-0 ${
-                          activeToolTab === tool.component ? "bg-primary text-primary-foreground" : "bg-transparent"
-                        }`}
-                        onClick={() => setActiveToolTab(tool.component)}
-                      >
-                        <tool.icon className="w-4 h-4 mr-2" />
-                        {tool.name}
-                      </Button>
-                    ))}
-                </div>
-
-                {renderActiveAITool()}
+                <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
+                  <CardHeader>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <CardTitle className="text-foreground font-bold text-lg sm:text-xl">
+                        Активный инструмент
+                      </CardTitle>
+                      <div className="flex flex-wrap gap-2">
+                        {aiTools
+                          .filter((tool) => tool.status === "active")
+                          .map((tool) => (
+                            <Button
+                              key={tool.component}
+                              variant={activeToolTab === tool.component ? "default" : "outline"}
+                              size="sm"
+                              className={`transition-all duration-300 ${
+                                activeToolTab === tool.component
+                                  ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25"
+                                  : "bg-transparent hover:bg-accent/50"
+                              }`}
+                              onClick={() => setActiveToolTab(tool.component)}
+                            >
+                              <tool.icon className="w-4 h-4 mr-2" />
+                              <span className="hidden sm:inline">{tool.name}</span>
+                              <span className="sm:hidden">{tool.name.split(" ")[0]}</span>
+                            </Button>
+                          ))}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-background/50 rounded-xl p-4 sm:p-6 border border-border/30">
+                      {renderActiveAITool()}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
 
@@ -636,24 +699,24 @@ export default function DashboardPage() {
             )}
 
             {activeTab === "chat" && (
-              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[600px] flex flex-col">
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[500px] sm:h-[600px] flex flex-col">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-foreground font-bold flex items-center">
+                  <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
                     <Bot className="w-5 h-5 mr-2 text-primary" />
                     ИИ-консультант по бизнесу
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardDescription className="text-muted-foreground text-sm">
                     Персональный помощник для роста вашего бизнеса
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="flex-1 flex flex-col p-6">
-                  <ScrollArea className="flex-1 mb-4 p-4 bg-background/50 rounded-lg border border-border/30">
-                    <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col p-4 sm:p-6">
+                  <ScrollArea className="flex-1 mb-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
+                    <div className="space-y-3 sm:space-y-4">
                       {chatHistory.map((msg) => (
                         <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                           <div
-                            className={`max-w-[80%] p-3 rounded-lg transition-all duration-300 ${
+                            className={`max-w-[85%] sm:max-w-[80%] p-3 rounded-lg transition-all duration-300 text-sm sm:text-base ${
                               msg.type === "user"
                                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                                 : "bg-card text-foreground border border-border/50"
@@ -670,13 +733,13 @@ export default function DashboardPage() {
                     <Input
                       value={chatMessage}
                       onChange={(e) => setChatMessage(e.target.value)}
-                      placeholder="Спросите о развитии бизнеса, ИИ-инструментах или аналитике..."
-                      className="bg-background border-border/50 focus:border-primary focus:ring-primary/20"
+                      placeholder="Спросите о развитии бизнеса..."
+                      className="bg-background border-border/50 focus:border-primary focus:ring-primary/20 text-sm sm:text-base"
                       onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                     />
                     <Button
                       onClick={handleSendMessage}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 flex-shrink-0"
                       size="icon"
                     >
                       <Send className="w-4 h-4" />
@@ -762,6 +825,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <FloatingActionMenu />
     </div>
   )
 }

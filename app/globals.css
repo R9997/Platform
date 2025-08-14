@@ -4,83 +4,80 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Enhanced Light theme colors - more professional and readable */
-  --background: oklch(0.99 0 0); /* Pure white background */
-  --foreground: oklch(0.08 0 0); /* Darker text for better contrast */
-  --card: oklch(0.98 0 0); /* Slightly off-white card background */
+  /* Улучшенная светлая тема с теплыми профессиональными цветами */
+  --background: oklch(0.99 0 0); /* Чистый белый фон */
+  --foreground: oklch(0.08 0 0); /* Темный текст для отличного контраста */
+  --card: oklch(0.98 0.005 45); /* Слегка теплый оттенок карточек */
   --card-foreground: oklch(0.08 0 0);
-  --popover: oklch(0.98 0 0);
+  --popover: oklch(0.98 0.005 45);
   --popover-foreground: oklch(0.08 0 0);
-  /* Professional cyan for light theme */
-  --primary: oklch(0.42 0.2 195); /* Slightly darker cyan for better contrast */
+  /* Теплый синий как основной цвет вместо зеленого */
+  --primary: oklch(0.45 0.18 240); /* Профессиональный синий */
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.95 0 0);
+  --secondary: oklch(0.96 0.01 45); /* Теплый нейтральный */
   --secondary-foreground: oklch(0.08 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.4 0 0); /* Much darker for better readability */
-  /* Professional blue accent */
-  --accent: oklch(0.38 0.2 220); /* Darker blue for better contrast */
+  --muted: oklch(0.97 0.01 45); /* Теплый приглушенный */
+  --muted-foreground: oklch(0.35 0 0); /* Темнее для лучшей читаемости */
+  /* Теплый оранжевый акцент для энергии */
+  --accent: oklch(0.55 0.15 35); /* Теплый оранжево-коричневый */
   --accent-foreground: oklch(0.99 0 0);
-  --destructive: oklch(0.52 0.24 15); /* Professional red */
+  --destructive: oklch(0.52 0.24 15);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.85 0 0); /* More visible borders */
-  --input: oklch(0.98 0 0);
-  --ring: oklch(0.42 0.2 195); /* Professional focus ring */
-  /* Enhanced chart colors for light theme */
-  --chart-1: oklch(0.42 0.2 195); /* Professional cyan */
-  --chart-2: oklch(0.38 0.2 220); /* Professional blue */
-  --chart-3: oklch(0.4 0.18 200); /* Light blue */
-  --chart-4: oklch(0.36 0.18 180); /* Aqua */
-  --chart-5: oklch(0.34 0.18 210); /* Deep blue */
+  --border: oklch(0.88 0.01 45); /* Теплые границы */
+  --input: oklch(0.98 0.005 45);
+  --ring: oklch(0.45 0.18 240);
+  /* Теплая палитра для графиков */
+  --chart-1: oklch(0.45 0.18 240); /* Синий */
+  --chart-2: oklch(0.55 0.15 35); /* Теплый оранжевый */
+  --chart-3: oklch(0.5 0.12 200); /* Голубой */
+  --chart-4: oklch(0.6 0.14 60); /* Золотистый */
+  --chart-5: oklch(0.4 0.16 280); /* Фиолетовый */
   --radius: 0.625rem;
-  --sidebar: oklch(0.98 0 0);
+  --sidebar: oklch(0.98 0.005 45);
   --sidebar-foreground: oklch(0.08 0 0);
-  --sidebar-primary: oklch(0.42 0.2 195);
+  --sidebar-primary: oklch(0.45 0.18 240);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.95 0 0);
+  --sidebar-accent: oklch(0.96 0.01 45);
   --sidebar-accent-foreground: oklch(0.08 0 0);
-  --sidebar-border: oklch(0.85 0 0);
-  --sidebar-ring: oklch(0.42 0.2 195);
-  /* Enhanced custom variables for light theme */
+  --sidebar-border: oklch(0.88 0.01 45);
+  --sidebar-ring: oklch(0.45 0.18 240);
+  /* Теплые кастомные переменные */
   --color-light-bg: oklch(0.99 0 0);
-  --color-light-surface: oklch(0.98 0 0);
-  --color-light-border: oklch(0.85 0 0);
+  --color-light-surface: oklch(0.98 0.005 45);
+  --color-light-border: oklch(0.88 0.01 45);
   --color-text-primary-light: oklch(0.08 0 0);
-  --color-text-secondary-light: oklch(0.4 0 0);
-  /* Professional glow effects for light theme */
-  --soft-glow-cyan-light: 0 0 8px oklch(0.42 0.2 195 / 0.2), 0 0 16px oklch(0.42 0.2 195 / 0.1);
-  --soft-glow-blue-light: 0 0 8px oklch(0.38 0.2 220 / 0.2), 0 0 16px oklch(0.38 0.2 220 / 0.1);
+  --color-text-secondary-light: oklch(0.35 0 0);
+  /* Теплые эффекты свечения */
+  --soft-glow-primary-light: 0 0 8px oklch(0.45 0.18 240 / 0.15), 0 0 16px oklch(0.45 0.18 240 / 0.08);
+  --soft-glow-accent-light: 0 0 8px oklch(0.55 0.15 35 / 0.15), 0 0 16px oklch(0.55 0.15 35 / 0.08);
 }
 
 .dark {
-  /* Enhanced dark theme with much better contrast and readability */
-  --background: oklch(0.04 0 0); /* Very dark background for maximum contrast */
-  --foreground: oklch(0.98 0 0); /* Near-white text for excellent readability */
-  --card: oklch(0.07 0 0); /* Dark card background with good contrast */
+  /* Сохраняем улучшенную темную тему с отличным контрастом */
+  --background: oklch(0.04 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.07 0 0);
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.07 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  /* More vibrant and visible primary colors */
-  --primary: oklch(0.7 0.22 195); /* Much brighter cyan for excellent visibility */
+  --primary: oklch(0.7 0.22 195);
   --primary-foreground: oklch(0.04 0 0);
   --secondary: oklch(0.1 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.08 0 0);
-  --muted-foreground: oklch(0.82 0 0); /* Much brighter muted text - no more gray on black! */
-  /* Enhanced accent color for excellent visibility */
-  --accent: oklch(0.65 0.22 220); /* Much brighter blue accent */
+  --muted-foreground: oklch(0.82 0 0);
+  --accent: oklch(0.65 0.22 220);
   --accent-foreground: oklch(0.04 0 0);
-  --destructive: oklch(0.65 0.28 15); /* Bright red for visibility */
+  --destructive: oklch(0.65 0.28 15);
   --destructive-foreground: oklch(0.04 0 0);
-  --border: oklch(0.25 0 0); /* Much more visible borders */
+  --border: oklch(0.25 0 0);
   --input: oklch(0.08 0 0);
-  --ring: oklch(0.7 0.22 195); /* Bright focus ring */
-  /* Enhanced chart colors with excellent visibility */
-  --chart-1: oklch(0.7 0.22 195); /* Bright cyan */
-  --chart-2: oklch(0.65 0.22 220); /* Bright blue */
-  --chart-3: oklch(0.6 0.2 200); /* Light blue */
-  --chart-4: oklch(0.65 0.2 180); /* Aqua */
-  --chart-5: oklch(0.6 0.2 210); /* Deep blue */
+  --ring: oklch(0.7 0.22 195);
+  --chart-1: oklch(0.7 0.22 195);
+  --chart-2: oklch(0.65 0.22 220);
+  --chart-3: oklch(0.6 0.2 200);
+  --chart-4: oklch(0.65 0.2 180);
+  --chart-5: oklch(0.6 0.2 210);
   --sidebar: oklch(0.07 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
   --sidebar-primary: oklch(0.7 0.22 195);
@@ -89,13 +86,11 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.25 0 0);
   --sidebar-ring: oklch(0.7 0.22 195);
-  /* Updated custom variables for excellent contrast */
   --color-dark-bg: oklch(0.04 0 0);
   --color-dark-surface: oklch(0.07 0 0);
   --color-dark-border: oklch(0.25 0 0);
   --color-text-primary: oklch(0.98 0 0);
   --color-text-secondary: oklch(0.82 0 0);
-  /* Enhanced glow effects for better visibility */
   --soft-glow-cyan: 0 0 12px oklch(0.7 0.22 195 / 0.5), 0 0 24px oklch(0.7 0.22 195 / 0.2);
   --soft-glow-blue: 0 0 12px oklch(0.65 0.22 220 / 0.5), 0 0 24px oklch(0.65 0.22 220 / 0.2);
 }
@@ -148,93 +143,48 @@
   body {
     @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
-  /* Enhanced utility classes with much better contrast for both themes */
+  /* Обновленные утилиты с теплыми цветами для светлой темы */
   .soft-glow {
-    box-shadow: var(--soft-glow-cyan-light);
+    box-shadow: var(--soft-glow-primary-light);
   }
   .dark .soft-glow {
     box-shadow: var(--soft-glow-cyan);
   }
-  .soft-glow-blue {
-    box-shadow: var(--soft-glow-blue-light);
+  .soft-glow-accent {
+    box-shadow: var(--soft-glow-accent-light);
   }
-  .dark .soft-glow-blue {
+  .dark .soft-glow-accent {
     box-shadow: var(--soft-glow-blue);
   }
   .soft-text {
-    color: oklch(0.42 0.2 195);
-    text-shadow: 0 0 4px oklch(0.42 0.2 195 / 0.25);
+    color: oklch(0.45 0.18 240);
+    text-shadow: 0 0 4px oklch(0.45 0.18 240 / 0.2);
   }
   .dark .soft-text {
     color: oklch(0.7 0.22 195);
     text-shadow: 0 0 6px oklch(0.7 0.22 195 / 0.4);
   }
-  .soft-text-blue {
-    color: oklch(0.38 0.2 220);
-    text-shadow: 0 0 4px oklch(0.38 0.2 220 / 0.25);
+  .soft-text-accent {
+    color: oklch(0.55 0.15 35);
+    text-shadow: 0 0 4px oklch(0.55 0.15 35 / 0.2);
   }
-  .dark .soft-text-blue {
+  .dark .soft-text-accent {
     color: oklch(0.65 0.22 220);
     text-shadow: 0 0 6px oklch(0.65 0.22 220 / 0.4);
   }
   .soft-border {
-    border-color: oklch(0.42 0.2 195);
-    box-shadow: 0 0 4px oklch(0.42 0.2 195 / 0.2);
+    border-color: oklch(0.45 0.18 240);
+    box-shadow: 0 0 4px oklch(0.45 0.18 240 / 0.15);
   }
   .dark .soft-border {
     border-color: oklch(0.7 0.22 195);
     box-shadow: 0 0 6px oklch(0.7 0.22 195 / 0.25);
   }
-  .soft-border-blue {
-    border-color: oklch(0.38 0.2 220);
-    box-shadow: 0 0 4px oklch(0.38 0.2 220 / 0.2);
+  .soft-border-accent {
+    border-color: oklch(0.55 0.15 35);
+    box-shadow: 0 0 4px oklch(0.55 0.15 35 / 0.15);
   }
-  .dark .soft-border-blue {
-    border-color: oklch(0.65 0.22 220);
-    box-shadow: 0 0 6px oklch(0.65 0.22 220 / 0.25);
-  }
-  /* Updated legacy neon classes with excellent visibility */
-  .neon-glow {
-    box-shadow: var(--soft-glow-cyan-light);
-  }
-  .dark .neon-glow {
-    box-shadow: var(--soft-glow-cyan);
-  }
-  .neon-glow-blue {
-    box-shadow: var(--soft-glow-blue-light);
-  }
-  .dark .neon-glow-blue {
-    box-shadow: var(--soft-glow-blue);
-  }
-  .neon-text {
-    color: oklch(0.42 0.2 195);
-    text-shadow: 0 0 4px oklch(0.42 0.2 195 / 0.25);
-  }
-  .dark .neon-text {
-    color: oklch(0.7 0.22 195);
-    text-shadow: 0 0 6px oklch(0.7 0.22 195 / 0.4);
-  }
-  .neon-text-blue {
-    color: oklch(0.38 0.2 220);
-    text-shadow: 0 0 4px oklch(0.38 0.2 220 / 0.25);
-  }
-  .dark .neon-text-blue {
-    color: oklch(0.65 0.22 220);
-    text-shadow: 0 0 6px oklch(0.65 0.22 220 / 0.4);
-  }
-  .neon-border {
-    border-color: oklch(0.42 0.2 195);
-    box-shadow: 0 0 4px oklch(0.42 0.2 195 / 0.2);
-  }
-  .dark .neon-border {
-    border-color: oklch(0.7 0.22 195);
-    box-shadow: 0 0 6px oklch(0.7 0.22 195 / 0.25);
-  }
-  .neon-border-blue {
-    border-color: oklch(0.38 0.2 220);
-    box-shadow: 0 0 4px oklch(0.38 0.2 220 / 0.2);
-  }
-  .dark .neon-border-blue {
+  .dark .soft-border-accent {
     border-color: oklch(0.65 0.22 220);
     box-shadow: 0 0 6px oklch(0.65 0.22 220 / 0.25);
   }
