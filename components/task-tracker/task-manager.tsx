@@ -52,7 +52,7 @@ interface TeamMember {
   role: string
 }
 
-export default function TaskManager() {
+const TaskManager = () => {
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: "1",
@@ -432,3 +432,6 @@ export default function TaskManager() {
     </div>
   )
 }
+
+export { TaskManager }
+export default TaskManager
