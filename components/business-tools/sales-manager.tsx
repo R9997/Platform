@@ -23,6 +23,9 @@ import {
   ArrowUp,
   Eye,
   Edit,
+  X,
+  Save,
+  Trash2,
 } from "lucide-react"
 
 interface Lead {
@@ -59,6 +62,18 @@ export function SalesManager() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [showAddLead, setShowAddLead] = useState(false)
+  const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [newLead, setNewLead] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    value: "",
+    source: "Сайт",
+    assignedTo: "Михаил Сидоров",
+    nextAction: "",
+    notes: "",
+  })
 
   const [salesMetrics, setSalesMetrics] = useState({
     totalRevenue: 2450000,
@@ -157,6 +172,92 @@ export function SalesManager() {
       activities: 15,
     },
   ])
+
+  const handleAddLead = () => {
+    if (newLead.name && newLead.email && newLead.company) {
+      const lead: Lead = {
+        id: leads.length + 1,
+        name: newLead.name,
+        company: newLead.company,
+        email: newLead.email,
+        phone: newLead.phone,
+        status: "new",
+        value: Number.parseInt(newLead.value) || 0,
+        probability: 25,
+        source: newLead.source,
+        assignedTo: newLead.assignedTo,
+        lastContact: new Date().toISOString().split("T")[0],
+        nextAction: newLead.nextAction || "Первичный контакт",
+        notes: newLead.notes,
+        createdAt: new Date().toISOString().split("T")[0],
+      }
+      setLeads([...leads, lead])
+      setSalesMetrics({ ...salesMetrics, totalLeads: salesMetrics.totalLeads + 1 })
+      setNewLead({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        value: "",
+        source: "Сайт",
+        assignedTo: "Михаил Сидоров",
+        nextAction: "",
+        notes: "",
+      })
+      setShowAddLead(false)
+    }
+  }
+
+  const handleEditLead = (lead: Lead) => {
+    setEditingLead(lead)
+  }
+
+  const handleSaveLead = () => {
+    if (editingLead) {
+      setLeads(leads.map((lead) => (lead.id === editingLead.id ? editingLead : lead)))
+      setEditingLead(null)
+    }
+  }
+
+  const handleDeleteLead = (leadId: number) => {
+    setLeads(leads.filter((lead) => lead.id !== leadId))
+    setSalesMetrics({ ...salesMetrics, totalLeads: salesMetrics.totalLeads - 1 })
+  }
+
+  const handleStatusChange = (leadId: number, newStatus: Lead["status"]) => {
+    setLeads(
+      leads.map((lead) => {
+        if (lead.id === leadId) {
+          let newProbability = lead.probability
+          switch (newStatus) {
+            case "new":
+              newProbability = 25
+              break
+            case "contacted":
+              newProbability = 40
+              break
+            case "qualified":
+              newProbability = 60
+              break
+            case "proposal":
+              newProbability = 75
+              break
+            case "negotiation":
+              newProbability = 85
+              break
+            case "closed-won":
+              newProbability = 100
+              break
+            case "closed-lost":
+              newProbability = 0
+              break
+          }
+          return { ...lead, status: newStatus, probability: newProbability }
+        }
+        return lead
+      }),
+    )
+  }
 
   const getStatusColor = (status: string) => {
     const colors = {
@@ -377,53 +478,171 @@ export function SalesManager() {
                 className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors"
               >
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-foreground">{lead.name}</h3>
-                        <Badge className={getStatusColor(lead.status)}>{getStatusLabel(lead.status)}</Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {lead.probability}% вероятность
-                        </Badge>
+                  {editingLead?.id === lead.id ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium">Имя</label>
+                          <Input
+                            value={editingLead.name}
+                            onChange={(e) => setEditingLead({ ...editingLead, name: e.target.value })}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Компания</label>
+                          <Input
+                            value={editingLead.company}
+                            onChange={(e) => setEditingLead({ ...editingLead, company: e.target.value })}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Email</label>
+                          <Input
+                            value={editingLead.email}
+                            onChange={(e) => setEditingLead({ ...editingLead, email: e.target.value })}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Телефон</label>
+                          <Input
+                            value={editingLead.phone}
+                            onChange={(e) => setEditingLead({ ...editingLead, phone: e.target.value })}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Потенциал</label>
+                          <Input
+                            type="number"
+                            value={editingLead.value}
+                            onChange={(e) => setEditingLead({ ...editingLead, value: Number.parseInt(e.target.value) })}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Статус</label>
+                          <Select
+                            value={editingLead.status}
+                            onValueChange={(value: Lead["status"]) => setEditingLead({ ...editingLead, status: value })}
+                          >
+                            <SelectTrigger className="mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new">Новый</SelectItem>
+                              <SelectItem value="contacted">Контакт</SelectItem>
+                              <SelectItem value="qualified">Квалифицирован</SelectItem>
+                              <SelectItem value="proposal">Предложение</SelectItem>
+                              <SelectItem value="negotiation">Переговоры</SelectItem>
+                              <SelectItem value="closed-won">Закрыт успешно</SelectItem>
+                              <SelectItem value="closed-lost">Закрыт неуспешно</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                      <p className="text-muted-foreground mb-2">{lead.company}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center">
-                          <Mail className="w-4 h-4 mr-1" />
-                          {lead.email}
-                        </div>
-                        <div className="flex items-center">
-                          <Phone className="w-4 h-4 mr-1" />
-                          {lead.phone}
-                        </div>
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          Последний контакт: {lead.lastContact}
-                        </div>
+                      <div>
+                        <label className="text-sm font-medium">Следующее действие</label>
+                        <Input
+                          value={editingLead.nextAction}
+                          onChange={(e) => setEditingLead({ ...editingLead, nextAction: e.target.value })}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Заметки</label>
+                        <Input
+                          value={editingLead.notes}
+                          onChange={(e) => setEditingLead({ ...editingLead, notes: e.target.value })}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button onClick={handleSaveLead} size="sm">
+                          <Save className="w-4 h-4 mr-1" />
+                          Сохранить
+                        </Button>
+                        <Button onClick={() => setEditingLead(null)} variant="outline" size="sm">
+                          <X className="w-4 h-4 mr-1" />
+                          Отмена
+                        </Button>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-foreground">{lead.value.toLocaleString("ru-RU")}₽</p>
-                      <p className="text-sm text-muted-foreground">Потенциал</p>
-                    </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-lg font-semibold text-foreground">{lead.name}</h3>
+                            <Select
+                              value={lead.status}
+                              onValueChange={(value: Lead["status"]) => handleStatusChange(lead.id, value)}
+                            >
+                              <SelectTrigger className="w-auto">
+                                <Badge className={getStatusColor(lead.status)}>{getStatusLabel(lead.status)}</Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="new">Новый</SelectItem>
+                                <SelectItem value="contacted">Контакт</SelectItem>
+                                <SelectItem value="qualified">Квалифицирован</SelectItem>
+                                <SelectItem value="proposal">Предложение</SelectItem>
+                                <SelectItem value="negotiation">Переговоры</SelectItem>
+                                <SelectItem value="closed-won">Закрыт успешно</SelectItem>
+                                <SelectItem value="closed-lost">Закрыт неуспешно</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Badge variant="outline" className="text-xs">
+                              {lead.probability}% вероятность
+                            </Badge>
+                          </div>
+                          <p className="text-muted-foreground mb-2">{lead.company}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                            <div className="flex items-center">
+                              <Mail className="w-4 h-4 mr-1" />
+                              {lead.email}
+                            </div>
+                            <div className="flex items-center">
+                              <Phone className="w-4 h-4 mr-1" />
+                              {lead.phone}
+                            </div>
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              Последний контакт: {lead.lastContact}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-foreground">{lead.value.toLocaleString("ru-RU")}₽</p>
+                          <p className="text-sm text-muted-foreground">Потенциал</p>
+                        </div>
+                      </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm text-foreground mb-1">Следующее действие: {lead.nextAction}</p>
-                      <p className="text-xs text-muted-foreground">Ответственный: {lead.assignedTo}</p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        <Eye className="w-4 h-4 mr-1" />
-                        Просмотр
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Edit className="w-4 h-4 mr-1" />
-                        Редактировать
-                      </Button>
-                    </div>
-                  </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm text-foreground mb-1">Следующее действие: {lead.nextAction}</p>
+                          <p className="text-xs text-muted-foreground">Ответственный: {lead.assignedTo}</p>
+                          {lead.notes && <p className="text-xs text-muted-foreground mt-1">Заметки: {lead.notes}</p>}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEditLead(lead)}>
+                            <Edit className="w-4 h-4 mr-1" />
+                            Редактировать
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteLead(lead.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Удалить
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -569,6 +788,144 @@ export function SalesManager() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {showAddLead && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle className="text-lg sm:text-xl">Добавить нового лида</CardTitle>
+              <CardDescription className="text-sm">Введите информацию о потенциальном клиенте</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Имя контакта *</label>
+                  <Input
+                    value={newLead.name}
+                    onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+                    placeholder="Иван Иванов"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Компания *</label>
+                  <Input
+                    value={newLead.company}
+                    onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
+                    placeholder="ООО Компания"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Email *</label>
+                  <Input
+                    type="email"
+                    value={newLead.email}
+                    onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                    placeholder="contact@company.com"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Телефон</label>
+                  <Input
+                    value={newLead.phone}
+                    onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                    placeholder="+7 (999) 123-45-67"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Потенциальная сумма</label>
+                  <Input
+                    type="number"
+                    value={newLead.value}
+                    onChange={(e) => setNewLead({ ...newLead, value: e.target.value })}
+                    placeholder="100000"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Источник</label>
+                  <Select value={newLead.source} onValueChange={(value) => setNewLead({ ...newLead, source: value })}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Сайт">Сайт</SelectItem>
+                      <SelectItem value="Реклама">Реклама</SelectItem>
+                      <SelectItem value="Рекомендация">Рекомендация</SelectItem>
+                      <SelectItem value="Холодный звонок">Холодный звонок</SelectItem>
+                      <SelectItem value="Социальные сети">Социальные сети</SelectItem>
+                      <SelectItem value="Выставка">Выставка</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Ответственный</label>
+                  <Select
+                    value={newLead.assignedTo}
+                    onValueChange={(value) => setNewLead({ ...newLead, assignedTo: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Михаил Сидоров">Михаил Сидоров</SelectItem>
+                      <SelectItem value="Елена Козлова">Елена Козлова</SelectItem>
+                      <SelectItem value="Анна Петрова">Анна Петрова</SelectItem>
+                      <SelectItem value="Дмитрий Волков">Дмитрий Волков</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Следующее действие</label>
+                  <Input
+                    value={newLead.nextAction}
+                    onChange={(e) => setNewLead({ ...newLead, nextAction: e.target.value })}
+                    placeholder="Первичный звонок"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Заметки</label>
+                <Input
+                  value={newLead.notes}
+                  onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                  placeholder="Дополнительная информация о лиде"
+                  className="mt-1"
+                />
+              </div>
+            </CardContent>
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddLead(false)
+                  setNewLead({
+                    name: "",
+                    company: "",
+                    email: "",
+                    phone: "",
+                    value: "",
+                    source: "Сайт",
+                    assignedTo: "Михаил Сидоров",
+                    nextAction: "",
+                    notes: "",
+                  })
+                }}
+                className="w-full sm:w-auto"
+              >
+                Отмена
+              </Button>
+              <Button onClick={handleAddLead} className="w-full sm:w-auto">
+                Добавить лида
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

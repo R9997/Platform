@@ -59,6 +59,180 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [notifications, setNotifications] = useState(3)
   const [showNotificationsModal, setShowNotificationsModal] = useState(false)
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false)
+  const [showAssignRoleModal, setShowAssignRoleModal] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false)
+  const [showCreateRoleModal, setShowCreateRoleModal] = useState(false)
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false)
+  const [projects, setProjects] = useState([
+    {
+      id: 1,
+      name: "Автоматизация продаж",
+      status: "В работе",
+      progress: 75,
+      team: ["А", "М"],
+      deadline: "2024-02-15",
+    },
+    {
+      id: 2,
+      name: "ИИ-чатбот поддержки",
+      status: "Планирование",
+      progress: 25,
+      team: ["Е", "Д"],
+      deadline: "2024-03-01",
+    },
+    {
+      id: 3,
+      name: "Аналитика клиентов",
+      status: "Завершен",
+      progress: 100,
+      team: ["А", "Д"],
+      deadline: "2024-01-30",
+    },
+  ])
+  const [leads, setLeads] = useState([
+    {
+      id: 1,
+      name: "ООО Технологии",
+      email: "contact@tech.com",
+      phone: "+7 (999) 123-45-67",
+      status: "Новый",
+      value: 150000,
+      source: "Сайт",
+    },
+    {
+      id: 2,
+      name: "ИП Иванов",
+      email: "ivanov@mail.com",
+      phone: "+7 (999) 765-43-21",
+      status: "В работе",
+      value: 75000,
+      source: "Реклама",
+    },
+  ])
+  const [newProject, setNewProject] = useState({ name: "", deadline: "", team: [] })
+  const [newRole, setNewRole] = useState({ name: "", permissions: [] })
+  const [newLead, setNewLead] = useState({ name: "", email: "", phone: "", value: "", source: "Сайт" })
+  const [userSettings, setUserSettings] = useState({
+    name: "Пользователь",
+    email: "user@example.com",
+    company: "Моя компания",
+  })
+
+  const [employees, setEmployees] = useState([
+    {
+      id: 1,
+      name: "Анна Петрова",
+      email: "anna@company.com",
+      role: "Менеджер",
+      status: "Активен",
+      avatar: "А",
+      productivity: 95,
+    },
+    {
+      id: 2,
+      name: "Михаил Сидоров",
+      email: "mikhail@company.com",
+      role: "Разработчик",
+      status: "Активен",
+      avatar: "М",
+      productivity: 88,
+    },
+    {
+      id: 3,
+      name: "Елена Козлова",
+      email: "elena@company.com",
+      role: "Дизайнер",
+      status: "Отпуск",
+      avatar: "Е",
+      productivity: 92,
+    },
+    {
+      id: 4,
+      name: "Дмитрий Волков",
+      email: "dmitry@company.com",
+      role: "Аналитик",
+      status: "Активен",
+      avatar: "Д",
+      productivity: 90,
+    },
+  ])
+  const [newEmployee, setNewEmployee] = useState({ name: "", email: "", role: "Сотрудник" })
+  const [availableRoles] = useState(["Администратор", "Менеджер", "Разработчик", "Дизайнер", "Аналитик", "Сотрудник"])
+
+  const handleAddProject = () => {
+    if (newProject.name && newProject.deadline) {
+      const project = {
+        id: projects.length + 1,
+        name: newProject.name,
+        status: "Планирование",
+        progress: 0,
+        team: newProject.team,
+        deadline: newProject.deadline,
+      }
+      setProjects([...projects, project])
+      setNewProject({ name: "", deadline: "", team: [] })
+      setShowAddProjectModal(false)
+    }
+  }
+
+  const handleCreateRole = () => {
+    if (newRole.name) {
+      console.log("Создана новая роль:", newRole)
+      setNewRole({ name: "", permissions: [] })
+      setShowCreateRoleModal(false)
+    }
+  }
+
+  const handleAddLead = () => {
+    if (newLead.name && newLead.email) {
+      const lead = {
+        id: leads.length + 1,
+        name: newLead.name,
+        email: newLead.email,
+        phone: newLead.phone,
+        status: "Новый",
+        value: Number.parseInt(newLead.value) || 0,
+        source: newLead.source,
+      }
+      setLeads([...leads, lead])
+      setNewLead({ name: "", email: "", phone: "", value: "", source: "Сайт" })
+      setShowAddLeadModal(false)
+    }
+  }
+
+  const handleSaveSettings = () => {
+    console.log("Настройки сохранены:", userSettings)
+    alert("Настройки успешно сохранены!")
+  }
+
+  const handleAddEmployee = () => {
+    if (newEmployee.name && newEmployee.email) {
+      const employee = {
+        id: employees.length + 1,
+        name: newEmployee.name,
+        email: newEmployee.email,
+        role: newEmployee.role,
+        status: "Активен",
+        avatar: newEmployee.name.charAt(0).toUpperCase(),
+        productivity: Math.floor(Math.random() * 20) + 80,
+      }
+      setEmployees([...employees, employee])
+      setNewEmployee({ name: "", email: "", role: "Сотрудник" })
+      setShowAddEmployeeModal(false)
+    }
+  }
+
+  const handleAssignRole = (employeeId, newRole) => {
+    setEmployees(employees.map((emp) => (emp.id === employeeId ? { ...emp, role: newRole } : emp)))
+    setShowAssignRoleModal(false)
+    setSelectedEmployee(null)
+  }
+
+  const handleRemoveEmployee = (employeeId) => {
+    setEmployees(employees.filter((emp) => emp.id !== employeeId))
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
@@ -86,7 +260,7 @@ export default function Dashboard() {
         { key: "projects", icon: Target, label: "Активные проекты", badge: 3 },
         { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
         { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
-        { key: "team", icon: Users, label: "Команда", badge: 4 },
+        { key: "team", icon: Users, label: "Команда", badge: null },
         { key: "roles", icon: Shield, label: "Роли и права", badge: null },
         { key: "chat", icon: MessageSquare, label: "ИИ-консультант", badge: null },
         { key: "settings", icon: Settings, label: "Настройки", badge: null },
@@ -168,7 +342,7 @@ export default function Dashboard() {
                     placeholder="Поиск..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-64 bg-background/50 border-border/50 focus:border-primary/50"
+                    className="pl-10 w-48 lg:w-64 bg-background/50 border-border/50 focus:border-primary/50"
                   />
                 </div>
 
@@ -195,7 +369,7 @@ export default function Dashboard() {
                   <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
                     <span className="text-xs font-bold text-white">П</span>
                   </div>
-                  <span className="text-foreground font-medium">Пользователь</span>
+                  <span className="text-foreground font-medium max-w-24 truncate">Пользователь</span>
                 </div>
 
                 <Button
@@ -304,67 +478,291 @@ export default function Dashboard() {
 
               {activeTab === "team" && (
                 <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground">Управление командой</h2>
-                      <p className="text-muted-foreground">Сотрудники, роли и права доступа</p>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground truncate">Управление командой</h2>
+                      <p className="text-sm sm:text-base text-muted-foreground">Сотрудники, роли и права доступа</p>
                     </div>
-                    <Button className="bg-primary hover:bg-primary/90">
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto shrink-0"
+                      onClick={() => setShowAddEmployeeModal(true)}
+                    >
                       <UserPlus className="w-4 h-4 mr-2" />
-                      Добавить сотрудника
+                      <span className="hidden sm:inline">Добавить сотрудника</span>
+                      <span className="sm:hidden">Добавить</span>
                     </Button>
                   </div>
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-                    <CardContent className="p-6">
-                      <p className="text-muted-foreground">
-                        Функционал управления командой будет добавлен в следующих обновлениях.
-                      </p>
-                    </CardContent>
-                  </Card>
+
+                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div className="xl:col-span-2">
+                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                        <CardHeader>
+                          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span className="text-lg sm:text-xl">Команда ({employees.length})</span>
+                            <Badge variant="secondary" className="self-start sm:self-center">
+                              {employees.filter((e) => e.status === "Активен").length} активных
+                            </Badge>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {employees.map((employee) => (
+                              <div
+                                key={employee.id}
+                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-background/50 rounded-lg border border-border/30"
+                              >
+                                <div className="flex items-center space-x-4 flex-1 min-w-0">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
+                                    <span className="text-sm font-bold text-white">{employee.avatar}</span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-foreground truncate text-sm sm:text-base">
+                                      {employee.name}
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                                      {employee.email}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs">
+                                        {employee.role}
+                                      </Badge>
+                                      <Badge
+                                        variant={employee.status === "Активен" ? "default" : "secondary"}
+                                        className="text-xs"
+                                      >
+                                        {employee.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end space-x-2 shrink-0">
+                                  <div className="text-left sm:text-right">
+                                    <p className="text-sm font-medium">{employee.productivity}%</p>
+                                    <p className="text-xs text-muted-foreground">Продуктивность</p>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setSelectedEmployee(employee)
+                                        setShowAssignRoleModal(true)
+                                      }}
+                                      className="text-xs px-2"
+                                    >
+                                      Роль
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleRemoveEmployee(employee.id)}
+                                      className="text-red-600 hover:text-red-700 text-xs px-2"
+                                    >
+                                      <span className="hidden sm:inline">Удалить</span>
+                                      <span className="sm:hidden">×</span>
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="space-y-6">
+                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">Статистика команды</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground">Всего сотрудников</span>
+                              <span className="font-bold text-sm sm:text-base">{employees.length}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground">Активных</span>
+                              <span className="font-bold text-green-600 text-sm sm:text-base">
+                                {employees.filter((e) => e.status === "Активен").length}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground">Средняя продуктивность</span>
+                              <span className="font-bold text-sm sm:text-base">
+                                {Math.round(
+                                  employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
+                                )}
+                                %
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">Роли в команде</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            {availableRoles.map((role) => {
+                              const count = employees.filter((emp) => emp.role === role).length
+                              return (
+                                <div key={role} className="flex justify-between items-center">
+                                  <span className="text-xs sm:text-sm truncate flex-1 mr-2">{role}</span>
+                                  <Badge variant="secondary" className="shrink-0">
+                                    {count}
+                                  </Badge>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {activeTab === "projects" && (
                 <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground">Активные проекты</h2>
-                      <p className="text-muted-foreground">Отслеживайте прогресс ваших ИИ-проектов</p>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground">Активные проекты</h2>
+                      <p className="text-sm sm:text-base text-muted-foreground">
+                        Отслеживайте прогресс ваших ИИ-проектов
+                      </p>
                     </div>
-                    <Button className="bg-primary hover:bg-primary/90">
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                      onClick={() => setShowAddProjectModal(true)}
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Новый проект
                     </Button>
                   </div>
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-                    <CardContent className="p-6">
-                      <p className="text-muted-foreground">
-                        Функционал управления проектами будет добавлен в следующих обновлениях.
-                      </p>
-                    </CardContent>
-                  </Card>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map((project) => (
+                      <Card key={project.id} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                        <CardHeader>
+                          <CardTitle className="text-lg truncate">{project.name}</CardTitle>
+                          <div className="flex items-center justify-between">
+                            <Badge
+                              variant={
+                                project.status === "Завершен"
+                                  ? "default"
+                                  : project.status === "В работе"
+                                    ? "secondary"
+                                    : "outline"
+                              }
+                            >
+                              {project.status}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">до {project.deadline}</span>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div>
+                              <div className="flex justify-between text-sm mb-1">
+                                <span>Прогресс</span>
+                                <span>{project.progress}%</span>
+                              </div>
+                              <div className="w-full bg-secondary rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${project.progress}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex -space-x-2">
+                                {project.team.map((member, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
+                                  >
+                                    <span className="text-xs font-bold text-white">{member}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              <Button variant="outline" size="sm">
+                                Подробнее
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {activeTab === "roles" && (
                 <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground">Роли и права доступа</h2>
-                      <p className="text-muted-foreground">Управление правами пользователей и безопасностью</p>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl sm:text-2xl font-bold text-foreground">Роли и права доступа</h2>
+                      <p className="text-sm sm:text-base text-muted-foreground">
+                        Управление правами пользователей и безопасностью
+                      </p>
                     </div>
-                    <Button className="bg-primary hover:bg-primary/90">
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                      onClick={() => setShowCreateRoleModal(true)}
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Создать роль
                     </Button>
                   </div>
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-                    <CardContent className="p-6">
-                      <p className="text-muted-foreground">
-                        Функционал управления ролями будет добавлен в следующих обновлениях.
-                      </p>
-                    </CardContent>
-                  </Card>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {availableRoles.map((role) => {
+                      const userCount = employees.filter((emp) => emp.role === role).length
+                      return (
+                        <Card key={role} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                          <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                              <span className="text-lg">{role}</span>
+                              <Badge variant="secondary">{userCount} польз.</Badge>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="text-sm text-muted-foreground">Права доступа для роли "{role}"</div>
+                              <div className="flex flex-wrap gap-2">
+                                {role === "Администратор" && (
+                                  <>
+                                    <Badge variant="outline">Полный доступ</Badge>
+                                    <Badge variant="outline">Управление пользователями</Badge>
+                                    <Badge variant="outline">Настройки системы</Badge>
+                                  </>
+                                )}
+                                {role === "Менеджер" && (
+                                  <>
+                                    <Badge variant="outline">Управление проектами</Badge>
+                                    <Badge variant="outline">Просмотр отчетов</Badge>
+                                    <Badge variant="outline">Управление командой</Badge>
+                                  </>
+                                )}
+                                {role === "Сотрудник" && (
+                                  <>
+                                    <Badge variant="outline">Базовый доступ</Badge>
+                                    <Badge variant="outline">Просмотр задач</Badge>
+                                  </>
+                                )}
+                              </div>
+                              <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                Редактировать права
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -379,58 +777,255 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="text-sm font-medium">Имя</label>
-                          <Input defaultValue="Пользователь" className="mt-1" />
+                          <Input
+                            value={userSettings.name}
+                            onChange={(e) => setUserSettings({ ...userSettings, name: e.target.value })}
+                            className="mt-1"
+                          />
                         </div>
                         <div>
                           <label className="text-sm font-medium">Email</label>
-                          <Input defaultValue="user@example.com" className="mt-1" />
+                          <Input
+                            value={userSettings.email}
+                            onChange={(e) => setUserSettings({ ...userSettings, email: e.target.value })}
+                            className="mt-1"
+                          />
                         </div>
                       </div>
                       <div>
                         <label className="text-sm font-medium">Компания</label>
-                        <Input defaultValue="Моя компания" className="mt-1" />
+                        <Input
+                          value={userSettings.company}
+                          onChange={(e) => setUserSettings({ ...userSettings, company: e.target.value })}
+                          className="mt-1"
+                        />
                       </div>
-                      <Button className="bg-primary hover:bg-primary/90">Сохранить изменения</Button>
+                      <Button className="bg-primary hover:bg-primary/90" onClick={handleSaveSettings}>
+                        Сохранить изменения
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                    <CardHeader>
+                      <CardTitle>Уведомления</CardTitle>
+                      <CardDescription>Настройка уведомлений и оповещений</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Email уведомления</p>
+                          <p className="text-sm text-muted-foreground">Получать уведомления на почту</p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Включено
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Push уведомления</p>
+                          <p className="text-sm text-muted-foreground">Уведомления в браузере</p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Отключено
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
               )}
             </div>
           </div>
-        </div>
 
-        {showNotificationsModal && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md mx-4">
-              <CardHeader>
-                <CardTitle>Уведомления</CardTitle>
-                <CardDescription>Последние обновления системы</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                    <p className="text-sm font-medium">Новый отчет готов</p>
-                    <p className="text-xs text-muted-foreground">Анализ продаж за месяц завершен</p>
+          {showAddProjectModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle className="text-lg sm:text-xl">Создать проект</CardTitle>
+                  <CardDescription className="text-sm">Добавьте новый проект в систему</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Название проекта</label>
+                    <Input
+                      value={newProject.name}
+                      onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                      placeholder="Введите название"
+                      className="mt-1"
+                    />
                   </div>
-                  <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                    <p className="text-sm font-medium">ИИ-инструмент активирован</p>
-                    <p className="text-xs text-muted-foreground">Генератор контента запущен</p>
+                  <div>
+                    <label className="text-sm font-medium">Срок выполнения</label>
+                    <Input
+                      type="date"
+                      value={newProject.deadline}
+                      onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+                      className="mt-1"
+                    />
                   </div>
+                </CardContent>
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowAddProjectModal(false)
+                      setNewProject({ name: "", deadline: "", team: [] })
+                    }}
+                    className="w-full sm:w-auto"
+                  >
+                    Отмена
+                  </Button>
+                  <Button onClick={handleAddProject} className="w-full sm:w-auto">
+                    Создать
+                  </Button>
                 </div>
-              </CardContent>
-              <div className="flex justify-end p-6 pt-0">
-                <Button
-                  onClick={() => {
-                    setShowNotificationsModal(false)
-                    setNotifications(0)
-                  }}
-                >
-                  Закрыть
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
+              </Card>
+            </div>
+          )}
+
+          {showCreateRoleModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle className="text-lg sm:text-xl">Создать роль</CardTitle>
+                  <CardDescription className="text-sm">Добавьте новую роль с правами доступа</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Название роли</label>
+                    <Input
+                      value={newRole.name}
+                      onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
+                      placeholder="Введите название роли"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Права доступа</label>
+                    <div className="mt-2 space-y-2">
+                      {["Просмотр", "Редактирование", "Удаление", "Администрирование"].map((permission) => (
+                        <div key={permission} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={permission}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setNewRole({ ...newRole, permissions: [...newRole.permissions, permission] })
+                              } else {
+                                setNewRole({
+                                  ...newRole,
+                                  permissions: newRole.permissions.filter((p) => p !== permission),
+                                })
+                              }
+                            }}
+                            className="rounded border-border"
+                          />
+                          <label htmlFor={permission} className="text-sm">
+                            {permission}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCreateRoleModal(false)
+                      setNewRole({ name: "", permissions: [] })
+                    }}
+                    className="w-full sm:w-auto"
+                  >
+                    Отмена
+                  </Button>
+                  <Button onClick={handleCreateRole} className="w-full sm:w-auto">
+                    Создать
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {showAddLeadModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle className="text-lg sm:text-xl">Добавить лид</CardTitle>
+                  <CardDescription className="text-sm">Добавьте нового потенциального клиента</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Название компании</label>
+                    <Input
+                      value={newLead.name}
+                      onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+                      placeholder="ООО Компания"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Email</label>
+                    <Input
+                      type="email"
+                      value={newLead.email}
+                      onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                      placeholder="contact@company.com"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Телефон</label>
+                    <Input
+                      value={newLead.phone}
+                      onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                      placeholder="+7 (999) 123-45-67"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Потенциальная сумма</label>
+                    <Input
+                      type="number"
+                      value={newLead.value}
+                      onChange={(e) => setNewLead({ ...newLead, value: e.target.value })}
+                      placeholder="100000"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Источник</label>
+                    <select
+                      value={newLead.source}
+                      onChange={(e) => setNewLead({ ...newLead, source: e.target.value })}
+                      className="w-full mt-1 p-2 border border-border rounded-md bg-background text-sm"
+                    >
+                      <option value="Сайт">Сайт</option>
+                      <option value="Реклама">Реклама</option>
+                      <option value="Рекомендация">Рекомендация</option>
+                      <option value="Холодный звонок">Холодный звонок</option>
+                    </select>
+                  </div>
+                </CardContent>
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowAddLeadModal(false)
+                      setNewLead({ name: "", email: "", phone: "", value: "", source: "Сайт" })
+                    }}
+                    className="w-full sm:w-auto"
+                  >
+                    Отмена
+                  </Button>
+                  <Button onClick={handleAddLead} className="w-full sm:w-auto">
+                    Добавить
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
     </TooltipProvider>
   )
