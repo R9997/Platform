@@ -61,7 +61,6 @@ import { HelpTooltip } from "@/components/help/help-tooltip"
 import { FeatureGuide } from "@/components/help/feature-guide"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TourLauncher } from "@/components/guide/interactive-tour"
-
 import TaskManager from "@/components/task-tracker/task-manager"
 import { FileManager } from "@/components/file-storage/file-manager"
 
@@ -86,14 +85,12 @@ export default function DashboardPage() {
       message: "Добро пожаловать в вашу ИИ-платформу! Я помогу оптимизировать ваш бизнес. С чего начнем?",
     },
   ])
-
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
     }
-
     checkMobile()
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
@@ -303,13 +300,11 @@ export default function DashboardPage() {
 
   const handleSendMessage = () => {
     if (!chatMessage.trim()) return
-
     const newMessage = {
       id: chatHistory.length + 1,
-      type: "user" as const,
+      type: "user",
       message: chatMessage,
     }
-
     setChatHistory((prev) => [...prev, newMessage])
     setChatMessage("")
 
@@ -321,10 +316,9 @@ export default function DashboardPage() {
         "Вижу потенциал для роста! Ваша эффективность 94%, но мы можем достичь 98% с новыми инструментами.",
       ]
       const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-
       const botResponse = {
         id: chatHistory.length + 2,
-        type: "bot" as const,
+        type: "bot",
         message: randomResponse,
       }
       setChatHistory((prev) => [...prev, botResponse])
@@ -337,12 +331,10 @@ export default function DashboardPage() {
 
   const activateAITool = (toolId: number) => {
     console.log(`Активация ИИ-инструмента ${toolId}`)
-    // Здесь будет API вызов для активации инструмента
   }
 
   const handleAddUser = () => {
     if (!newUserData.name || !newUserData.email) return
-
     const newUser = {
       id: teamMembers.length + 1,
       name: newUserData.name,
@@ -362,17 +354,13 @@ export default function DashboardPage() {
       lastActive: "Только что",
       productivity: 0,
     }
-
     console.log("Добавление нового пользователя:", newUser)
-    // Здесь будет API вызов для добавления пользователя
-
     setNewUserData({ name: "", email: "", role: "member", department: "" })
     setShowAddUserModal(false)
   }
 
   const removeUser = (userId: number) => {
     console.log("Удаление пользователя:", userId)
-    // Здесь будет API вызов для удаления пользователя
   }
 
   const getRoleColor = (role: string) => {
@@ -406,7 +394,6 @@ export default function DashboardPage() {
       { label: "Главная", href: "/" },
       { label: "Бизнес-платформа", href: "/dashboard" },
     ]
-
     switch (activeTab) {
       case "overview":
         breadcrumbs.push({ label: "Обзор бизнеса", href: "/dashboard" })
@@ -442,7 +429,6 @@ export default function DashboardPage() {
         breadcrumbs.push({ label: "Роли и права", href: "/dashboard?tab=roles" })
         break
     }
-
     return breadcrumbs
   }
 
@@ -545,38 +531,31 @@ export default function DashboardPage() {
           description: "Настройки аккаунта, уведомлений и персонализация интерфейса платформы",
         },
       ].map((item) => (
-        <TooltipProvider key={item.key}>
-          <div className="relative group">
-            <Button
-              variant={activeTab === item.key ? "default" : "ghost"}
-              className={`w-full justify-start transition-all duration-300 group ${
-                activeTab === item.key
-                  ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]"
-                  : "text-foreground hover:bg-accent/50 hover:text-accent-foreground hover:scale-[1.01]"
-              }`}
-              onClick={() => {
-                setActiveTab(item.key)
-                onItemClick?.()
-              }}
-            >
-              <item.icon className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
-              <span className="flex-1 text-left">{item.label}</span>
-              {item.badge && (
-                <Badge variant="secondary" className="ml-2 text-xs bg-background/50">
-                  {item.badge}
-                </Badge>
-              )}
-              <ChevronRight
-                className={`w-4 h-4 ml-2 transition-transform ${activeTab === item.key ? "rotate-90" : "group-hover:translate-x-1"}`}
-              />
-            </Button>
-            <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 lg:hidden">
-              <div className="bg-popover text-popover-foreground px-3 py-2 rounded-md shadow-md border max-w-xs text-sm">
-                {item.description}
-              </div>
-            </div>
-          </div>
-        </TooltipProvider>
+        <div key={item.key} className="relative group">
+          <Button
+            variant={activeTab === item.key ? "default" : "ghost"}
+            className={`w-full justify-start transition-all duration-300 group ${
+              activeTab === item.key
+                ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]"
+                : "text-foreground hover:bg-accent/50 hover:text-accent-foreground hover:scale-[1.01]"
+            }`}
+            onClick={() => {
+              setActiveTab(item.key)
+              onItemClick?.()
+            }}
+          >
+            <item.icon className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
+            <span className="flex-1 text-left">{item.label}</span>
+            {item.badge && (
+              <Badge variant="secondary" className="ml-2 text-xs bg-background/50">
+                {item.badge}
+              </Badge>
+            )}
+            <ChevronRight
+              className={`w-4 h-4 ml-2 transition-transform ${activeTab === item.key ? "rotate-90" : "group-hover:translate-x-1"}`}
+            />
+          </Button>
+        </div>
       ))}
     </div>
   )
@@ -585,10 +564,9 @@ export default function DashboardPage() {
     <TooltipProvider>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <header className="bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 shadow-lg shadow-primary/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px:8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-4">
-                {/* Mobile menu trigger */}
                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                   <SheetTrigger asChild>
                     <Button variant="ghost" size="icon" className="lg:hidden">
@@ -607,7 +585,6 @@ export default function DashboardPage() {
                     </div>
                   </SheetContent>
                 </Sheet>
-
                 <Link
                   href="/"
                   className="flex items-center space-x-2 hover:opacity-80 transition-all duration-300 group"
@@ -625,9 +602,7 @@ export default function DashboardPage() {
                   Бизнес-платформа
                 </Badge>
               </div>
-
               <div className="flex items-center space-x-2 sm:space-x-4">
-                {/* Search - hidden on mobile */}
                 <div className="relative hidden md:block">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
@@ -637,12 +612,8 @@ export default function DashboardPage() {
                     className="pl-10 w-64 bg-background/50 border-border/50 focus:border-primary/50"
                   />
                 </div>
-
                 <TourLauncher />
-
                 <FeatureGuide />
-
-                {/* Notifications */}
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
                   {notifications > 0 && (
@@ -651,16 +622,13 @@ export default function DashboardPage() {
                     </Badge>
                   )}
                 </Button>
-
                 <ThemeToggle />
-
                 <div className="hidden md:flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
                     <span className="text-xs font-bold text-white">П</span>
                   </div>
                   <span className="text-foreground font-medium">Пользователь</span>
                 </div>
-
                 <Button
                   onClick={handleLogout}
                   variant="outline"
@@ -675,7 +643,7 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px:8 py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           <div className="mb-6 sm:mb-8">
             <Breadcrumb>
               <BreadcrumbList className="flex-wrap">
@@ -718,7 +686,9 @@ export default function DashboardPage() {
                       side="right"
                     />
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">Ваша ИИ-платформа роста</CardDescription>
+                  <CardDescription className="text-muted-foreground text-sm">
+                    Ваша ИИ-платформа роста
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <NavigationMenu />
@@ -733,7 +703,6 @@ export default function DashboardPage() {
                   <div id="metrics-section">
                     <AnimatedMetrics />
                   </div>
-
                   <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
                     <CardHeader>
                       <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
@@ -790,7 +759,6 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </div>
-
                         <div className="p-4 sm:p-6 bg-gradient-to-br from-blue-500/5 via-blue-500/3 to-transparent border border-blue-500/20 rounded-xl hover:bg-blue-500/10 transition-all duration-300 group cursor-pointer">
                           <div className="flex items-start space-x-3 sm:space-x-4">
                             <div className="p-2 sm:p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
@@ -830,8 +798,6 @@ export default function DashboardPage() {
                       </div>
                     </CardContent>
                   </Card>
-
-                  {/* Последняя активность */}
                   <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
                     <CardHeader>
                       <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
@@ -892,7 +858,6 @@ export default function DashboardPage() {
                   <div id="ai-tools-section">
                     <AIToolsShowcase />
                   </div>
-
                   <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -943,7 +908,6 @@ export default function DashboardPage() {
                       Новый проект
                     </Button>
                   </div>
-
                   <div className="space-y-4">
                     {activeProjects.map((project) => (
                       <Card
@@ -982,7 +946,6 @@ export default function DashboardPage() {
                               <p className="text-lg font-bold text-green-600">{project.roi}</p>
                             </div>
                           </div>
-
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
                               <span className="text-sm text-muted-foreground">Прогресс</span>
@@ -990,7 +953,6 @@ export default function DashboardPage() {
                             </div>
                             <Progress value={project.progress} className="h-2" />
                           </div>
-
                           <div className="flex justify-end space-x-2 mt-4">
                             <Button size="sm" variant="outline">
                               Подробнее
@@ -1018,7 +980,6 @@ export default function DashboardPage() {
                       Персональный помощник для роста вашего бизнеса
                     </CardDescription>
                   </CardHeader>
-
                   <CardContent className="flex-1 flex flex-col p-4 sm:p-6">
                     <ScrollArea className="flex-1 mb-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
                       <div className="space-y-3 sm:space-y-4">
@@ -1037,7 +998,6 @@ export default function DashboardPage() {
                         ))}
                       </div>
                     </ScrollArea>
-
                     <div className="flex space-x-2">
                       <Input
                         value={chatMessage}
@@ -1087,8 +1047,8 @@ export default function DashboardPage() {
                         <Input
                           defaultValue="Моя компания"
                           className="mt-1 bg-background border-border/50 focus:border-primary focus:ring-primary/20"
-                          />
-                        </div>
+                        />
+                      </div>
                       <div>
                         <label className="text-foreground text-sm font-medium">Цели бизнеса</label>
                         <Textarea
@@ -1102,7 +1062,6 @@ export default function DashboardPage() {
                       </Button>
                     </CardContent>
                   </Card>
-
                   <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
                     <CardHeader>
                       <CardTitle className="text-foreground font-bold">Уведомления</CardTitle>
@@ -1176,8 +1135,6 @@ export default function DashboardPage() {
                       Добавить сотрудника
                     </Button>
                   </div>
-
-                  {/* Department overview */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {departments.map((dept, index) => (
                       <Card key={index} className="bg-card/50 backdrop-blur-sm border border-border/50">
@@ -1209,8 +1166,6 @@ export default function DashboardPage() {
                       </Card>
                     ))}
                   </div>
-
-                  {/* Team members list */}
                   <div className="space-y-4">
                     {teamMembers.map((member) => (
                       <Card key={member.id} className="bg-card/50 backdrop-blur-sm border border-border/50">
@@ -1237,7 +1192,6 @@ export default function DashboardPage() {
                               <p className="text-lg font-bold text-primary">{member.productivity}%</p>
                             </div>
                           </div>
-
                           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                               <p className="text-xs text-muted-foreground">Использование ИИ</p>
@@ -1255,7 +1209,6 @@ export default function DashboardPage() {
                               <p className="text-xs text-muted-foreground mt-1">{member.lastActive}</p>
                             </div>
                           </div>
-
                           <div className="mt-4 flex justify-end space-x-2">
                             <Button size="sm" variant="outline">
                               Редактировать
@@ -1290,57 +1243,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {activeTab === "chat" && (
-                <div id="chat-section">
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[500px] sm:h-[600px] flex flex-col">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
-                      <Bot className="w-5 h-5 mr-2 text-primary" />
-                      ИИ-консультант по бизнесу
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground text-sm">
-                      Персональный помощник для роста вашего бизнеса
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="flex-1 flex flex-col p-4 sm:p-6">
-                    <ScrollArea className="flex-1 mb-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
-                      <div className="space-y-3 sm:space-y-4">
-                        {chatHistory.map((msg) => (
-                          <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
-                            <div
-                              className={`max-w-[85%] sm:max-w-[80%] p-3 rounded-lg transition-all duration-300 text-sm sm:text-base ${
-                                msg.type === "user"
-                                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                                  : "bg-card text-foreground border border-border/50"
-                              }`}
-                            >
-                              {msg.message}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-
-                    <div className="flex space-x-2">
-                      <Input
-                        value={chatMessage}
-                        onChange={(e) => setChatMessage(e.target.value)}
-                        placeholder="Спросите о развитии бизнеса..."
-                        className="bg-background border-border/50 focus:border-primary focus:ring-primary/20 text-sm sm:text-base"
-                        onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 flex-shrink-0"
-                        size="icon"
-                      >
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
               {activeTab === "roles" && (
                 <div className="space-y-6" id="roles-section">
                   <div className="flex justify-between items-center">
@@ -1353,9 +1255,7 @@ export default function DashboardPage() {
                       Создать роль
                     </Button>
                   </div>
-
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Existing roles */}
                     <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
                       <CardHeader>
                         <CardTitle className="text-foreground font-bold">Системные роли</CardTitle>
@@ -1407,8 +1307,6 @@ export default function DashboardPage() {
                         ))}
                       </CardContent>
                     </Card>
-
-                    {/* Permissions matrix */}
                     <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
                       <CardHeader>
                         <CardTitle className="text-foreground font-bold">Матрица прав доступа</CardTitle>
@@ -1449,70 +1347,67 @@ export default function DashboardPage() {
                   </div>
                 </div>
               )}
-
-              {/* Add other tabs content here */}
             </div>
           </div>
-        </div>
 
-        {/* Add User Modal */}
-        {showAddUserModal && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Добавить сотрудника</CardTitle>
-                <CardDescription>Введите данные нового сотрудника</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Имя</label>
-                  <Input
-                    value={newUserData.name}
-                    onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
-                    placeholder="Введите имя"
-                  />
+          {/* Add User Modal */}
+          {showAddUserModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <Card className="w-full max-w-md">
+                <CardHeader>
+                  <CardTitle>Добавить сотрудника</CardTitle>
+                  <CardDescription>Введите данные нового сотрудника</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Имя</label>
+                    <Input
+                      value={newUserData.name}
+                      onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
+                      placeholder="Введите имя"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Email</label>
+                    <Input
+                      value={newUserData.email}
+                      onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                      placeholder="email@example.com"
+                      type="email"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Роль</label>
+                    <select
+                      value={newUserData.role}
+                      onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value })}
+                      className="w-full p-2 border rounded-md bg-background"
+                    >
+                      <option value="member">Сотрудник</option>
+                      <option value="manager">Менеджер</option>
+                      <option value="admin">Администратор</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Отдел</label>
+                    <Input
+                      value={newUserData.department}
+                      onChange={(e) => setNewUserData({ ...newUserData, department: e.target.value })}
+                      placeholder="Название отдела"
+                    />
+                  </div>
+                </CardContent>
+                <div className="flex justify-end space-x-2 p-6 pt-0">
+                  <Button variant="outline" onClick={() => setShowAddUserModal(false)}>
+                    Отмена
+                  </Button>
+                  <Button onClick={handleAddUser}>Добавить</Button>
                 </div>
-                <div>
-                  <label className="text-sm font-medium">Email</label>
-                  <Input
-                    value={newUserData.email}
-                    onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
-                    placeholder="email@example.com"
-                    type="email"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Роль</label>
-                  <select
-                    value={newUserData.role}
-                    onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value })}
-                    className="w-full p-2 border rounded-md bg-background"
-                  >
-                    <option value="member">Сотрудник</option>
-                    <option value="manager">Менеджер</option>
-                    <option value="admin">Администратор</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Отдел</label>
-                  <Input
-                    value={newUserData.department}
-                    onChange={(e) => setNewUserData({ ...newUserData, department: e.target.value })}
-                    placeholder="Название отдела"
-                  />
-                </div>
-              </CardContent>
-              <div className="flex justify-end space-x-2 p-6 pt-0">
-                <Button variant="outline" onClick={() => setShowAddUserModal(false)}>
-                  Отмена
-                </Button>
-                <Button onClick={handleAddUser}>Добавить</Button>
-              </div>
-            </Card>
-          </div>
-        )}
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
     </TooltipProvider>
   )
-  \
 }
