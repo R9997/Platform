@@ -67,7 +67,7 @@ interface Project {
   color: string
 }
 
-export default function FileManager() {
+function FileManager() {
   const [files, setFiles] = useState<FileItem[]>([
     {
       id: "1",
@@ -687,3 +687,5 @@ export default function FileManager() {
     </div>
   )
 }
+
+export { FileManager }

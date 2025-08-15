@@ -62,6 +62,9 @@ import { FeatureGuide } from "@/components/help/feature-guide"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TourLauncher } from "@/components/guide/interactive-tour"
 
+import TaskManager from "@/components/task-tracker/task-manager"
+import { FileManager } from "@/components/file-storage/file-manager"
+
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const [activeToolTab, setActiveToolTab] = useState("content-generator")
@@ -672,7 +675,7 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px:8 py-4 sm:py-8">
           <div className="mb-6 sm:mb-8">
             <Breadcrumb>
               <BreadcrumbList className="flex-wrap">
@@ -727,7 +730,9 @@ export default function DashboardPage() {
             <div className="col-span-1 lg:col-span-3">
               {activeTab === "overview" && (
                 <div className="space-y-6 sm:space-y-8">
-                  <AnimatedMetrics />
+                  <div id="metrics-section">
+                    <AnimatedMetrics />
+                  </div>
 
                   <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
                     <CardHeader>
@@ -884,7 +889,9 @@ export default function DashboardPage() {
 
               {activeTab === "tools" && (
                 <div className="space-y-6 sm:space-y-8">
-                  <AIToolsShowcase />
+                  <div id="ai-tools-section">
+                    <AIToolsShowcase />
+                  </div>
 
                   <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5">
                     <CardHeader>
@@ -1080,8 +1087,8 @@ export default function DashboardPage() {
                         <Input
                           defaultValue="Моя компания"
                           className="mt-1 bg-background border-border/50 focus:border-primary focus:ring-primary/20"
-                        />
-                      </div>
+                          />
+                        </div>
                       <div>
                         <label className="text-foreground text-sm font-medium">Цели бизнеса</label>
                         <Textarea
@@ -1126,7 +1133,7 @@ export default function DashboardPage() {
               )}
 
               {activeTab === "sales" && (
-                <div className="space-y-6">
+                <div className="space-y-6" id="sales-section">
                   <div className="flex justify-between items-center">
                     <div>
                       <h2 className="text-2xl font-bold text-foreground">Управление продажами</h2>
@@ -1158,7 +1165,7 @@ export default function DashboardPage() {
               )}
 
               {activeTab === "team" && (
-                <div className="space-y-6">
+                <div className="space-y-6" id="team-section">
                   <div className="flex justify-between items-center">
                     <div>
                       <h2 className="text-2xl font-bold text-foreground">Управление командой</h2>
@@ -1271,6 +1278,178 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {activeTab === "tasks" && (
+                <div className="space-y-6" id="tasks-section">
+                  <TaskManager />
+                </div>
+              )}
+
+              {activeTab === "files" && (
+                <div className="space-y-6" id="files-section">
+                  <FileManager />
+                </div>
+              )}
+
+              {activeTab === "chat" && (
+                <div id="chat-section">
+                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[500px] sm:h-[600px] flex flex-col">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-foreground font-bold flex items-center text-lg sm:text-xl">
+                      <Bot className="w-5 h-5 mr-2 text-primary" />
+                      ИИ-консультант по бизнесу
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground text-sm">
+                      Персональный помощник для роста вашего бизнеса
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="flex-1 flex flex-col p-4 sm:p-6">
+                    <ScrollArea className="flex-1 mb-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30">
+                      <div className="space-y-3 sm:space-y-4">
+                        {chatHistory.map((msg) => (
+                          <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+                            <div
+                              className={`max-w-[85%] sm:max-w-[80%] p-3 rounded-lg transition-all duration-300 text-sm sm:text-base ${
+                                msg.type === "user"
+                                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                                  : "bg-card text-foreground border border-border/50"
+                              }`}
+                            >
+                              {msg.message}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+
+                    <div className="flex space-x-2">
+                      <Input
+                        value={chatMessage}
+                        onChange={(e) => setChatMessage(e.target.value)}
+                        placeholder="Спросите о развитии бизнеса..."
+                        className="bg-background border-border/50 focus:border-primary focus:ring-primary/20 text-sm sm:text-base"
+                        onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 flex-shrink-0"
+                        size="icon"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              {activeTab === "roles" && (
+                <div className="space-y-6" id="roles-section">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-2xl font-bold text-foreground">Роли и права доступа</h2>
+                      <p className="text-muted-foreground">Управление правами пользователей и безопасностью</p>
+                    </div>
+                    <Button className="bg-primary hover:bg-primary/90">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Создать роль
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Existing roles */}
+                    <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <CardHeader>
+                        <CardTitle className="text-foreground font-bold">Системные роли</CardTitle>
+                        <CardDescription>Предустановленные роли с базовыми правами</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {[
+                          {
+                            name: "Администратор",
+                            description: "Полный доступ ко всем функциям платформы",
+                            users: 1,
+                            permissions: ["Все права"],
+                            color: "red",
+                          },
+                          {
+                            name: "Менеджер",
+                            description: "Управление проектами и командой",
+                            users: 2,
+                            permissions: ["Проекты", "Команда", "ИИ-инструменты", "Аналитика"],
+                            color: "blue",
+                          },
+                          {
+                            name: "Сотрудник",
+                            description: "Выполнение задач и работа с файлами",
+                            users: 1,
+                            permissions: ["Задачи", "Файлы", "Базовые ИИ-инструменты"],
+                            color: "green",
+                          },
+                        ].map((role, index) => (
+                          <div
+                            key={index}
+                            className="p-4 bg-background/50 rounded-lg border border-border/30 hover:bg-background/70 transition-colors"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-foreground">{role.name}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {role.users} польз.
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{role.description}</p>
+                            <div className="flex flex-wrap gap-1">
+                              {role.permissions.map((permission, pIndex) => (
+                                <Badge key={pIndex} variant="secondary" className="text-xs">
+                                  {permission}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+
+                    {/* Permissions matrix */}
+                    <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <CardHeader>
+                        <CardTitle className="text-foreground font-bold">Матрица прав доступа</CardTitle>
+                        <CardDescription>Детальная настройка прав для каждой роли</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {[
+                            { category: "Основные функции", permissions: ["Просмотр дашборда", "Поиск", "Уведомления"] },
+                            { category: "Проекты", permissions: ["Создание", "Редактирование", "Удаление"] },
+                            { category: "Аналитика", permissions: ["Просмотр метрик", "Экспорт отчетов", "Настройка KPI"] },
+                            { category: "Команда", permissions: ["Просмотр участников", "Добавление", "Управление ролями"] },
+                            { category: "ИИ-инструменты", permissions: ["Базовые", "Продвинутые", "Настройка"] },
+                            { category: "Файлы", permissions: ["Просмотр", "Загрузка", "Управление папками"] },
+                            { category: "Задачи", permissions: ["Создание", "Назначение", "Отслеживание"] },
+                            { category: "Отчеты", permissions: ["Просмотр", "Создание", "Планирование"] },
+                            { category: "Администрирование", permissions: ["Настройки", "Безопасность", "Интеграции"] },
+                          ].map((section, index) => (
+                            <div key={index} className="space-y-2">
+                              <h4 className="font-medium text-foreground text-sm">{section.category}</h4>
+                              <div className="grid grid-cols-3 gap-2 text-xs">
+                                {section.permissions.map((permission, pIndex) => (
+                                  <div key={pIndex} className="flex items-center space-x-2">
+                                    <input
+                                      type="checkbox"
+                                      className="rounded border-border"
+                                      defaultChecked={index < 3}
+                                    />
+                                    <span className="text-muted-foreground">{permission}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
               {/* Add other tabs content here */}
             </div>
           </div>
@@ -1335,4 +1514,5 @@ export default function DashboardPage() {
       </div>
     </TooltipProvider>
   )
+  \
 }
