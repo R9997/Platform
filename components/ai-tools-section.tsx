@@ -1,6 +1,9 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MessageSquare, ImageIcon, BarChart3, FileText, Zap, ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 const tools = [
   {
@@ -34,6 +37,10 @@ const tools = [
 ]
 
 export function AIToolsSection() {
+  const handleToolDetails = (toolTitle: string) => {
+    window.location.href = `/solutions#${toolTitle.toLowerCase().replace(/\s+/g, "-")}`
+  }
+
   return (
     <section id="tools" className="py-20 lg:py-32">
       <div className="container mx-auto px-4">
@@ -100,7 +107,11 @@ export function AIToolsSection() {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="ghost" className={`w-full hover:${textClass} transition-all duration-300`}>
+                  <Button
+                    variant="ghost"
+                    className={`w-full hover:${textClass} transition-all duration-300`}
+                    onClick={() => handleToolDetails(tool.title)}
+                  >
                     Подробнее
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -111,10 +122,12 @@ export function AIToolsSection() {
         </div>
 
         <div className="text-center">
-          <Button size="lg" className="bg-accent hover:bg-accent/90 neon-glow-purple text-lg px-8 py-6">
-            Посмотреть все инструменты
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <Link href="/solutions">
+            <Button size="lg" className="bg-accent hover:bg-accent/90 neon-glow-purple text-lg px-8 py-6">
+              Посмотреть все инструменты
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

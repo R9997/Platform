@@ -1,7 +1,23 @@
+"use client"
+
 import { Facebook, Twitter, Linkedin, Github, Mail, Phone, MapPin, Zap } from "lucide-react"
 import Link from "next/link"
 
 export function Footer() {
+  const handleSocialClick = (platform: string) => {
+    const socialLinks = {
+      facebook: "https://facebook.com/reframeburo",
+      twitter: "https://twitter.com/reframeburo",
+      linkedin: "https://linkedin.com/company/reframeburo",
+      github: "https://github.com/reframeburo",
+    }
+
+    const url = socialLinks[platform as keyof typeof socialLinks]
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer")
+    }
+  }
+
   return (
     <footer className="bg-card/20 py-12 md:py-16 border-t border-border/50">
       <div className="container mx-auto px-4">
@@ -17,34 +33,34 @@ export function Footer() {
               Создаем будущее с помощью передовых ИИ технологий для трансформации вашего бизнеса.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="#"
+              <button
+                onClick={() => handleSocialClick("facebook")}
                 className="text-muted-foreground hover:text-primary hover:soft-text transition-all duration-300"
                 aria-label="Facebook"
               >
                 <Facebook className="h-5 w-5" />
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                onClick={() => handleSocialClick("twitter")}
                 className="text-muted-foreground hover:text-primary hover:soft-text transition-all duration-300"
                 aria-label="Twitter"
               >
                 <Twitter className="h-5 w-5" />
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                onClick={() => handleSocialClick("linkedin")}
                 className="text-muted-foreground hover:text-primary hover:soft-text transition-all duration-300"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                onClick={() => handleSocialClick("github")}
                 className="text-muted-foreground hover:text-primary hover:soft-text transition-all duration-300"
                 aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
-              </a>
+              </button>
             </div>
           </div>
 

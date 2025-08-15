@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,7 +32,6 @@ import {
   Activity,
   Users,
   FileText,
-  Brain,
   Rocket,
   CheckCircle,
   Plus,
@@ -44,12 +44,20 @@ import {
   Menu,
   Bell,
   Search,
+  DollarSign,
+  UserPlus,
+  Mail,
+  Edit,
+  Eye,
+  Trash2,
 } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { DataAnalyzer } from "@/components/ai-tools/data-analyzer"
 import { ProcessAutomation } from "@/components/ai-tools/process-automation"
+import { SalesManager } from "@/components/business-tools/sales-manager"
+import { FinanceManager } from "@/components/business-tools/finance-manager"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
 import { FloatingActionMenu } from "@/components/interactive/floating-action-menu"
@@ -61,6 +69,13 @@ export default function DashboardPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [notifications, setNotifications] = useState(3)
+  const [showAddUserModal, setShowAddUserModal] = useState(false)
+  const [newUserData, setNewUserData] = useState({
+    name: "",
+    email: "",
+    role: "member",
+    department: "",
+  })
   const [chatHistory, setChatHistory] = useState([
     {
       id: 1,
@@ -82,7 +97,7 @@ export default function DashboardPage() {
   }, [])
 
   const businessMetrics = {
-    monthlyRevenue: 450000,
+    monthlyRevenue: 2450000,
     revenueGrowth: 23,
     automatedProcesses: 12,
     timeSaved: 156,
@@ -90,6 +105,11 @@ export default function DashboardPage() {
     activeProjects: 8,
     completedTasks: 1247,
     clientSatisfaction: 98,
+    totalExpenses: 1680000,
+    netProfit: 770000,
+    activePipeline: 1850000,
+    totalLeads: 156,
+    conversionRate: 24.8,
   }
 
   const aiTools = [
@@ -143,20 +163,106 @@ export default function DashboardPage() {
     },
     {
       id: 4,
-      name: "Персональный ассистент",
-      description: "Планирование, напоминания и управление задачами",
+      name: "Менеджер продаж",
+      description: "CRM система и управление воронкой продаж",
       status: "active",
-      usage: 67,
-      monthlyTasks: 89,
-      roi: "+180%",
-      category: "Продуктивность",
-      icon: Brain,
-      component: "personal-assistant",
-      color: "from-orange-500/20 to-orange-600/10",
-      borderColor: "border-orange-500/30",
-      textColor: "text-orange-600",
+      usage: 78,
+      monthlyTasks: 189,
+      roi: "+450%",
+      category: "Продажи",
+      icon: TrendingUp,
+      component: "sales-manager",
+      color: "from-emerald-500/20 to-emerald-600/10",
+      borderColor: "border-emerald-500/30",
+      textColor: "text-emerald-600",
+      isRunning: true,
+    },
+    {
+      id: 5,
+      name: "Финансовый менеджер",
+      description: "Управление бюджетом, доходами и расходами",
+      status: "active",
+      usage: 82,
+      monthlyTasks: 167,
+      roi: "+380%",
+      category: "Финансы",
+      icon: DollarSign,
+      component: "finance-manager",
+      color: "from-amber-500/20 to-amber-600/10",
+      borderColor: "border-amber-500/30",
+      textColor: "text-amber-600",
       isRunning: false,
     },
+  ]
+
+  const teamMembers = [
+    {
+      id: 1,
+      name: "Анна Петрова",
+      email: "anna@company.com",
+      role: "admin",
+      department: "Маркетинг",
+      avatar: "АП",
+      status: "online",
+      joinDate: "2024-01-15",
+      aiToolsUsage: 85,
+      tasksCompleted: 234,
+      permissions: ["all"],
+      lastActive: "Сейчас онлайн",
+      productivity: 94,
+    },
+    {
+      id: 2,
+      name: "Михаил Сидоров",
+      email: "mikhail@company.com",
+      role: "manager",
+      department: "Продажи",
+      avatar: "МС",
+      status: "online",
+      joinDate: "2024-02-01",
+      aiToolsUsage: 72,
+      tasksCompleted: 156,
+      permissions: ["sales-manager", "content-generator", "data-analyzer"],
+      lastActive: "5 минут назад",
+      productivity: 88,
+    },
+    {
+      id: 3,
+      name: "Елена Козлова",
+      email: "elena@company.com",
+      role: "manager",
+      department: "Финансы",
+      avatar: "ЕК",
+      status: "online",
+      joinDate: "2024-02-20",
+      aiToolsUsage: 82,
+      tasksCompleted: 167,
+      permissions: ["finance-manager", "data-analyzer"],
+      lastActive: "15 минут назад",
+      productivity: 91,
+    },
+    {
+      id: 4,
+      name: "Дмитрий Волков",
+      email: "dmitry@company.com",
+      role: "member",
+      department: "Аналитика",
+      avatar: "ДВ",
+      status: "offline",
+      joinDate: "2024-03-01",
+      aiToolsUsage: 91,
+      tasksCompleted: 198,
+      permissions: ["data-analyzer", "content-generator"],
+      lastActive: "2 часа назад",
+      productivity: 87,
+    },
+  ]
+
+  const departments = [
+    { name: "Маркетинг", members: 1, color: "blue", budget: 120000, spent: 95000 },
+    { name: "Продажи", members: 1, color: "green", budget: 180000, spent: 145000 },
+    { name: "Финансы", members: 1, color: "amber", budget: 90000, spent: 72000 },
+    { name: "Аналитика", members: 1, color: "purple", budget: 110000, spent: 88000 },
   ]
 
   const activeProjects = [
@@ -231,6 +337,67 @@ export default function DashboardPage() {
     // Здесь будет API вызов для активации инструмента
   }
 
+  const handleAddUser = () => {
+    if (!newUserData.name || !newUserData.email) return
+
+    const newUser = {
+      id: teamMembers.length + 1,
+      name: newUserData.name,
+      email: newUserData.email,
+      role: newUserData.role,
+      department: newUserData.department,
+      avatar: newUserData.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase(),
+      status: "offline",
+      joinDate: new Date().toISOString().split("T")[0],
+      aiToolsUsage: 0,
+      tasksCompleted: 0,
+      permissions: newUserData.role === "admin" ? ["all"] : ["content-generator"],
+      lastActive: "Только что",
+      productivity: 0,
+    }
+
+    console.log("Добавление нового пользователя:", newUser)
+    // Здесь будет API вызов для добавления пользователя
+
+    setNewUserData({ name: "", email: "", role: "member", department: "" })
+    setShowAddUserModal(false)
+  }
+
+  const removeUser = (userId: number) => {
+    console.log("Удаление пользователя:", userId)
+    // Здесь будет API вызов для удаления пользователя
+  }
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "bg-red-500/10 text-red-600 border-red-500/30"
+      case "manager":
+        return "bg-blue-500/10 text-blue-600 border-blue-500/30"
+      case "member":
+        return "bg-green-500/10 text-green-600 border-green-500/30"
+      default:
+        return "bg-gray-500/10 text-gray-600 border-gray-500/30"
+    }
+  }
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "Администратор"
+      case "manager":
+        return "Менеджер"
+      case "member":
+        return "Сотрудник"
+      default:
+        return "Пользователь"
+    }
+  }
+
   const getBreadcrumbs = () => {
     const breadcrumbs = [
       { label: "Главная", href: "/" },
@@ -244,8 +411,17 @@ export default function DashboardPage() {
       case "tools":
         breadcrumbs.push({ label: "ИИ-инструменты", href: "/dashboard?tab=tools" })
         break
+      case "sales":
+        breadcrumbs.push({ label: "Продажи", href: "/dashboard?tab=sales" })
+        break
+      case "finance":
+        breadcrumbs.push({ label: "Финансы", href: "/dashboard?tab=finance" })
+        break
       case "projects":
         breadcrumbs.push({ label: "Активные проекты", href: "/dashboard?tab=projects" })
+        break
+      case "team":
+        breadcrumbs.push({ label: "Команда", href: "/dashboard?tab=team" })
         break
       case "chat":
         breadcrumbs.push({ label: "ИИ-консультант", href: "/dashboard?tab=chat" })
@@ -266,6 +442,10 @@ export default function DashboardPage() {
         return <DataAnalyzer />
       case "process-automation":
         return <ProcessAutomation />
+      case "sales-manager":
+        return <SalesManager />
+      case "finance-manager":
+        return <FinanceManager />
       default:
         return <ContentGenerator />
     }
@@ -281,7 +461,10 @@ export default function DashboardPage() {
           label: "ИИ-инструменты",
           badge: aiTools.filter((t) => t.status === "active").length,
         },
+        { key: "sales", icon: TrendingUp, label: "Продажи", badge: businessMetrics.totalLeads },
+        { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
         { key: "projects", icon: Target, label: "Активные проекты", badge: activeProjects.length },
+        { key: "team", icon: Users, label: "Команда", badge: teamMembers.length },
         { key: "chat", icon: MessageSquare, label: "ИИ-консультант", badge: null },
         { key: "settings", icon: Settings, label: "Настройки", badge: null },
       ].map((item) => (
@@ -316,7 +499,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <header className="bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 shadow-lg shadow-primary/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px:8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               {/* Mobile menu trigger */}
@@ -820,6 +1003,257 @@ export default function DashboardPage() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            )}
+
+            {activeTab === "sales" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">Управление продажами</h2>
+                    <p className="text-muted-foreground">CRM система и воронка продаж</p>
+                  </div>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    ROI +450%
+                  </Badge>
+                </div>
+                <SalesManager />
+              </div>
+            )}
+
+            {activeTab === "finance" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">Финансовое управление</h2>
+                    <p className="text-muted-foreground">Бюджет, доходы и расходы</p>
+                  </div>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                    <DollarSign className="w-3 h-3 mr-1" />
+                    Прибыль: {businessMetrics.netProfit.toLocaleString("ru-RU")}₽
+                  </Badge>
+                </div>
+                <FinanceManager />
+              </div>
+            )}
+
+            {activeTab === "team" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">Управление командой</h2>
+                    <p className="text-muted-foreground">Сотрудники, роли и права доступа</p>
+                  </div>
+                  <Button onClick={() => setShowAddUserModal(true)} className="bg-primary hover:bg-primary/90">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Добавить сотрудника
+                  </Button>
+                </div>
+
+                {/* Department overview */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {departments.map((dept, index) => (
+                    <Card key={index} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold text-foreground">{dept.name}</h3>
+                          <Badge variant="outline" className="text-xs">
+                            {dept.members} чел.
+                          </Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Бюджет</span>
+                            <span className="text-foreground">{dept.budget.toLocaleString("ru-RU")}₽</span>
+                          </div>
+                          <div className="space-y-1">
+                            <Progress value={(dept.spent / dept.budget) * 100} className="h-1" />
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">
+                                Потрачено: {dept.spent.toLocaleString("ru-RU")}₽
+                              </span>
+                              <span className="text-green-600">
+                                {Math.round(((dept.budget - dept.spent) / dept.budget) * 100)}% остаток
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Team members list */}
+                <div className="space-y-4">
+                  {teamMembers.map((member) => (
+                    <Card key={member.id} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                              <span className="text-sm font-bold text-white">{member.avatar}</span>
+                            </div>
+                            <div>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h3 className="text-lg font-semibold text-foreground">{member.name}</h3>
+                                <Badge className={getRoleColor(member.role)}>{getRoleLabel(member.role)}</Badge>
+                                <Badge variant={member.status === "online" ? "default" : "secondary"}>
+                                  {member.status === "online" ? "Онлайн" : "Офлайн"}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                                <div className="flex items-center">
+                                  <Mail className="w-4 h-4 mr-1" />
+                                  {member.email}
+                                </div>
+                                <div className="flex items-center">
+                                  <Briefcase className="w-4 h-4 mr-1" />
+                                  {member.department}
+                                </div>
+                                <div className="flex items-center">
+                                  <Calendar className="w-4 h-4 mr-1" />С {member.joinDate}
+                                </div>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Последняя активность: {member.lastActive}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center space-x-4 mb-2">
+                              <div className="text-center">
+                                <p className="text-sm font-medium text-foreground">{member.productivity}%</p>
+                                <p className="text-xs text-muted-foreground">Продуктивность</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm font-medium text-foreground">{member.tasksCompleted}</p>
+                                <p className="text-xs text-muted-foreground">Задач</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm font-medium text-foreground">{member.aiToolsUsage}%</p>
+                                <p className="text-xs text-muted-foreground">ИИ-инструменты</p>
+                              </div>
+                            </div>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline">
+                                <Edit className="w-4 h-4 mr-1" />
+                                Редактировать
+                              </Button>
+                              <Button size="sm" variant="outline">
+                                <Eye className="w-4 h-4 mr-1" />
+                                Профиль
+                              </Button>
+                              {member.role !== "admin" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => removeUser(member.id)}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-border/30">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Доступные инструменты:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {member.permissions.includes("all") ? (
+                                <Badge variant="secondary" className="text-xs">
+                                  Все инструменты
+                                </Badge>
+                              ) : (
+                                member.permissions.map((permission, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {aiTools.find((tool) => tool.component === permission)?.name || permission}
+                                  </Badge>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Add user modal */}
+                {showAddUserModal && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <Card className="w-full max-w-md mx-4">
+                      <CardHeader>
+                        <CardTitle>Добавить сотрудника</CardTitle>
+                        <CardDescription>Заполните информацию о новом сотруднике</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-foreground">Имя</label>
+                          <Input
+                            value={newUserData.name}
+                            onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
+                            placeholder="Введите имя"
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground">Email</label>
+                          <Input
+                            value={newUserData.email}
+                            onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                            placeholder="email@company.com"
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground">Роль</label>
+                          <Select
+                            value={newUserData.role}
+                            onValueChange={(value) => setNewUserData({ ...newUserData, role: value })}
+                          >
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Выберите роль" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="member">Сотрудник</SelectItem>
+                              <SelectItem value="manager">Менеджер</SelectItem>
+                              <SelectItem value="admin">Администратор</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground">Отдел</label>
+                          <Select
+                            value={newUserData.department}
+                            onValueChange={(value) => setNewUserData({ ...newUserData, department: value })}
+                          >
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder="Выберите отдел" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {departments.map((dept) => (
+                                <SelectItem key={dept.name} value={dept.name}>
+                                  {dept.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex space-x-2 pt-4">
+                          <Button onClick={handleAddUser} className="flex-1">
+                            Добавить
+                          </Button>
+                          <Button variant="outline" onClick={() => setShowAddUserModal(false)} className="flex-1">
+                            Отмена
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
               </div>
             )}
           </div>

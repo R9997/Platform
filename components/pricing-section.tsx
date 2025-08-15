@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from "lucide-react"
@@ -47,6 +49,16 @@ const plans = [
 ]
 
 export function PricingSection() {
+  const handlePlanSelect = (planName: string) => {
+    if (planName === "Enterprise") {
+      // Перенаправление на страницу контактов для Enterprise плана
+      window.location.href = "/contact"
+    } else {
+      // Перенаправление на регистрацию для других планов
+      window.location.href = "/register"
+    }
+  }
+
   return (
     <section id="pricing" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -89,7 +101,12 @@ export function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={plan.popular ? "default" : "outline"} size="lg">
+                <Button
+                  className="w-full"
+                  variant={plan.popular ? "default" : "outline"}
+                  size="lg"
+                  onClick={() => handlePlanSelect(plan.name)}
+                >
                   {plan.name === "Enterprise" ? "Contact Sales" : "Start Free Trial"}
                 </Button>
               </CardContent>
