@@ -12,17 +12,14 @@ import {
   ArrowLeft,
   Play,
   BookOpen,
-  Users,
-  FileText,
   BarChart3,
   CheckCircle,
   Brain,
-  MessageSquare,
-  DollarSign,
-  Shield,
   Lightbulb,
   Star,
   Award,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 
 interface TourStep {
@@ -31,24 +28,21 @@ interface TourStep {
   description: string
   detailedInfo: string
   target: string
-  position: "top" | "bottom" | "left" | "right"
   icon: React.ReactNode
   tips?: string[]
-  actionRequired?: boolean
   category: "basics" | "advanced" | "expert"
 }
 
 const tourSteps: TourStep[] = [
   {
     id: "welcome",
-    title: "Добро пожаловать в ИИ-платформу!",
-    description: "Это ваше рабочее пространство для управления бизнесом с помощью искусственного интеллекта.",
+    title: "Добро пожаловать в ИИ-платформу",
+    description: "Ваше рабочее пространство для управления бизнесом с помощью искусственного интеллекта.",
     detailedInfo:
-      "Платформа Рефрейм Бюро объединяет все инструменты для роста бизнеса: от автоматизации процессов до аналитики и управления командой. Каждый элемент интерфейса создан для максимальной эффективности.",
+      "Платформа Рефрейм Бюро объединяет все инструменты для роста бизнеса: автоматизацию, аналитику и управление командой.",
     target: "dashboard-header",
-    position: "bottom",
-    icon: <Play className="w-4 h-4" />,
-    tips: ["Используйте поиск для быстрого доступа к функциям", "Настройте уведомления в правом верхнем углу"],
+    icon: <Play className="w-5 h-5" />,
+    tips: ["Используйте поиск для быстрого доступа", "Настройте уведомления в правом углу"],
     category: "basics",
   },
   {
@@ -56,16 +50,10 @@ const tourSteps: TourStep[] = [
     title: "Интерактивные метрики бизнеса",
     description: "Ключевые показатели вашего бизнеса с возможностью редактирования и отслеживания целей.",
     detailedInfo:
-      "Метрики обновляются в реальном времени и показывают: выручку, автоматизированные процессы, эффективность ИИ и выполненные задачи. Наведите курсор на любую карточку для редактирования значений.",
+      "Метрики обновляются в реальном времени: выручка, автоматизация, эффективность ИИ. Кликайте на карточки для редактирования.",
     target: "metrics-section",
-    position: "bottom",
-    icon: <BarChart3 className="w-4 h-4" />,
-    tips: [
-      "Кликните на кнопки +/- для быстрого изменения значений",
-      "Используйте иконку настроек для детального редактирования",
-      "Зеленая полоса показывает прогресс к вашей цели",
-    ],
-    actionRequired: true,
+    icon: <BarChart3 className="w-5 h-5" />,
+    tips: ["Используйте кнопки +/- для быстрого изменения", "Зеленая полоса показывает прогресс к цели"],
     category: "basics",
   },
   {
@@ -73,129 +61,31 @@ const tourSteps: TourStep[] = [
     title: "ИИ-инструменты для автоматизации",
     description: "Мощные инструменты искусственного интеллекта для автоматизации бизнес-процессов.",
     detailedInfo:
-      "5 основных ИИ-инструментов: генератор контента, анализатор данных, автоматизация процессов, менеджер продаж и финансовый менеджер. Каждый инструмент настраивается под ваши потребности.",
+      "5 основных ИИ-инструментов: генератор контента, анализатор данных, автоматизация, продажи и финансы.",
     target: "ai-tools-section",
-    position: "top",
-    icon: <Brain className="w-4 h-4" />,
-    tips: [
-      "Начните с генератора контента для создания постов и статей",
-      "Анализатор данных поможет найти скрытые паттерны в продажах",
-      "ROI каждого инструмента отображается в реальном времени",
-    ],
+    icon: <Brain className="w-5 h-5" />,
+    tips: ["Начните с генератора контента", "ROI отображается в реальном времени"],
     category: "advanced",
   },
   {
     id: "tasks",
-    title: "Kanban-доска задач",
-    description: "Полноценная система управления задачами с назначением исполнителей и отслеживанием прогресса.",
+    title: "Управление задачами",
+    description: "Kanban-доска для управления задачами с назначением исполнителей и отслеживанием прогресса.",
     detailedInfo:
-      "Создавайте задачи, назначайте исполнителей из команды, устанавливайте приоритеты и сроки. Задачи автоматически перемещаются между статусами: К выполнению → В работе → На проверке → Завершено.",
+      "Создавайте задачи, назначайте исполнителей, устанавливайте приоритеты. Автоматическое перемещение между статусами.",
     target: "tasks-section",
-    position: "top",
-    icon: <CheckCircle className="w-4 h-4" />,
-    tips: [
-      "Используйте теги для категоризации задач",
-      "Добавляйте комментарии и файлы к задачам",
-      "Отслеживайте время выполнения для оптимизации процессов",
-    ],
-    actionRequired: true,
+    icon: <CheckCircle className="w-5 h-5" />,
+    tips: ["Используйте теги для категоризации", "Отслеживайте время выполнения"],
     category: "advanced",
-  },
-  {
-    id: "files",
-    title: "Умное файловое хранилище",
-    description: "Централизованное хранение с drag & drop загрузкой, папками и системой прав доступа.",
-    detailedInfo:
-      "Загружайте файлы перетаскиванием, создавайте папки для организации, настраивайте права доступа (приватный/команда/публичный). Поддерживается предварительный просмотр и поиск по содержимому.",
-    target: "files-section",
-    position: "top",
-    icon: <FileText className="w-4 h-4" />,
-    tips: [
-      "Перетащите файлы прямо в браузер для загрузки",
-      "Используйте теги для быстрого поиска документов",
-      "Настройте права доступа для конфиденциальных файлов",
-    ],
-    category: "basics",
-  },
-  {
-    id: "team",
-    title: "Управление командой и ролями",
-    description: "Добавляйте сотрудников, назначайте роли и отслеживайте продуктивность команды.",
-    detailedInfo:
-      "Система ролей включает: Администратор (полный доступ), Менеджер (управление проектами), Сотрудник (выполнение задач). Отслеживайте использование ИИ-инструментов и продуктивность каждого участника.",
-    target: "team-section",
-    position: "top",
-    icon: <Users className="w-4 h-4" />,
-    tips: [
-      "Создавайте кастомные роли для специфических потребностей",
-      "Отслеживайте активность сотрудников в реальном времени",
-      "Используйте отчеты по продуктивности для оптимизации работы",
-    ],
-    category: "advanced",
-  },
-  {
-    id: "sales",
-    title: "CRM и управление продажами",
-    description: "Полноценная CRM система с воронкой продаж и автоматизацией процессов.",
-    detailedInfo:
-      "Управляйте лидами, отслеживайте сделки, анализируйте конверсию. ИИ автоматически сегментирует клиентов и предлагает персонализированные предложения для увеличения продаж.",
-    target: "sales-section",
-    position: "left",
-    icon: <DollarSign className="w-4 h-4" />,
-    tips: [
-      "Настройте автоматические уведомления для важных сделок",
-      "Используйте ИИ-анализ для прогнозирования продаж",
-      "Интегрируйте с email-маркетингом для nurturing лидов",
-    ],
-    category: "expert",
-  },
-  {
-    id: "ai-chat",
-    title: "ИИ-консультант по бизнесу",
-    description: "Персональный ИИ-помощник для консультаций и анализа бизнес-метрик.",
-    detailedInfo:
-      "ИИ-консультант анализирует ваши данные и дает персональные рекомендации по росту бизнеса. Задавайте вопросы о метриках, стратегии, оптимизации процессов - получайте экспертные советы 24/7.",
-    target: "chat-section",
-    position: "right",
-    icon: <MessageSquare className="w-4 h-4" />,
-    tips: [
-      "Спрашивайте конкретные вопросы о ваших метриках",
-      "Запрашивайте рекомендации по оптимизации процессов",
-      "ИИ учитывает контекст вашего бизнеса в ответах",
-    ],
-    category: "expert",
-  },
-  {
-    id: "roles",
-    title: "Система ролей и безопасность",
-    description: "Детальная настройка прав доступа и создание кастомных ролей для команды.",
-    detailedInfo:
-      "9 категорий прав: основные функции, проекты, аналитика, команда, ИИ-инструменты, файлы, задачи, отчеты, администрирование. Создавайте роли под специфические потребности вашего бизнеса.",
-    target: "roles-section",
-    position: "left",
-    icon: <Shield className="w-4 h-4" />,
-    tips: [
-      "Начните с готовых ролей, затем создавайте кастомные",
-      "Регулярно аудируйте права доступа сотрудников",
-      "Используйте временные роли для проектной работы",
-    ],
-    category: "expert",
   },
   {
     id: "completion",
-    title: "Поздравляем! Вы готовы к работе",
-    description:
-      "Теперь вы знаете все основные возможности платформы. Начните с создания первой задачи или загрузки файлов.",
-    detailedInfo:
-      "Вы изучили все ключевые функции платформы Рефрейм Бюро. Рекомендуем начать с настройки команды, создания первого проекта и активации ИИ-инструментов для вашей отрасли.",
+    title: "Готово! Начинайте работу",
+    description: "Теперь вы знаете основные возможности платформы. Создайте первую задачу или загрузите файлы.",
+    detailedInfo: "Рекомендуем начать с настройки команды, создания проекта и активации ИИ-инструментов.",
     target: "dashboard-header",
-    position: "bottom",
-    icon: <Award className="w-4 h-4" />,
-    tips: [
-      "Используйте поиск для быстрого доступа к функциям",
-      "Обращайтесь к ИИ-консультанту за помощью",
-      "Изучайте аналитику для принятия решений",
-    ],
+    icon: <Award className="w-5 h-5" />,
+    tips: ["Используйте ИИ-консультанта за помощью", "Изучайте аналитику для принятия решений"],
     category: "basics",
   },
 ]
@@ -208,8 +98,7 @@ interface InteractiveTourProps {
 export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [showDetailedInfo, setShowDetailedInfo] = useState(false)
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
+  const [showDetails, setShowDetails] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -224,7 +113,6 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
 
   const highlightElement = (targetId: string) => {
     removeHighlight()
-
     const element = document.getElementById(targetId)
     if (element) {
       element.classList.add("tour-highlight")
@@ -238,13 +126,11 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
   }
 
   const nextStep = () => {
-    setCompletedSteps((prev) => new Set([...prev, currentStep]))
-
     if (currentStep < tourSteps.length - 1) {
       const newStep = currentStep + 1
       setCurrentStep(newStep)
       highlightElement(tourSteps[newStep].target)
-      setShowDetailedInfo(false)
+      setShowDetails(false)
     } else {
       completeTour()
     }
@@ -255,21 +141,14 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
       const newStep = currentStep - 1
       setCurrentStep(newStep)
       highlightElement(tourSteps[newStep].target)
-      setShowDetailedInfo(false)
+      setShowDetails(false)
     }
-  }
-
-  const jumpToStep = (stepIndex: number) => {
-    setCurrentStep(stepIndex)
-    highlightElement(tourSteps[stepIndex].target)
-    setShowDetailedInfo(false)
   }
 
   const completeTour = () => {
     removeHighlight()
     onClose()
     localStorage.setItem("dashboard-tour-completed", "true")
-    localStorage.setItem("dashboard-tour-completion-date", new Date().toISOString())
   }
 
   if (!isVisible) return null
@@ -280,13 +159,13 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "basics":
-        return "bg-green-500/10 text-green-600 border-green-500/30"
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
       case "advanced":
-        return "bg-blue-500/10 text-blue-600 border-blue-500/30"
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
       case "expert":
-        return "bg-purple-500/10 text-purple-600 border-purple-500/30"
+        return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
       default:
-        return "bg-gray-500/10 text-gray-600 border-gray-500/30"
+        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300"
     }
   }
 
@@ -305,162 +184,161 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
 
-      <div className="fixed top-2 left-2 right-2 bottom-2 sm:top-4 sm:left-4 sm:right-4 sm:bottom-4 z-50 flex items-center justify-center p-2 sm:p-4">
-        <Card className="border-primary/20 shadow-2xl w-full max-w-5xl max-h-full overflow-hidden bg-background/95 backdrop-blur-sm enhanced-modal">
-          <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-            <div className="flex items-start justify-between gap-3 sm:gap-4">
-              <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
-                <div className="p-2 sm:p-3 bg-primary/10 rounded-xl shrink-0">{currentTourStep.icon}</div>
-                <div className="min-w-0 flex-1">
-                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight mb-2 break-words">
+      <div className="fixed inset-4 sm:inset-8 lg:inset-16 z-50">
+        <Card className="h-full w-full shadow-2xl bg-background border-2 border-primary/20 overflow-hidden">
+          <CardHeader className="border-b bg-muted/30 p-8">
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex items-start gap-6 flex-1 min-w-0">
+                <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 shrink-0">
+                  {currentTourStep.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">
                     {currentTourStep.title}
                   </CardTitle>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="secondary" className="text-xs sm:text-sm">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <Badge variant="secondary" className="text-base font-medium px-4 py-2">
                       Шаг {currentStep + 1} из {tourSteps.length}
                     </Badge>
-                    <Badge className={`${getCategoryColor(currentTourStep.category)} text-xs sm:text-sm`}>
+                    <Badge className={`${getCategoryColor(currentTourStep.category)} text-base font-medium px-4 py-2`}>
                       {getCategoryLabel(currentTourStep.category)}
                     </Badge>
-                    {currentTourStep.actionRequired && (
-                      <Badge variant="outline" className="text-orange-600 border-orange-500/30 text-xs sm:text-sm">
-                        <Star className="w-3 h-3 mr-1" />
-                        Попробуйте
-                      </Badge>
+                  </div>
+                </div>
+              </div>
+              <Button variant="ghost" size="lg" onClick={completeTour} className="shrink-0">
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
+
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-semibold text-muted-foreground">Прогресс обучения</span>
+                <span className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</span>
+              </div>
+              <Progress value={progressPercentage} className="h-3" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="flex-1 overflow-hidden p-0">
+            <div className="h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto p-8 lg:p-12">
+                <div className="max-w-5xl mx-auto space-y-8">
+                  <div className="p-8 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl border border-primary/10">
+                    <p className="text-xl lg:text-2xl leading-relaxed font-medium text-foreground">
+                      {currentTourStep.description}
+                    </p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setShowDetails(!showDetails)}
+                      className="w-full text-lg font-medium px-8 py-6 h-auto justify-between"
+                    >
+                      <span className="flex items-center gap-3">
+                        <Lightbulb className="w-6 h-6" />
+                        {showDetails ? "Скрыть подробности" : "Показать подробности и советы"}
+                      </span>
+                      {showDetails ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+                    </Button>
+
+                    {showDetails && (
+                      <div className="space-y-8 p-8 bg-muted/20 rounded-3xl border">
+                        <p className="text-lg lg:text-xl leading-relaxed text-muted-foreground">
+                          {currentTourStep.detailedInfo}
+                        </p>
+
+                        {currentTourStep.tips && (
+                          <div className="space-y-6">
+                            <h4 className="text-xl font-bold text-foreground flex items-center gap-3">
+                              <Star className="w-6 h-6 text-primary" />
+                              Полезные советы:
+                            </h4>
+                            <div className="space-y-4">
+                              {currentTourStep.tips.map((tip, index) => (
+                                <div key={index} className="flex gap-4 p-6 bg-background/60 rounded-2xl border">
+                                  <span className="text-primary font-bold text-2xl leading-none shrink-0">
+                                    {index + 1}.
+                                  </span>
+                                  <span className="text-lg text-muted-foreground leading-relaxed">{tip}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={completeTour} className="h-8 w-8 sm:h-9 sm:w-9 p-0 shrink-0">
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-            </div>
 
-            <div className="space-y-3 mt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Прогресс обучения</span>
-                <span className="font-semibold text-primary">{Math.round(progressPercentage)}%</span>
-              </div>
-              <Progress value={progressPercentage} className="h-3 bg-muted/50" />
-            </div>
-          </CardHeader>
+              <div className="border-t bg-muted/20 p-8">
+                <div className="max-w-5xl mx-auto">
+                  <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
+                    {tourSteps.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                          index === currentStep
+                            ? "bg-primary scale-125"
+                            : index < currentStep
+                              ? "bg-green-500"
+                              : "bg-muted-foreground/30"
+                        }`}
+                      />
+                    ))}
+                  </div>
 
-          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto">
-            <div className="space-y-4 sm:space-y-6">
-              <div className="p-4 sm:p-6 bg-primary/5 rounded-xl border border-primary/10">
-                <p className="text-foreground leading-relaxed text-sm sm:text-base lg:text-lg font-medium break-words">
-                  {currentTourStep.description}
-                </p>
-              </div>
+                  <div className="flex items-center justify-between gap-6">
+                    <Button
+                      variant="outline"
+                      onClick={prevStep}
+                      disabled={currentStep === 0}
+                      size="lg"
+                      className="flex items-center gap-3 px-8 py-4 text-lg font-medium bg-transparent"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                      Назад
+                    </Button>
 
-              {!showDetailedInfo ? (
-                <Button
-                  variant="outline"
-                  size="default"
-                  onClick={() => setShowDetailedInfo(true)}
-                  className="flex items-center gap-2 w-full sm:w-auto"
-                >
-                  <Lightbulb className="w-4 h-4" />
-                  Показать подробную информацию
-                </Button>
-              ) : (
-                <div className="space-y-4 p-4 sm:p-6 bg-muted/30 rounded-xl border border-muted/50">
-                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base break-words">
-                    {currentTourStep.detailedInfo}
-                  </p>
-
-                  {currentTourStep.tips && (
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-foreground flex items-center gap-2 text-sm sm:text-base">
-                        <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
-                        Полезные советы:
-                      </h4>
-                      <div className="space-y-2 pl-0 sm:pl-2">
-                        {currentTourStep.tips.map((tip, index) => (
-                          <div key={index} className="flex items-start gap-3 p-3 sm:p-4 bg-background/50 rounded-lg">
-                            <span className="text-primary font-bold text-base sm:text-lg leading-none mt-0.5 shrink-0">
-                              •
-                            </span>
-                            <span className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 break-words">
-                              {tip}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="hidden lg:flex items-center gap-2">
+                      {tourSteps.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            index === currentStep
+                              ? "bg-primary scale-150"
+                              : index < currentStep
+                                ? "bg-green-500"
+                                : "bg-muted-foreground/30"
+                          }`}
+                        />
+                      ))}
                     </div>
-                  )}
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowDetailedInfo(false)}
-                    className="text-xs sm:text-sm"
-                  >
-                    Свернуть подробности
-                  </Button>
+                    <Button
+                      onClick={nextStep}
+                      size="lg"
+                      className="flex items-center gap-3 px-8 py-4 text-lg font-medium"
+                    >
+                      {currentStep === tourSteps.length - 1 ? (
+                        <>
+                          <Award className="w-5 h-5" />
+                          Завершить
+                        </>
+                      ) : (
+                        <>
+                          Далее
+                          <ArrowRight className="w-5 h-5" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-center gap-2 py-4 sm:py-6 mt-4 sm:mt-6 border-t border-muted/30">
-              <div className="flex items-center gap-1 p-2 bg-muted/20 rounded-full overflow-x-auto max-w-full">
-                {tourSteps.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => jumpToStep(index)}
-                    className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-300 shrink-0 ${
-                      index === currentStep
-                        ? "bg-primary scale-125 shadow-lg shadow-primary/30"
-                        : completedSteps.has(index)
-                          ? "bg-green-500 hover:bg-green-600"
-                          : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                    }`}
-                    title={`Шаг ${index + 1}: ${tourSteps[index].title}`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 gap-3 sm:gap-4">
-              <Button
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2 min-w-[100px] w-full sm:w-auto bg-transparent"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Назад
-              </Button>
-
-              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={completeTour}
-                  className="text-muted-foreground text-xs sm:text-sm"
-                >
-                  Пропустить обучение
-                </Button>
-
-                <Button
-                  onClick={nextStep}
-                  className="flex items-center gap-2 min-w-[120px] w-full sm:w-auto"
-                  size="default"
-                >
-                  {currentStep === tourSteps.length - 1 ? (
-                    <>
-                      <Award className="w-4 h-4" />
-                      Завершить
-                    </>
-                  ) : (
-                    <>
-                      Далее
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -472,40 +350,9 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
           position: relative;
           z-index: 45;
           border-radius: 16px;
-          box-shadow: 
-            0 0 0 3px rgba(59, 130, 246, 0.8), 
-            0 0 0 6px rgba(59, 130, 246, 0.4), 
-            0 0 0 12px rgba(59, 130, 246, 0.2),
-            0 0 30px rgba(59, 130, 246, 0.6);
-          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: scale(1.03);
-        }
-        
-        .tour-highlight::before {
-          content: '';
-          position: absolute;
-          inset: -12px;
-          border-radius: 20px;
-          background: linear-gradient(45deg, 
-            transparent, 
-            rgba(59, 130, 246, 0.1), 
-            rgba(59, 130, 246, 0.2), 
-            rgba(59, 130, 246, 0.1), 
-            transparent
-          );
-          animation: pulse-glow 3s infinite ease-in-out;
-          pointer-events: none;
-        }
-        
-        @keyframes pulse-glow {
-          0%, 100% { 
-            opacity: 0.3; 
-            transform: scale(1); 
-          }
-          50% { 
-            opacity: 0.7; 
-            transform: scale(1.08); 
-          }
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.6);
+          transition: all 0.4s ease;
+          transform: scale(1.02);
         }
       `}</style>
     </>
@@ -515,23 +362,16 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
 export function TourLauncher() {
   const [showTour, setShowTour] = useState(false)
   const [hasCompletedTour, setHasCompletedTour] = useState(false)
-  const [completionDate, setCompletionDate] = useState<string | null>(null)
 
   useEffect(() => {
     const completed = localStorage.getItem("dashboard-tour-completed")
-    const date = localStorage.getItem("dashboard-tour-completion-date")
     setHasCompletedTour(!!completed)
-    setCompletionDate(date)
   }, [])
-
-  const startTour = () => {
-    setShowTour(true)
-  }
 
   return (
     <>
       <Button
-        onClick={startTour}
+        onClick={() => setShowTour(true)}
         variant={hasCompletedTour ? "outline" : "default"}
         size="sm"
         className="flex items-center gap-2"
