@@ -27,6 +27,7 @@ import {
   UserPlus,
   Rocket,
   CheckSquare,
+  Brain,
 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -43,13 +44,14 @@ import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { SalesManager } from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
 import { FeatureGuide } from "@/components/help/feature-guide"
-import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TaskManager } from "@/components/task-tracker/task-manager"
 import { FileManager } from "@/components/file-storage/file-manager"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
+import { TourLauncher } from "@/components/guide/tour-launcher"
+import { AIBusinessStrategist } from "@/components/business-strategy/ai-business-strategist"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -253,6 +255,7 @@ export default function Dashboard() {
     <div className="space-y-2">
       {[
         { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
+        { key: "strategy", icon: Brain, label: "ИИ-стратег", badge: "NEW" },
         { key: "tools", icon: Rocket, label: "ИИ-инструменты", badge: 5 },
         { key: "sales", icon: TrendingUp, label: "Продажи", badge: 156 },
         { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
@@ -280,7 +283,12 @@ export default function Dashboard() {
           <item.icon className="w-4 h-4 mr-3 flex-shrink-0" />
           <span className="flex-1 text-left truncate">{item.label}</span>
           {item.badge && (
-            <Badge variant="secondary" className="ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center">
+            <Badge
+              variant={item.badge === "NEW" ? "default" : "secondary"}
+              className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center ${
+                item.badge === "NEW" ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white animate-pulse" : ""
+              }`}
+            >
               {item.badge}
             </Badge>
           )}
@@ -344,18 +352,23 @@ export default function Dashboard() {
                   />
                 </div>
 
-                <InteractiveTour />
-                <FeatureGuide />
+                <div className="flex items-center space-x-1">
+                  <TourLauncher />
+                  <FeatureGuide />
+                </div>
 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative"
-                  onClick={() => setShowNotificationsModal(true)}
+                  className="relative hover:bg-muted/80 dark:hover:bg-muted/40 transition-colors duration-200"
+                  onClick={() => {
+                    setShowNotificationsModal(true)
+                    console.log("[v0] Notifications button clicked")
+                  }}
                 >
-                  <Bell className="h-5 w-5" />
+                  <Bell className="h-5 w-5 text-foreground" />
                   {notifications > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white border-2 border-background">
                       {notifications}
                     </Badge>
                   )}
@@ -374,10 +387,10 @@ export default function Dashboard() {
                   onClick={() => (window.location.href = "/")}
                   variant="outline"
                   size="sm"
-                  className="border-border/50 hover:border-primary/50"
+                  className="border-border/50 hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-muted/30 dark:hover:border-primary/70 transition-all duration-200"
                 >
-                  <LogOut className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Выйти</span>
+                  <LogOut className="w-4 h-4 sm:mr-2 text-foreground" />
+                  <span className="hidden sm:inline text-foreground">Выйти</span>
                 </Button>
               </div>
             </div>
@@ -424,6 +437,8 @@ export default function Dashboard() {
                   <AIToolsShowcase />
                 </div>
               )}
+
+              {activeTab === "strategy" && <AIBusinessStrategist />}
 
               {activeTab === "tools" && (
                 <div className="space-y-6 sm:space-y-8">

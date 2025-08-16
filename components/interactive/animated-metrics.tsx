@@ -9,7 +9,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { TrendingUp, DollarSign, Rocket, Brain, Activity, Sparkles, Settings, Plus, Minus } from "lucide-react"
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
+  Target,
+  BarChart3,
+  Activity,
+  Sparkles,
+  Settings,
+  Plus,
+  Minus,
+  Briefcase,
+} from "lucide-react"
 
 interface AnimatedMetricProps {
   title: string
@@ -211,51 +223,79 @@ export function AnimatedMetrics() {
     {
       id: "revenue",
       title: "Месячная выручка",
-      value: 450000,
+      value: 2450000,
       suffix: " ₽",
-      trend: 23,
-      trendLabel: "к прошлому месяцу",
+      trend: 18,
+      trendLabel: "рост к прошлому месяцу",
       icon: DollarSign,
       color: "emerald-500",
       gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
       delay: 0,
-      goal: 600000,
+      goal: 3000000,
     },
     {
-      id: "processes",
-      title: "Автоматизированные процессы",
-      value: 12,
-      trend: 150,
-      trendLabel: "Экономия 156ч/месяц",
-      icon: Rocket,
+      id: "deals",
+      title: "Активные сделки",
+      value: 47,
+      trend: 25,
+      trendLabel: "новых сделок за неделю",
+      icon: Briefcase,
       color: "blue-500",
       gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
       delay: 200,
-      goal: 20,
+      goal: 60,
     },
     {
-      id: "efficiency",
-      title: "ИИ эффективность",
-      value: 94,
+      id: "conversion",
+      title: "Конверсия продаж",
+      value: 34,
       suffix: "%",
-      trendLabel: "Отличный результат",
-      icon: Brain,
+      trend: 12,
+      trendLabel: "улучшение за месяц",
+      icon: Target,
       color: "purple-500",
       gradient: "from-purple-500/10 via-purple-500/5 to-transparent",
       delay: 400,
-      goal: 98,
+      goal: 45,
     },
     {
-      id: "tasks",
-      title: "Выполнено задач",
-      value: 1247,
-      trend: 35,
-      trendLabel: "Удовлетворенность 98%",
-      icon: Activity,
+      id: "team",
+      title: "Продуктивность команды",
+      value: 87,
+      suffix: "%",
+      trend: 8,
+      trendLabel: "эффективность работы",
+      icon: Users,
       color: "orange-500",
       gradient: "from-orange-500/10 via-orange-500/5 to-transparent",
       delay: 600,
-      goal: 1500,
+      goal: 95,
+    },
+    {
+      id: "profit",
+      title: "Чистая прибыль",
+      value: 890000,
+      suffix: " ₽",
+      trend: 22,
+      trendLabel: "рентабельность 36%",
+      icon: BarChart3,
+      color: "green-500",
+      gradient: "from-green-500/10 via-green-500/5 to-transparent",
+      delay: 800,
+      goal: 1200000,
+    },
+    {
+      id: "automation",
+      title: "Автоматизация ИИ",
+      value: 73,
+      suffix: "%",
+      trend: 15,
+      trendLabel: "экономия 240ч/месяц",
+      icon: Activity,
+      color: "indigo-500",
+      gradient: "from-indigo-500/10 via-indigo-500/5 to-transparent",
+      delay: 1000,
+      goal: 90,
     },
   ])
 
@@ -277,11 +317,13 @@ export function AnimatedMetrics() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="text-lg sm:text-xl font-semibold text-foreground truncate">Ключевые метрики</h3>
-          <p className="text-sm text-muted-foreground">Наведите курсор на карточку для редактирования</p>
+          <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-1">Дашборд бизнес-метрик</h3>
+          <p className="text-sm text-muted-foreground">
+            Ключевые показатели состояния вашего бизнеса • Наведите курсор для редактирования
+          </p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6">
         {metrics.map((metric) => (
           <AnimatedMetric
             key={metric.id}

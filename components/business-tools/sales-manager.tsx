@@ -6,29 +6,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import {
   TrendingUp,
-  Users,
   Target,
-  DollarSign,
+  BarChart3,
+  Plus,
+  Settings,
+  Edit,
+  Eye,
+  Trash2,
+  RussianRubleIcon as Ruble,
   Phone,
   Mail,
   Calendar,
-  Plus,
-  Filter,
   Search,
-  Clock,
-  ArrowUp,
-  Eye,
-  Edit,
   X,
   Save,
-  Trash2,
-  Settings,
+  Filter,
 } from "lucide-react"
 
 interface Lead {
@@ -339,24 +336,22 @@ export function SalesManager() {
     setSalesMetrics({ ...salesMetrics, [field]: value })
   }
 
+  const [showEditLead, setShowEditLead] = useState(false)
+
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-muted/50">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="pipeline" className="flex items-center">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Воронка
-          </TabsTrigger>
-          <TabsTrigger value="leads" className="flex items-center">
-            <Users className="w-4 h-4 mr-2" />
-            Лиды
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Воронка продаж
           </TabsTrigger>
           <TabsTrigger value="deals" className="flex items-center">
             <Target className="w-4 h-4 mr-2" />
             Сделки
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center">
-            <DollarSign className="w-4 h-4 mr-2" />
+            <Ruble className="w-4 h-4 mr-2" />
             Аналитика
           </TabsTrigger>
         </TabsList>
@@ -370,22 +365,19 @@ export function SalesManager() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Общая выручка</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {salesMetrics.totalRevenue.toLocaleString("ru-RU")}₽
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <ArrowUp className="w-3 h-3 text-green-600 mr-1" />
-                      <span className="text-xs text-green-600">+{salesMetrics.monthlyGrowth}%</span>
+                    <div className="flex items-baseline space-x-1">
+                      <p className="text-2xl font-bold text-green-600">2.4М</p>
+                      <span className="text-sm text-green-600">₽</span>
                     </div>
                   </div>
                   <div className="p-2 bg-green-500/10 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                    <Ruble className="w-5 h-5 text-green-600" />
                   </div>
                 </div>
               </CardContent>
@@ -395,12 +387,8 @@ export function SalesManager() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Конверсия</p>
-                    <p className="text-2xl font-bold text-foreground">{salesMetrics.conversionRate}%</p>
-                    <div className="flex items-center mt-1">
-                      <ArrowUp className="w-3 h-3 text-blue-600 mr-1" />
-                      <span className="text-xs text-blue-600">+2.3%</span>
-                    </div>
+                    <p className="text-sm text-muted-foreground">Активные сделки</p>
+                    <p className="text-2xl font-bold text-blue-600">47</p>
                   </div>
                   <div className="p-2 bg-blue-500/10 rounded-lg">
                     <Target className="w-5 h-5 text-blue-600" />
@@ -413,14 +401,8 @@ export function SalesManager() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Средний чек</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {salesMetrics.avgDealSize.toLocaleString("ru-RU")}₽
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <ArrowUp className="w-3 h-3 text-purple-600 mr-1" />
-                      <span className="text-xs text-purple-600">+12%</span>
-                    </div>
+                    <p className="text-sm text-muted-foreground">Конверсия</p>
+                    <p className="text-2xl font-bold text-purple-600">34%</p>
                   </div>
                   <div className="p-2 bg-purple-500/10 rounded-lg">
                     <TrendingUp className="w-5 h-5 text-purple-600" />
@@ -433,17 +415,14 @@ export function SalesManager() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">В работе</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {salesMetrics.activePipeline.toLocaleString("ru-RU")}₽
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <Clock className="w-3 h-3 text-orange-600 mr-1" />
-                      <span className="text-xs text-orange-600">{salesMetrics.totalLeads} лидов</span>
+                    <p className="text-sm text-muted-foreground">Средний чек</p>
+                    <div className="flex items-baseline space-x-1">
+                      <p className="text-2xl font-bold text-orange-600">156К</p>
+                      <span className="text-sm text-orange-600">₽</span>
                     </div>
                   </div>
                   <div className="p-2 bg-orange-500/10 rounded-lg">
-                    <Users className="w-5 h-5 text-orange-600" />
+                    <BarChart3 className="w-5 h-5 text-orange-600" />
                   </div>
                 </div>
               </CardContent>
@@ -724,62 +703,78 @@ export function SalesManager() {
         </TabsContent>
 
         <TabsContent value="deals" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {deals.map((deal) => (
-              <Card
-                key={deal.id}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-colors"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground mb-2">{deal.title}</h3>
-                      <p className="text-muted-foreground mb-3">{deal.client}</p>
-                      <Badge variant="outline" className="mb-3">
-                        {deal.stage}
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Активные сделки</h3>
+            <Button onClick={() => setShowAddLead(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Добавить сделку
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {leads.map((lead) => (
+              <Card key={lead.id} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-foreground truncate">{lead.name}</h4>
+                        <p className="text-sm text-muted-foreground truncate">{lead.email}</p>
+                        <p className="text-sm text-muted-foreground">{lead.phone}</p>
+                      </div>
+                      <Badge
+                        variant={
+                          lead.status === "Новый"
+                            ? "default"
+                            : lead.status === "В работе"
+                              ? "secondary"
+                              : lead.status === "Закрыт"
+                                ? "outline"
+                                : "destructive"
+                        }
+                        className="shrink-0"
+                      >
+                        {lead.status}
                       </Badge>
                     </div>
-                  </div>
 
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Сумма сделки</span>
-                      <span className="text-lg font-bold text-foreground">{deal.value.toLocaleString("ru-RU")}₽</span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Вероятность</span>
-                        <span className="text-sm font-medium text-foreground">{deal.probability}%</span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Сумма сделки</p>
+                        <p className="font-semibold text-foreground">{lead.value.toLocaleString()} ₽</p>
                       </div>
-                      <Progress value={deal.probability} className="h-2" />
+                      <div className="text-right">
+                        <p className="text-sm text-muted-foreground">Источник</p>
+                        <p className="text-sm font-medium">{lead.source}</p>
+                      </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Закрытие</span>
-                      <span className="text-foreground">{deal.closeDate}</span>
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 bg-transparent"
+                        onClick={() => {
+                          console.log("[v0] Editing lead:", lead.id)
+                          setEditingLead(lead)
+                          setShowEditLead(true)
+                        }}
+                      >
+                        <Edit className="w-4 h-4 mr-1" />
+                        Редактировать
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          console.log("[v0] Opening lead details:", lead.id)
+                          alert(`Детали сделки: ${lead.name}\nСумма: ${lead.value.toLocaleString()} ₽\nСтатус: ${lead.status}`)
+                        }}
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        Открыть
+                      </Button>
                     </div>
-
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Ответственный</span>
-                      <span className="text-foreground">{deal.assignedTo}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Активности</span>
-                      <Badge variant="secondary">{deal.activities}</Badge>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-2 mt-4">
-                    <Button size="sm" variant="outline" className="flex-1 bg-transparent">
-                      <Edit className="w-4 h-4 mr-1" />
-                      Редактировать
-                    </Button>
-                    <Button size="sm" className="flex-1">
-                      <Eye className="w-4 h-4 mr-1" />
-                      Открыть
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -788,80 +783,181 @@ export function SalesManager() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-card/60 backdrop-blur-xl border border-border/50">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Аналитика продаж</h3>
+              <p className="text-sm text-muted-foreground">Данные формируются на основе активных сделок и истории продаж</p>
+            </div>
+            <Button variant="outline" size="sm">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Экспорт отчета
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center text-foreground">
-                  <TrendingUp className="w-5 h-5 mr-2 text-primary" />
-                  Динамика продаж
-                </CardTitle>
+                <CardTitle className="text-base">Динамика продаж</CardTitle>
+                <CardDescription>Выручка по месяцам (₽)</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { month: "Октябрь", revenue: 1850000, deals: 15, growth: 12 },
-                    { month: "Ноябрь", revenue: 2100000, deals: 18, growth: 18 },
-                    { month: "Декабрь", revenue: 2450000, deals: 22, growth: 24 },
-                    { month: "Январь", revenue: 2890000, deals: 28, growth: 32 },
-                  ].map((data, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-foreground">{data.month}</p>
-                        <p className="text-sm text-muted-foreground">{data.deals} сделок</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-foreground">{data.revenue.toLocaleString("ru-RU")}₽</p>
-                        <div className="flex items-center">
-                          <ArrowUp className="w-3 h-3 text-green-600 mr-1" />
-                          <span className="text-xs text-green-600">+{data.growth}%</span>
-                        </div>
-                      </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Январь 2024</span>
+                    <span className="font-semibold">1.8М ₽</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Февраль 2024</span>
+                    <span className="font-semibold">2.1М ₽</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Март 2024</span>
+                    <span className="font-semibold">2.4М ₽</span>
+                  </div>
+                  <div className="pt-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Рост за квартал</span>
+                      <span className="font-bold text-green-600">+33%</span>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card/60 backdrop-blur-xl border border-border/50">
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center text-foreground">
-                  <Users className="w-5 h-5 mr-2 text-primary" />
-                  Эффективность команды
-                </CardTitle>
+                <CardTitle className="text-base">Источники лидов</CardTitle>
+                <CardDescription>Откуда приходят клиенты</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { name: "Михаил Сидоров", deals: 12, revenue: 1450000, conversion: 28 },
-                    { name: "Елена Козлова", deals: 8, revenue: 980000, conversion: 22 },
-                    { name: "Анна Петрова", deals: 6, revenue: 720000, conversion: 18 },
-                    { name: "Дмитрий Волков", deals: 4, revenue: 540000, conversion: 15 },
-                  ].map((member, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-foreground">{member.name}</span>
-                        <div className="text-right">
-                          <span className="text-sm font-medium text-foreground">
-                            {member.revenue.toLocaleString("ru-RU")}₽
-                          </span>
-                          <p className="text-xs text-muted-foreground">{member.deals} сделок</p>
-                        </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Сайт</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 bg-muted rounded-full h-2">
+                        <div className="w-3/4 bg-primary h-2 rounded-full"></div>
                       </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Конверсия</span>
-                          <span className="text-foreground">{member.conversion}%</span>
-                        </div>
-                        <Progress value={member.conversion} className="h-1" />
-                      </div>
+                      <span className="text-sm font-medium">45%</span>
                     </div>
-                  ))}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Реклама</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 bg-muted rounded-full h-2">
+                        <div className="w-1/2 bg-blue-500 h-2 rounded-full"></div>
+                      </div>
+                      <span className="text-sm font-medium">30%</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Рекомендации</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 bg-muted rounded-full h-2">
+                        <div className="w-1/4 bg-green-500 h-2 rounded-full"></div>
+                      </div>
+                      <span className="text-sm font-medium">25%</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+              <CardHeader>
+                <CardTitle className="text-base">Конверсия по этапам</CardTitle>
+                <CardDescription>Процент перехода между этапами</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Лид → Квалификация</span>
+                    <span className="font-semibold text-blue-600">78%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Квалификация → Предложение</span>
+                    <span className="font-semibold text-orange-600">65%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Предложение → Закрытие</span>
+                    <span className="font-semibold text-green-600">42%</span>
+                  </div>
+                  <div className="pt-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Общая конверсия</span>
+                      <span className="font-bold text-primary">34%</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+              <CardHeader>
+                <CardTitle className="text-base">Прогноз продаж</CardTitle>
+                <CardDescription>ИИ-анализ на основе текущих данных</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Апрель 2024 (прогноз)</span>
+                    <span className="font-semibold text-blue-600">2.7М ₽</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Май 2024 (прогноз)</span>
+                    <span className="font-semibold text-blue-600">3.1М ₽</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Июнь 2024 (прогноз)</span>
+                    <span className="font-semibold text-blue-600">3.4М ₽</span>
+                  </div>
+                  <div className="pt-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Ожидаемый рост</span>
+                      <span className="font-bold text-green-600">+41%</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+            <CardHeader>
+              <CardTitle className="text-base">Как формируется аналитика</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground">Источники данных:</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Активные сделки в CRM</li>
+                    <li>• История закрытых сделок</li>
+                    <li>• Данные о лидах и источниках</li>
+                    <li>• Временные метки активности</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground">Расчеты:</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Конверсия = Закрытые / Общие лиды</li>
+                    <li>• Средний чек = Выручка / Количество</li>
+                    <li>• Цикл продаж = Среднее время</li>
+                    <li>• ROI = (Прибыль - Затраты) / Затраты</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground">ИИ-прогнозы:</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Анализ трендов продаж</li>
+                    <li>• Сезонные колебания</li>
+                    <li>• Поведенческие паттерны</li>
+                    <li>• Внешние факторы рынка</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
-      </Tabs>
 
       {showEditPipeline && editingStage && (
         <Dialog open={showEditPipeline} onOpenChange={setShowEditPipeline}>
@@ -1155,5 +1251,5 @@ export function SalesManager() {
         </div>
       )}
     </div>
-  )
+  )\
 }

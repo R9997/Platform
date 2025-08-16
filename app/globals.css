@@ -70,7 +70,8 @@
   --accent-foreground: oklch(0.06 0 0);
   --destructive: oklch(0.68 0.28 15);
   --destructive-foreground: oklch(0.06 0 0);
-  --border: oklch(0.22 0 0); /* Светлее границы */
+  /* Улучшенные границы для лучшей видимости в темной теме */
+  --border: oklch(0.28 0 0); /* Более светлые границы для лучшей видимости */
   --input: oklch(0.11 0 0); /* Светлее поля ввода */
   --ring: oklch(0.75 0.22 195);
   --chart-1: oklch(0.75 0.22 195);
@@ -84,11 +85,13 @@
   --sidebar-primary-foreground: oklch(0.06 0 0);
   --sidebar-accent: oklch(0.12 0 0);
   --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.22 0 0);
+  /* Улучшенные границы сайдбара */
+  --sidebar-border: oklch(0.28 0 0);
   --sidebar-ring: oklch(0.75 0.22 195);
   --color-dark-bg: oklch(0.06 0 0);
   --color-dark-surface: oklch(0.09 0 0);
-  --color-dark-border: oklch(0.22 0 0);
+  /* Более контрастные границы для темной темы */
+  --color-dark-border: oklch(0.28 0 0);
   --color-text-primary: oklch(0.95 0 0);
   --color-text-secondary: oklch(0.75 0 0);
   --soft-glow-cyan: 0 0 12px oklch(0.75 0.22 195 / 0.4), 0 0 24px oklch(0.75 0.22 195 / 0.15);
@@ -143,6 +146,43 @@
   body {
     @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
+
+  /* Добавлены специальные стили для улучшенной видимости в темной теме */
+  .dark .card-enhanced {
+    border: 1px solid oklch(0.28 0 0);
+    box-shadow: 0 0 0 1px oklch(0.28 0 0 / 0.5), 0 2px 4px oklch(0 0 0 / 0.3);
+  }
+
+  .dark .card-enhanced:hover {
+    border-color: oklch(0.35 0 0);
+    box-shadow: 0 0 0 1px oklch(0.35 0 0 / 0.7), 0 4px 8px oklch(0 0 0 / 0.4);
+  }
+
+  .dark .section-border {
+    border: 1px solid oklch(0.25 0 0);
+    box-shadow: inset 0 0 0 1px oklch(0.25 0 0 / 0.3);
+  }
+
+  .dark .content-separator {
+    border-bottom: 1px solid oklch(0.25 0 0);
+    box-shadow: 0 1px 0 oklch(0.25 0 0 / 0.5);
+  }
+
+  .dark .input-enhanced {
+    border: 1px solid oklch(0.3 0 0);
+    background: oklch(0.08 0 0);
+  }
+
+  .dark .input-enhanced:focus {
+    border-color: oklch(0.75 0.22 195);
+    box-shadow: 0 0 0 2px oklch(0.75 0.22 195 / 0.2);
+  }
+
+  .dark .modal-enhanced {
+    border: 1px solid oklch(0.3 0 0);
+    box-shadow: 0 0 0 1px oklch(0.3 0 0 / 0.5), 0 8px 32px oklch(0 0 0 / 0.6);
+  }
+
   /* Обновленные утилиты с теплыми цветами для светлой темы */
   .soft-glow {
     box-shadow: var(--soft-glow-primary-light);
