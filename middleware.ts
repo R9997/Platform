@@ -5,7 +5,7 @@ import { jwtVerify } from "jose"
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key")
 
 // Protected routes that require authentication
-const protectedRoutes = ["/dashboard", "/api/users", "/api/projects", "/api/tasks", "/api/files", "/api/teams"]
+const protectedRoutes = ["/api/users", "/api/projects", "/api/tasks", "/api/files", "/api/teams"]
 
 // Public API routes that don't require authentication
 const publicApiRoutes = ["/api/auth", "/api/chat"]
@@ -16,6 +16,11 @@ export async function middleware(request: NextRequest) {
   // Check if the route is protected
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
   const isPublicApiRoute = publicApiRoutes.some((route) => pathname.startsWith(route))
+
+  // Allow access to dashboard without authorization (demo mode)
+  if (pathname === "/dashboard") {
+    return NextResponse.next()
+  }
 
   if (isProtectedRoute && !isPublicApiRoute) {
     const token =

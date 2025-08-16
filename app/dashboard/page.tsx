@@ -5,7 +5,30 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Users, TrendingUp, FileText, Settings, Bell, Plus, Search, Target, DollarSign, Briefcase, MessageSquare, Home, Shield, LogOut, Menu, Sparkles, Bot, Send, UserPlus, Rocket, CheckSquare, Brain } from 'lucide-react'
+import {
+  Users,
+  TrendingUp,
+  FileText,
+  Settings,
+  Bell,
+  Plus,
+  Search,
+  Target,
+  DollarSign,
+  Briefcase,
+  MessageSquare,
+  Home,
+  Shield,
+  LogOut,
+  Menu,
+  Sparkles,
+  Bot,
+  Send,
+  UserPlus,
+  Rocket,
+  CheckSquare,
+  Brain,
+} from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
@@ -166,6 +189,8 @@ export default function Dashboard() {
       read: false,
     },
   ])
+
+  const [isDemoMode, setIsDemoMode] = useState(true)
 
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
@@ -366,7 +391,7 @@ export default function Dashboard() {
                   className="bg-gradient-to-r from-primary/20 to-accent/20 text-primary border-primary/30 shadow-sm hidden sm:flex"
                 >
                   <Sparkles className="w-3 h-3 mr-1" />
-                  Бизнес-платформа
+                  {isDemoMode ? "Демо-режим" : "Бизнес-платформа"}
                 </Badge>
               </div>
 
@@ -407,19 +432,19 @@ export default function Dashboard() {
 
                 <div className="hidden md:flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">П</span>
+                    <span className="text-xs font-bold text-white">Д</span>
                   </div>
-                  <span className="text-foreground font-medium max-w-24 truncate">Пользователь</span>
+                  <span className="text-foreground font-medium max-w-24 truncate">Демо-пользователь</span>
                 </div>
 
                 <Button
-                  onClick={() => (window.location.href = "/")}
+                  onClick={() => (window.location.href = "/login")}
                   variant="outline"
                   size="sm"
                   className="border-border/50 hover:border-primary/50 hover:bg-muted/50 dark:hover:bg-muted/30 dark:hover:border-primary/70 transition-all duration-200"
                 >
                   <LogOut className="w-4 h-4 sm:mr-2 text-foreground" />
-                  <span className="hidden sm:inline text-foreground">Выйти</span>
+                  <span className="hidden sm:inline text-foreground">Войти</span>
                 </Button>
               </div>
             </div>
