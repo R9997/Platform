@@ -214,7 +214,7 @@ export function FeatureGuide() {
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             {features.map((feature) => {
               const FeatureIcon = feature.icon
               return (

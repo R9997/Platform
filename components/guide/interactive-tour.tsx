@@ -3,7 +3,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import {
@@ -18,8 +17,7 @@ import {
   Lightbulb,
   Star,
   Award,
-  ChevronDown,
-  ChevronUp,
+  ChevronRight,
 } from "lucide-react"
 
 interface TourStep {
@@ -151,6 +149,13 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
     localStorage.setItem("dashboard-tour-completed", "true")
   }
 
+  const handleShowMore = () => {
+    setShowDetails(true)
+    setTimeout(() => {
+      nextStep()
+    }, 1000)
+  }
+
   if (!isVisible) return null
 
   const currentTourStep = tourSteps[currentStep]
@@ -184,165 +189,184 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
-
-      <div className="fixed inset-4 sm:inset-8 lg:inset-16 z-50">
-        <Card className="h-full w-full shadow-2xl bg-background border-2 border-primary/20 overflow-hidden">
-          <CardHeader className="border-b bg-muted/30 p-8">
-            <div className="flex items-start justify-between gap-6">
-              <div className="flex items-start gap-6 flex-1 min-w-0">
-                <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 shrink-0">
-                  {currentTourStep.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">
-                    {currentTourStep.title}
-                  </CardTitle>
-                  <div className="flex items-center gap-4 flex-wrap">
-                    <Badge variant="secondary" className="text-base font-medium px-4 py-2">
-                      Шаг {currentStep + 1} из {tourSteps.length}
-                    </Badge>
-                    <Badge className={`${getCategoryColor(currentTourStep.category)} text-base font-medium px-4 py-2`}>
-                      {getCategoryLabel(currentTourStep.category)}
-                    </Badge>
-                  </div>
+      <div
+        className="fixed z-50 bg-background tour-modal-fullscreen"
+        style={{
+          position: "fixed !important",
+          top: "0 !important",
+          left: "0 !important",
+          right: "0 !important",
+          bottom: "0 !important",
+          width: "100vw !important",
+          height: "100vh !important",
+          maxWidth: "none !important",
+          maxHeight: "none !important",
+          margin: "0 !important",
+          padding: "0 !important",
+          zIndex: "9999 !important",
+        }}
+      >
+        <div className="border-b bg-muted/30" style={{ width: "100% !important", maxWidth: "none !important" }}>
+          <div
+            className="flex items-start justify-between gap-8 p-8"
+            style={{ width: "100% !important", maxWidth: "none !important" }}
+          >
+            <div className="flex items-start gap-8 flex-1 min-w-0">
+              <div className="p-6 bg-primary/10 rounded-2xl border border-primary/20 shrink-0">
+                <div className="w-12 h-12">{currentTourStep.icon}</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-5xl font-bold mb-6 leading-tight break-words">{currentTourStep.title}</h1>
+                <div className="flex items-center gap-6 flex-wrap">
+                  <Badge variant="secondary" className="text-xl font-medium px-6 py-3">
+                    Шаг {currentStep + 1} из {tourSteps.length}
+                  </Badge>
+                  <Badge className={`${getCategoryColor(currentTourStep.category)} text-xl font-medium px-6 py-3`}>
+                    {getCategoryLabel(currentTourStep.category)}
+                  </Badge>
                 </div>
               </div>
-              <Button variant="ghost" size="lg" onClick={completeTour} className="shrink-0">
-                <X className="w-6 h-6" />
+            </div>
+            <Button variant="ghost" size="lg" onClick={completeTour} className="shrink-0 p-4">
+              <X className="w-8 h-8" />
+            </Button>
+          </div>
+
+          <div className="p-8 pt-0 space-y-6" style={{ width: "100% !important", maxWidth: "none !important" }}>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl font-semibold text-muted-foreground">Прогресс обучения</span>
+              <span className="text-4xl font-bold text-primary">{Math.round(progressPercentage)}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-6" />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto" style={{ width: "100% !important", maxWidth: "none !important" }}>
+          <div className="p-8 space-y-12" style={{ width: "100% !important", maxWidth: "none !important" }}>
+            <div
+              className="p-16 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl border border-primary/10"
+              style={{ width: "100% !important", maxWidth: "none !important" }}
+            >
+              <p className="text-4xl leading-relaxed font-medium text-foreground break-words">
+                {currentTourStep.description}
+              </p>
+            </div>
+
+            <div className="space-y-8" style={{ width: "100% !important", maxWidth: "none !important" }}>
+              <Button
+                variant="default"
+                size="lg"
+                onClick={handleShowMore}
+                className="w-full text-2xl font-medium px-12 py-8 h-auto justify-between bg-primary hover:bg-primary/90"
+                style={{ width: "100% !important", maxWidth: "none !important" }}
+              >
+                <span className="flex items-center gap-4">
+                  <Lightbulb className="w-8 h-8" />
+                  Подробнее и перейти к следующему шагу
+                </span>
+                <ChevronRight className="w-8 h-8" />
+              </Button>
+
+              {showDetails && (
+                <div
+                  className="space-y-12 p-16 bg-muted/20 rounded-3xl border"
+                  style={{ width: "100% !important", maxWidth: "none !important" }}
+                >
+                  <p className="text-3xl leading-relaxed text-muted-foreground break-words">
+                    {currentTourStep.detailedInfo}
+                  </p>
+
+                  {currentTourStep.tips && (
+                    <div className="space-y-8" style={{ width: "100% !important", maxWidth: "none !important" }}>
+                      <h4 className="text-4xl font-bold text-foreground flex items-center gap-4">
+                        <Star className="w-8 h-8 text-primary" />
+                        Полезные советы:
+                      </h4>
+                      <div className="space-y-6" style={{ width: "100% !important", maxWidth: "none !important" }}>
+                        {currentTourStep.tips.map((tip, index) => (
+                          <div
+                            key={index}
+                            className="flex gap-6 p-10 bg-background/60 rounded-2xl border"
+                            style={{ width: "100% !important", maxWidth: "none !important" }}
+                          >
+                            <span className="text-primary font-bold text-4xl leading-none shrink-0">{index + 1}.</span>
+                            <span className="text-2xl text-muted-foreground leading-relaxed break-words flex-1">
+                              {tip}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t bg-muted/20" style={{ width: "100% !important", maxWidth: "none !important" }}>
+          <div className="p-8" style={{ width: "100% !important", maxWidth: "none !important" }}>
+            <div className="flex items-center justify-center gap-3 mb-6 lg:hidden">
+              {tourSteps.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-6 h-6 rounded-full transition-all duration-300 ${
+                    index === currentStep
+                      ? "bg-primary scale-125"
+                      : index < currentStep
+                        ? "bg-green-500"
+                        : "bg-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div
+              className="flex items-center justify-between gap-8"
+              style={{ width: "100% !important", maxWidth: "none !important" }}
+            >
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+                size="lg"
+                className="flex items-center gap-3 px-8 py-4 text-2xl font-medium bg-transparent"
+              >
+                <ArrowLeft className="w-6 h-6" />
+                Назад
+              </Button>
+
+              <div className="hidden lg:flex items-center gap-4">
+                {tourSteps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-6 h-6 rounded-full transition-all duration-300 ${
+                      index === currentStep
+                        ? "bg-primary scale-150"
+                        : index < currentStep
+                          ? "bg-green-500"
+                          : "bg-muted-foreground/30"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <Button onClick={nextStep} size="lg" className="flex items-center gap-3 px-8 py-4 text-2xl font-medium">
+                {currentStep === tourSteps.length - 1 ? (
+                  <>
+                    <Award className="w-6 h-6" />
+                    Завершить
+                  </>
+                ) : (
+                  <>
+                    Далее
+                    <ArrowRight className="w-6 h-6" />
+                  </>
+                )}
               </Button>
             </div>
-
-            <div className="mt-8 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-semibold text-muted-foreground">Прогресс обучения</span>
-                <span className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</span>
-              </div>
-              <Progress value={progressPercentage} className="h-3" />
-            </div>
-          </CardHeader>
-
-          <CardContent className="flex-1 overflow-hidden p-0">
-            <div className="h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto p-8 lg:p-12">
-                <div className="max-w-5xl mx-auto space-y-8">
-                  <div className="p-8 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl border border-primary/10">
-                    <p className="text-xl lg:text-2xl leading-relaxed font-medium text-foreground">
-                      {currentTourStep.description}
-                    </p>
-                  </div>
-
-                  <div className="space-y-6">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={() => setShowDetails(!showDetails)}
-                      className="w-full text-lg font-medium px-8 py-6 h-auto justify-between"
-                    >
-                      <span className="flex items-center gap-3">
-                        <Lightbulb className="w-6 h-6" />
-                        {showDetails ? "Скрыть подробности" : "Показать подробности и советы"}
-                      </span>
-                      {showDetails ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
-                    </Button>
-
-                    {showDetails && (
-                      <div className="space-y-8 p-8 bg-muted/20 rounded-3xl border">
-                        <p className="text-lg lg:text-xl leading-relaxed text-muted-foreground">
-                          {currentTourStep.detailedInfo}
-                        </p>
-
-                        {currentTourStep.tips && (
-                          <div className="space-y-6">
-                            <h4 className="text-xl font-bold text-foreground flex items-center gap-3">
-                              <Star className="w-6 h-6 text-primary" />
-                              Полезные советы:
-                            </h4>
-                            <div className="space-y-4">
-                              {currentTourStep.tips.map((tip, index) => (
-                                <div key={index} className="flex gap-4 p-6 bg-background/60 rounded-2xl border">
-                                  <span className="text-primary font-bold text-2xl leading-none shrink-0">
-                                    {index + 1}.
-                                  </span>
-                                  <span className="text-lg text-muted-foreground leading-relaxed">{tip}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t bg-muted/20 p-8">
-                <div className="max-w-5xl mx-auto">
-                  <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
-                    {tourSteps.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                          index === currentStep
-                            ? "bg-primary scale-125"
-                            : index < currentStep
-                              ? "bg-green-500"
-                              : "bg-muted-foreground/30"
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between gap-6">
-                    <Button
-                      variant="outline"
-                      onClick={prevStep}
-                      disabled={currentStep === 0}
-                      size="lg"
-                      className="flex items-center gap-3 px-8 py-4 text-lg font-medium bg-transparent"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                      Назад
-                    </Button>
-
-                    <div className="hidden lg:flex items-center gap-2">
-                      {tourSteps.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            index === currentStep
-                              ? "bg-primary scale-150"
-                              : index < currentStep
-                                ? "bg-green-500"
-                                : "bg-muted-foreground/30"
-                          }`}
-                        />
-                      ))}
-                    </div>
-
-                    <Button
-                      onClick={nextStep}
-                      size="lg"
-                      className="flex items-center gap-3 px-8 py-4 text-lg font-medium"
-                    >
-                      {currentStep === tourSteps.length - 1 ? (
-                        <>
-                          <Award className="w-5 h-5" />
-                          Завершить
-                        </>
-                      ) : (
-                        <>
-                          Далее
-                          <ArrowRight className="w-5 h-5" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <style jsx global>{`
@@ -353,6 +377,37 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
           box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.6);
           transition: all 0.4s ease;
           transform: scale(1.02);
+        }
+        
+        /* Более агрессивные принудительные стили для полноэкранного режима */
+        .tour-modal-fullscreen {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          z-index: 9999 !important;
+        }
+        
+        /* Переопределение всех возможных ограничений ширины */
+        .tour-modal-fullscreen * {
+          max-width: none !important;
+        }
+        
+        /* Принудительные стили для Dialog компонентов если они используются */
+        [data-radix-dialog-content] {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
       `}</style>
     </>
