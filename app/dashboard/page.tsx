@@ -50,7 +50,7 @@ import { TaskManager } from "@/components/task-tracker/task-manager"
 import { FileManager } from "@/components/file-storage/file-manager"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
-import { TourLauncher } from "@/components/guide/tour-launcher"
+import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { AIBusinessStrategist } from "@/components/business-strategy/ai-business-strategist"
 
 export default function Dashboard() {
@@ -353,7 +353,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex items-center space-x-1">
-                  <TourLauncher />
+                  <InteractiveTour />
                   <FeatureGuide />
                 </div>
 
