@@ -41,61 +41,44 @@
   --sidebar-accent-foreground: oklch(0.08 0 0);
   --sidebar-border: oklch(0.88 0.01 45);
   --sidebar-ring: oklch(0.45 0.18 240);
-  /* Теплые кастомные переменные */
-  --color-light-bg: oklch(0.99 0 0);
-  --color-light-surface: oklch(0.98 0.005 45);
-  --color-light-border: oklch(0.88 0.01 45);
-  --color-text-primary-light: oklch(0.08 0 0);
-  --color-text-secondary-light: oklch(0.35 0 0);
-  /* Теплые эффекты свечения */
-  --soft-glow-primary-light: 0 0 8px oklch(0.45 0.18 240 / 0.15), 0 0 16px oklch(0.45 0.18 240 / 0.08);
-  --soft-glow-accent-light: 0 0 8px oklch(0.55 0.15 35 / 0.15), 0 0 16px oklch(0.55 0.15 35 / 0.08);
 }
 
 .dark {
-  /* Улучшенная темная тема с более яркими и видными шрифтами */
-  --background: oklch(0.06 0 0); /* Немного светлее фон для лучшей читаемости */
-  --foreground: oklch(0.95 0 0); /* Более яркий основной текст */
-  --card: oklch(0.09 0 0); /* Светлее карточки для лучшего контраста */
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.09 0 0);
-  --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.75 0.22 195); /* Ярче основной цвет */
-  --primary-foreground: oklch(0.06 0 0);
-  --secondary: oklch(0.12 0 0); /* Светлее вторичный */
-  --secondary-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.11 0 0); /* Светлее приглушенный фон */
-  --muted-foreground: oklch(0.75 0 0); /* Значительно ярче приглушенный текст */
-  --accent: oklch(0.68 0.22 220); /* Ярче акцентный цвет */
-  --accent-foreground: oklch(0.06 0 0);
-  --destructive: oklch(0.68 0.28 15);
-  --destructive-foreground: oklch(0.06 0 0);
-  /* Улучшенные границы для лучшей видимости в темной теме */
-  --border: oklch(0.28 0 0); /* Более светлые границы для лучшей видимости */
-  --input: oklch(0.11 0 0); /* Светлее поля ввода */
-  --ring: oklch(0.75 0.22 195);
-  --chart-1: oklch(0.75 0.22 195);
-  --chart-2: oklch(0.68 0.22 220);
-  --chart-3: oklch(0.65 0.2 200);
-  --chart-4: oklch(0.68 0.2 180);
-  --chart-5: oklch(0.65 0.2 210);
-  --sidebar: oklch(0.09 0 0);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.75 0.22 195);
-  --sidebar-primary-foreground: oklch(0.06 0 0);
-  --sidebar-accent: oklch(0.12 0 0);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  /* Улучшенные границы сайдбара */
-  --sidebar-border: oklch(0.28 0 0);
-  --sidebar-ring: oklch(0.75 0.22 195);
-  --color-dark-bg: oklch(0.06 0 0);
-  --color-dark-surface: oklch(0.09 0 0);
-  /* Более контрастные границы для темной темы */
-  --color-dark-border: oklch(0.28 0 0);
-  --color-text-primary: oklch(0.95 0 0);
-  --color-text-secondary: oklch(0.75 0 0);
-  --soft-glow-cyan: 0 0 12px oklch(0.75 0.22 195 / 0.4), 0 0 24px oklch(0.75 0.22 195 / 0.15);
-  --soft-glow-blue: 0 0 12px oklch(0.68 0.22 220 / 0.4), 0 0 24px oklch(0.68 0.22 220 / 0.15);
+  /* Значительно улучшенная темная тема с максимальной контрастностью */
+  --background: oklch(0.03 0 0); /* Еще более темный фон */
+  --foreground: oklch(0.99 0 0); /* Максимально яркий основной текст */
+  --card: oklch(0.07 0 0); /* Более контрастные карточки */
+  --card-foreground: oklch(0.99 0 0);
+  --popover: oklch(0.07 0 0);
+  --popover-foreground: oklch(0.99 0 0);
+  --primary: oklch(0.82 0.28 195); /* Максимально яркий основной цвет */
+  --primary-foreground: oklch(0.03 0 0);
+  --secondary: oklch(0.09 0 0); /* Контрастный вторичный */
+  --secondary-foreground: oklch(0.99 0 0);
+  --muted: oklch(0.08 0 0); /* Контрастный приглушенный фон */
+  --muted-foreground: oklch(0.85 0 0); /* Очень яркий приглушенный текст */
+  --accent: oklch(0.75 0.28 220); /* Максимально яркий акцентный цвет */
+  --accent-foreground: oklch(0.03 0 0);
+  --destructive: oklch(0.75 0.32 15);
+  --destructive-foreground: oklch(0.03 0 0);
+  /* Максимально контрастные границы */
+  --border: oklch(0.4 0 0); /* Очень светлые границы */
+  --input: oklch(0.08 0 0); /* Контрастные поля ввода */
+  --ring: oklch(0.82 0.28 195);
+  --chart-1: oklch(0.82 0.28 195);
+  --chart-2: oklch(0.75 0.28 220);
+  --chart-3: oklch(0.72 0.25 200);
+  --chart-4: oklch(0.75 0.25 180);
+  --chart-5: oklch(0.72 0.25 210);
+  --sidebar: oklch(0.06 0 0);
+  --sidebar-foreground: oklch(0.99 0 0);
+  --sidebar-primary: oklch(0.82 0.28 195);
+  --sidebar-primary-foreground: oklch(0.03 0 0);
+  --sidebar-accent: oklch(0.09 0 0);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  /* Максимально контрастные границы сайдбара */
+  --sidebar-border: oklch(0.4 0 0);
+  --sidebar-ring: oklch(0.82 0.28 195);
 }
 
 @theme inline {
@@ -135,8 +118,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-sans: var(--font-open-sans);
-  --font-serif: var(--font-montserrat);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
 }
 
 @layer base {
@@ -146,90 +129,6 @@
   body {
     @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
-
-  /* Добавлены специальные стили для улучшенной видимости в темной теме */
-  .dark .card-enhanced {
-    border: 1px solid oklch(0.28 0 0);
-    box-shadow: 0 0 0 1px oklch(0.28 0 0 / 0.5), 0 2px 4px oklch(0 0 0 / 0.3);
-  }
-
-  .dark .card-enhanced:hover {
-    border-color: oklch(0.35 0 0);
-    box-shadow: 0 0 0 1px oklch(0.35 0 0 / 0.7), 0 4px 8px oklch(0 0 0 / 0.4);
-  }
-
-  .dark .section-border {
-    border: 1px solid oklch(0.25 0 0);
-    box-shadow: inset 0 0 0 1px oklch(0.25 0 0 / 0.3);
-  }
-
-  .dark .content-separator {
-    border-bottom: 1px solid oklch(0.25 0 0);
-    box-shadow: 0 1px 0 oklch(0.25 0 0 / 0.5);
-  }
-
-  .dark .input-enhanced {
-    border: 1px solid oklch(0.3 0 0);
-    background: oklch(0.08 0 0);
-  }
-
-  .dark .input-enhanced:focus {
-    border-color: oklch(0.75 0.22 195);
-    box-shadow: 0 0 0 2px oklch(0.75 0.22 195 / 0.2);
-  }
-
-  .dark .modal-enhanced {
-    border: 1px solid oklch(0.3 0 0);
-    box-shadow: 0 0 0 1px oklch(0.3 0 0 / 0.5), 0 8px 32px oklch(0 0 0 / 0.6);
-  }
-
-  /* Обновленные утилиты с теплыми цветами для светлой темы */
-  .soft-glow {
-    box-shadow: var(--soft-glow-primary-light);
-  }
-  .dark .soft-glow {
-    box-shadow: var(--soft-glow-cyan);
-  }
-  .soft-glow-accent {
-    box-shadow: var(--soft-glow-accent-light);
-  }
-  .dark .soft-glow-accent {
-    box-shadow: var(--soft-glow-blue);
-  }
-  .soft-text {
-    color: oklch(0.45 0.18 240);
-    text-shadow: 0 0 4px oklch(0.45 0.18 240 / 0.2);
-  }
-  .dark .soft-text {
-    /* Более яркий и видный текст в темной теме */
-    color: oklch(0.75 0.22 195);
-    text-shadow: 0 0 6px oklch(0.75 0.22 195 / 0.3);
-  }
-  .soft-text-accent {
-    color: oklch(0.55 0.15 35);
-    text-shadow: 0 0 4px oklch(0.55 0.15 35 / 0.2);
-  }
-  .dark .soft-text-accent {
-    /* Более яркий акцентный текст в темной теме */
-    color: oklch(0.68 0.22 220);
-    text-shadow: 0 0 6px oklch(0.68 0.22 220 / 0.3);
-  }
-  .soft-border {
-    border-color: oklch(0.45 0.18 240);
-    box-shadow: 0 0 4px oklch(0.45 0.18 240 / 0.15);
-  }
-  .dark .soft-border {
-    /* Более яркие границы в темной теме */
-    border-color: oklch(0.75 0.22 195);
-    box-shadow: 0 0 6px oklch(0.75 0.22 195 / 0.2);
-  }
-  .soft-border-accent {
-    border-color: oklch(0.55 0.15 35);
-    box-shadow: 0 0 4px oklch(0.55 0.15 35 / 0.15);
-  }
-  .dark .soft-border-accent {
-    /* Более яркие акцентные границы в темной теме */
-    border-color: oklch(0.68 0.22 220);
-    box-shadow: 0 0 6px oklch(0.68 0.22 220 / 0.2);
-  }
 }
+
+/* Removed all custom utility classes that were causing errors and replaced with standard Tailwind approach */

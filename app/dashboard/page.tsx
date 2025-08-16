@@ -5,30 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import {
-  Users,
-  TrendingUp,
-  FileText,
-  Settings,
-  Bell,
-  Plus,
-  Search,
-  Target,
-  DollarSign,
-  Briefcase,
-  MessageSquare,
-  Home,
-  Shield,
-  LogOut,
-  Menu,
-  Sparkles,
-  Bot,
-  Send,
-  UserPlus,
-  Rocket,
-  CheckSquare,
-  Brain,
-} from "lucide-react"
+import { Users, TrendingUp, FileText, Settings, Bell, Plus, Search, Target, DollarSign, Briefcase, MessageSquare, Home, Shield, LogOut, Menu, Sparkles, Bot, Send, UserPlus, Rocket, CheckSquare, Brain } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
@@ -39,6 +16,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Link from "next/link"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { SalesManager } from "@/components/business-tools/sales-manager"
@@ -162,6 +140,33 @@ export default function Dashboard() {
   const [newEmployee, setNewEmployee] = useState({ name: "", email: "", role: "Сотрудник" })
   const [availableRoles] = useState(["Администратор", "Менеджер", "Разработчик", "Дизайнер", "Аналитик", "Сотрудник"])
 
+  const [notificationsList, setNotificationsList] = useState([
+    {
+      id: 1,
+      title: "Новый проект создан",
+      message: "Проект 'Автоматизация продаж' был успешно создан",
+      time: "5 минут назад",
+      type: "success",
+      read: false,
+    },
+    {
+      id: 2,
+      title: "Задача просрочена",
+      message: "Задача 'Настройка CRM' просрочена на 2 дня",
+      time: "1 час назад",
+      type: "warning",
+      read: false,
+    },
+    {
+      id: 3,
+      title: "Новое сообщение",
+      message: "Получено сообщение от клиента ООО Технологии",
+      time: "3 часа назад",
+      type: "info",
+      read: false,
+    },
+  ])
+
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
       const project = {
@@ -233,6 +238,30 @@ export default function Dashboard() {
 
   const handleRemoveEmployee = (employeeId) => {
     setEmployees(employees.filter((emp) => emp.id !== employeeId))
+  }
+
+  const markNotificationAsRead = (id: number) => {
+    setNotificationsList((prev) => prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)))
+    const unreadCount = notificationsList.filter((n) => !n.read && n.id !== id).length
+    setNotifications(unreadCount)
+  }
+
+  const markAllAsRead = () => {
+    setNotificationsList((prev) => prev.map((notif) => ({ ...notif, read: true })))
+    setNotifications(0)
+  }
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "success":
+        return <CheckSquare className="w-4 h-4 text-green-500" />
+      case "warning":
+        return <Bell className="w-4 h-4 text-yellow-500" />
+      case "info":
+        return <MessageSquare className="w-4 h-4 text-blue-500" />
+      default:
+        return <Bell className="w-4 h-4 text-gray-500" />
+    }
   }
 
   useEffect(() => {
@@ -368,7 +397,7 @@ export default function Dashboard() {
                 >
                   <Bell className="h-5 w-5 text-foreground" />
                   {notifications > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white border-2 border-background">
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 text-white border-2 border-background animate-pulse">
                       {notifications}
                     </Badge>
                   )}
@@ -414,7 +443,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
             <div className="hidden lg:block lg:col-span-1 xl:col-span-1">
-              <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5 sticky top-24 min-w-[280px] w-full">
+              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5 sticky top-24 min-w-[280px] w-full">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-foreground font-bold text-lg flex items-center">
                     <div className="p-2 bg-primary/10 rounded-lg mr-3 flex-shrink-0">
@@ -443,7 +472,7 @@ export default function Dashboard() {
               {activeTab === "tools" && (
                 <div className="space-y-6 sm:space-y-8">
                   <AIToolsShowcase />
-                  <Card className="bg-card/60 backdrop-blur-xl border border-border/50">
+                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
                     <CardHeader>
                       <CardTitle>Активные ИИ-инструменты</CardTitle>
                       <CardDescription>Управление и мониторинг ИИ-инструментов</CardDescription>
@@ -461,26 +490,26 @@ export default function Dashboard() {
               {activeTab === "finance" && <FinanceManager />}
 
               {activeTab === "chat" && (
-                <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[600px] flex flex-col">
+                <Card className="enhanced-card backdrop-blur-sm border border-border/50 h-[600px] flex flex-col">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
+                    <CardTitle className="flex items-center text-foreground">
                       <Bot className="w-5 h-5 mr-2 text-primary" />
                       ИИ-консультант по бизнесу
                     </CardTitle>
                     <CardDescription>Персональный помощник для роста вашего бизнеса</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
-                    <ScrollArea className="flex-1 mb-4 p-4 bg-background/50 rounded-lg border">
+                    <ScrollArea className="flex-1 mb-4 p-4 enhanced-input rounded-lg bg-background/50">
                       <div className="space-y-4">
                         <div className="flex justify-start">
-                          <div className="bg-card text-foreground p-3 rounded-lg border max-w-[80%]">
+                          <div className="enhanced-card text-foreground p-3 rounded-lg max-w-[80%]">
                             Добро пожаловать в вашу ИИ-платформу! Я помогу оптимизировать ваш бизнес. С чего начнем?
                           </div>
                         </div>
                       </div>
                     </ScrollArea>
                     <div className="flex space-x-2">
-                      <Input placeholder="Спросите о развитии бизнеса..." className="bg-background border-border/50" />
+                      <Input placeholder="Спросите о развитии бизнеса..." className="enhanced-input" />
                       <Button size="icon">
                         <Send className="w-4 h-4" />
                       </Button>
@@ -508,7 +537,7 @@ export default function Dashboard() {
 
                   <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <div className="xl:col-span-2">
-                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50">
                         <CardHeader>
                           <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <span className="text-lg sm:text-xl">Команда ({employees.length})</span>
@@ -584,7 +613,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="space-y-6">
-                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50">
                         <CardHeader>
                           <CardTitle className="text-base sm:text-lg">Статистика команды</CardTitle>
                         </CardHeader>
@@ -613,7 +642,7 @@ export default function Dashboard() {
                         </CardContent>
                       </Card>
 
-                      <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50">
                         <CardHeader>
                           <CardTitle className="text-base sm:text-lg">Роли в команде</CardTitle>
                         </CardHeader>
@@ -658,7 +687,7 @@ export default function Dashboard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {projects.map((project) => (
-                      <Card key={project.id} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                      <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
                         <CardHeader>
                           <CardTitle className="text-lg truncate">{project.name}</CardTitle>
                           <div className="flex items-center justify-between">
@@ -735,7 +764,7 @@ export default function Dashboard() {
                     {availableRoles.map((role) => {
                       const userCount = employees.filter((emp) => emp.role === role).length
                       return (
-                        <Card key={role} className="bg-card/50 backdrop-blur-sm border border-border/50">
+                        <Card key={role} className="enhanced-card backdrop-blur-sm border border-border/50">
                           <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                               <span className="text-lg">{role}</span>
@@ -781,7 +810,7 @@ export default function Dashboard() {
 
               {activeTab === "settings" && (
                 <div className="space-y-6">
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
                     <CardHeader>
                       <CardTitle>Настройки аккаунта</CardTitle>
                       <CardDescription>Управление профилем и предпочтениями</CardDescription>
@@ -819,7 +848,7 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
                     <CardHeader>
                       <CardTitle>Уведомления</CardTitle>
                       <CardDescription>Настройка уведомлений и оповещений</CardDescription>
@@ -849,196 +878,184 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-
-          {showAddProjectModal && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-                <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Создать проект</CardTitle>
-                  <CardDescription className="text-sm">Добавьте новый проект в систему</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Название проекта</label>
-                    <Input
-                      value={newProject.name}
-                      onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                      placeholder="Введите название"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Срок выполнения</label>
-                    <Input
-                      type="date"
-                      value={newProject.deadline}
-                      onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
-                      className="mt-1"
-                    />
-                  </div>
-                </CardContent>
-                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowAddProjectModal(false)
-                      setNewProject({ name: "", deadline: "", team: [] })
-                    }}
-                    className="w-full sm:w-auto"
-                  >
-                    Отмена
-                  </Button>
-                  <Button onClick={handleAddProject} className="w-full sm:w-auto">
-                    Создать
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {showCreateRoleModal && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-                <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Создать роль</CardTitle>
-                  <CardDescription className="text-sm">Добавьте новую роль с правами доступа</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Название роли</label>
-                    <Input
-                      value={newRole.name}
-                      onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
-                      placeholder="Введите название роли"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Права доступа</label>
-                    <div className="mt-2 space-y-2">
-                      {["Просмотр", "Редактирование", "Удаление", "Администрирование"].map((permission) => (
-                        <div key={permission} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={permission}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setNewRole({ ...newRole, permissions: [...newRole.permissions, permission] })
-                              } else {
-                                setNewRole({
-                                  ...newRole,
-                                  permissions: newRole.permissions.filter((p) => p !== permission),
-                                })
-                              }
-                            }}
-                            className="rounded border-border"
-                          />
-                          <label htmlFor={permission} className="text-sm">
-                            {permission}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowCreateRoleModal(false)
-                      setNewRole({ name: "", permissions: [] })
-                    }}
-                    className="w-full sm:w-auto"
-                  >
-                    Отмена
-                  </Button>
-                  <Button onClick={handleCreateRole} className="w-full sm:w-auto">
-                    Создать
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {showAddLeadModal && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <Card className="w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-                <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">Добавить лид</CardTitle>
-                  <CardDescription className="text-sm">Добавьте нового потенциального клиента</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Название компании</label>
-                    <Input
-                      value={newLead.name}
-                      onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
-                      placeholder="ООО Компания"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Email</label>
-                    <Input
-                      type="email"
-                      value={newLead.email}
-                      onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
-                      placeholder="contact@company.com"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Телефон</label>
-                    <Input
-                      value={newLead.phone}
-                      onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
-                      placeholder="+7 (999) 123-45-67"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Потенциальная сумма</label>
-                    <Input
-                      type="number"
-                      value={newLead.value}
-                      onChange={(e) => setNewLead({ ...newLead, value: e.target.value })}
-                      placeholder="100000"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Источник</label>
-                    <select
-                      value={newLead.source}
-                      onChange={(e) => setNewLead({ ...newLead, source: e.target.value })}
-                      className="w-full mt-1 p-2 border border-border rounded-md bg-background text-sm"
-                    >
-                      <option value="Сайт">Сайт</option>
-                      <option value="Реклама">Реклама</option>
-                      <option value="Рекомендация">Рекомендация</option>
-                      <option value="Холодный звонок">Холодный звонок</option>
-                    </select>
-                  </div>
-                </CardContent>
-                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:space-x-2 p-6 pt-0">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowAddLeadModal(false)
-                      setNewLead({ name: "", email: "", phone: "", value: "", source: "Сайт" })
-                    }}
-                    className="w-full sm:w-auto"
-                  >
-                    Отмена
-                  </Button>
-                  <Button onClick={handleAddLead} className="w-full sm:w-auto">
-                    Добавить
-                  </Button>
-                </div>
-              </Card>
-            </div>
-          )}
         </div>
+
+        <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
+          <DialogContent className="max-w-md mx-4 max-h-[80vh] overflow-y-auto enhanced-modal">
+            <DialogHeader>
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-primary" />
+                  Уведомления
+                </DialogTitle>
+                {notifications > 0 && (
+                  <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs hover:bg-primary/10">
+                    Отметить все как прочитанные
+                  </Button>
+                )}
+              </div>
+            </DialogHeader>
+
+            <ScrollArea className="max-h-96">
+              <div className="space-y-3">
+                {notificationsList.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                    <p className="text-muted-foreground">Нет новых уведомлений</p>
+                  </div>
+                ) : (
+                  notificationsList.map((notification) => (
+                    <Card
+                      key={notification.id}
+                      className={`cursor-pointer transition-all duration-200 hover:shadow-md enhanced-card ${
+                        notification.read ? "bg-card/30 border-border/30" : "bg-card/80 border-primary/20 shadow-sm"
+                      }`}
+                      onClick={() => markNotificationAsRead(notification.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4
+                                className={`text-sm font-medium truncate ${
+                                  notification.read ? "text-muted-foreground" : "text-foreground"
+                                }`}
+                              >
+                                {notification.title}
+                              </h4>
+                              {!notification.read && (
+                                <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 ml-2" />
+                              )}
+                            </div>
+                            <p
+                              className={`text-xs mb-2 break-words ${
+                                notification.read ? "text-muted-foreground/70" : "text-muted-foreground"
+                              }`}
+                            >
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-muted-foreground/60">{notification.time}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+
+            {notificationsList.length > 0 && (
+              <div className="flex justify-center pt-4 border-t border-border/50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs hover:bg-primary/10 bg-transparent"
+                  onClick={() => {
+                    console.log("[v0] View all notifications clicked")
+                    setShowNotificationsModal(false)
+                  }}
+                >
+                  Посмотреть все уведомления
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {showAddEmployeeModal && (
+          <Dialog open={showAddEmployeeModal} onOpenChange={setShowAddEmployeeModal}>
+            <DialogContent className="max-w-md mx-4">
+              <DialogHeader>
+                <DialogTitle>Добавить сотрудника</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Имя</label>
+                  <Input
+                    value={newEmployee.name}
+                    onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                    placeholder="Введите имя"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <Input
+                    value={newEmployee.email}
+                    onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                    placeholder="Введите email"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Роль</label>
+                  <select
+                    value={newEmployee.role}
+                    onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
+                    className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+                  >
+                    {availableRoles.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddEmployeeModal(false)
+                    setNewEmployee({ name: "", email: "", role: "Сотрудник" })
+                  }}
+                >
+                  Отмена
+                </Button>
+                <Button onClick={handleAddEmployee}>Добавить</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {showAssignRoleModal && selectedEmployee && (
+          <Dialog open={showAssignRoleModal} onOpenChange={setShowAssignRoleModal}>
+            <DialogContent className="max-w-md mx-4">
+              <DialogHeader>
+                <DialogTitle>Назначить роль</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">Назначить роль для {selectedEmployee.name}</p>
+                <div>
+                  <label className="text-sm font-medium">Выберите роль</label>
+                  <select
+                    defaultValue={selectedEmployee.role}
+                    onChange={(e) => handleAssignRole(selectedEmployee.id, e.target.value)}
+                    className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+                  >
+                    {availableRoles.map((role) => (
+                      <option key={role} value={role}>
+                        {role}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAssignRoleModal(false)
+                    setSelectedEmployee(null)
+                  }}
+                >
+                  Отмена
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </TooltipProvider>
   )

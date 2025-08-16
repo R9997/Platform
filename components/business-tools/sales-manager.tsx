@@ -2,31 +2,14 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import {
-  TrendingUp,
-  Target,
-  BarChart3,
-  Plus,
-  Settings,
-  Edit,
-  Eye,
-  Trash2,
-  Ruble,
-  Phone,
-  Mail,
-  Calendar,
-  Search,
-  X,
-  Save,
-  Filter,
-} from "lucide-react"
+import { TrendingUp, Target, BarChart3, Plus, Settings, Edit, Eye, Trash2, RussianRubleIcon as Ruble, Phone, Mail, Calendar, Search, X, Save, Filter } from 'lucide-react'
 
 interface Lead {
   id: number
@@ -91,11 +74,51 @@ export function SalesManager() {
   })
 
   const [pipelineStages, setPipelineStages] = useState([
-    { stage: "Лиды", count: 156, value: 2450000, color: "blue", width: 100 },
-    { stage: "Квалифицированные", count: 89, value: 1850000, color: "green", width: 75 },
-    { stage: "Предложения", count: 45, value: 1200000, color: "purple", width: 60 },
-    { stage: "Переговоры", count: 28, value: 950000, color: "orange", width: 45 },
-    { stage: "Закрытые", count: 18, value: 680000, color: "emerald", width: 30 },
+    {
+      stage: "Лиды",
+      count: 156,
+      value: 2450000,
+      color: "blue",
+      width: 100,
+      bgClass: "bg-blue-500",
+      textClass: "text-blue-600",
+    },
+    {
+      stage: "Квалифицированные",
+      count: 89,
+      value: 1850000,
+      color: "green",
+      width: 75,
+      bgClass: "bg-green-500",
+      textClass: "text-green-600",
+    },
+    {
+      stage: "Предложения",
+      count: 45,
+      value: 1200000,
+      color: "purple",
+      width: 60,
+      bgClass: "bg-purple-500",
+      textClass: "text-purple-600",
+    },
+    {
+      stage: "Переговоры",
+      count: 28,
+      value: 950000,
+      color: "orange",
+      width: 45,
+      bgClass: "bg-orange-500",
+      textClass: "text-orange-600",
+    },
+    {
+      stage: "Закрытые",
+      count: 18,
+      value: 680000,
+      color: "emerald",
+      width: 30,
+      bgClass: "bg-emerald-500",
+      textClass: "text-emerald-600",
+    },
   ])
 
   const [leads, setLeads] = useState<Lead[]>([
@@ -128,7 +151,7 @@ export function SalesManager() {
       assignedTo: "Елена Козлова",
       lastContact: "2024-01-14",
       nextAction: "Обсуждение бюджета",
-      notes: "Требует интеграцию с 1С",
+      notes: "Требует интеграции с 1С",
       createdAt: "2024-01-08",
     },
     {
@@ -242,18 +265,32 @@ export function SalesManager() {
         if (lead.id === leadId) {
           let newProbability = lead.probability
           switch (newStatus) {
-            case "new": newProbability = 25; break
-            case "contacted": newProbability = 40; break
-            case "qualified": newProbability = 60; break
-            case "proposal": newProbability = 75; break
-            case "negotiation": newProbability = 85; break
-            case "closed-won": newProbability = 100; break
-            case "closed-lost": newProbability = 0; break
+            case "new":
+              newProbability = 25
+              break
+            case "contacted":
+              newProbability = 40
+              break
+            case "qualified":
+              newProbability = 60
+              break
+            case "proposal":
+              newProbability = 75
+              break
+            case "negotiation":
+              newProbability = 85
+              break
+            case "closed-won":
+              newProbability = 100
+              break
+            case "closed-lost":
+              newProbability = 0
+              break
           }
           return { ...lead, status: newStatus, probability: newProbability }
         }
         return lead
-      })
+      }),
     )
   }
 
@@ -311,6 +348,8 @@ export function SalesManager() {
       value: 0,
       color: "gray",
       width: 10,
+      bgClass: "bg-gray-500",
+      textClass: "text-gray-600",
     }
     setPipelineStages([...pipelineStages, newStage])
   }
@@ -326,7 +365,6 @@ export function SalesManager() {
   return (
     <div className="space-y-6 p-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Вкладки */}
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="pipeline" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
@@ -342,7 +380,6 @@ export function SalesManager() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Воронка продаж */}
         <TabsContent value="pipeline" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Ключевые метрики</h3>
@@ -358,7 +395,9 @@ export function SalesManager() {
                   <div>
                     <p className="text-sm text-muted-foreground">Общая выручка</p>
                     <div className="flex items-baseline space-x-1">
-                      <p className="text-2xl font-bold text-green-600">{(salesMetrics.totalRevenue / 1_000_000).toFixed(1)}М</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {(salesMetrics.totalRevenue / 1_000_000).toFixed(1)}М
+                      </p>
                       <span className="text-sm text-green-600">₽</span>
                     </div>
                   </div>
@@ -400,7 +439,9 @@ export function SalesManager() {
                   <div>
                     <p className="text-sm text-muted-foreground">Средний чек</p>
                     <div className="flex items-baseline space-x-1">
-                      <p className="text-2xl font-bold text-orange-600">{(salesMetrics.avgDealSize / 1000).toFixed(0)}К</p>
+                      <p className="text-2xl font-bold text-orange-600">
+                        {(salesMetrics.avgDealSize / 1000).toFixed(0)}К
+                      </p>
                       <span className="text-sm text-orange-600">₽</span>
                     </div>
                   </div>
@@ -424,7 +465,12 @@ export function SalesManager() {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-foreground">{stage.stage}</span>
-                        <Button variant="ghost" size="sm" onClick={() => handleEditStage(stage)} className="h-6 w-6 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditStage(stage)}
+                          className="h-6 w-6 p-0"
+                        >
                           <Edit className="w-3 h-3" />
                         </Button>
                         <Button
@@ -446,7 +492,7 @@ export function SalesManager() {
                     <div className="relative">
                       <div className="w-full bg-muted/30 rounded-full h-3">
                         <div
-                          className={`bg-${stage.color}-500 h-3 rounded-full transition-all duration-500`}
+                          className={`${stage.bgClass} h-3 rounded-full transition-all duration-500`}
                           style={{ width: `${stage.width}%` }}
                         />
                       </div>
@@ -454,7 +500,7 @@ export function SalesManager() {
                   </div>
                 ))}
               </div>
-              <Button variant="outline" size="sm" className="mt-4" onClick={handleAddStage}>
+              <Button variant="outline" size="sm" className="mt-4 bg-transparent" onClick={handleAddStage}>
                 <Plus className="w-4 h-4 mr-2" />
                 Добавить этап
               </Button>
@@ -507,19 +553,31 @@ export function SalesManager() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label>Имя</Label>
-                          <Input value={editingLead.name} onChange={(e) => setEditingLead({ ...editingLead, name: e.target.value })} />
+                          <Input
+                            value={editingLead.name}
+                            onChange={(e) => setEditingLead({ ...editingLead, name: e.target.value })}
+                          />
                         </div>
                         <div>
                           <Label>Компания</Label>
-                          <Input value={editingLead.company} onChange={(e) => setEditingLead({ ...editingLead, company: e.target.value })} />
+                          <Input
+                            value={editingLead.company}
+                            onChange={(e) => setEditingLead({ ...editingLead, company: e.target.value })}
+                          />
                         </div>
                         <div>
                           <Label>Email</Label>
-                          <Input value={editingLead.email} onChange={(e) => setEditingLead({ ...editingLead, email: e.target.value })} />
+                          <Input
+                            value={editingLead.email}
+                            onChange={(e) => setEditingLead({ ...editingLead, email: e.target.value })}
+                          />
                         </div>
                         <div>
                           <Label>Телефон</Label>
-                          <Input value={editingLead.phone} onChange={(e) => setEditingLead({ ...editingLead, phone: e.target.value })} />
+                          <Input
+                            value={editingLead.phone}
+                            onChange={(e) => setEditingLead({ ...editingLead, phone: e.target.value })}
+                          />
                         </div>
                         <div>
                           <Label>Потенциал (₽)</Label>
@@ -531,7 +589,10 @@ export function SalesManager() {
                         </div>
                         <div>
                           <Label>Статус</Label>
-                          <Select value={editingLead.status} onValueChange={(v) => setEditingLead({ ...editingLead, status: v as any })}>
+                          <Select
+                            value={editingLead.status}
+                            onValueChange={(v) => setEditingLead({ ...editingLead, status: v as any })}
+                          >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -562,8 +623,14 @@ export function SalesManager() {
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={handleSaveLead}><Save className="w-4 h-4 mr-1" />Сохранить</Button>
-                        <Button variant="outline" onClick={() => setEditingLead(null)}><X className="w-4 h-4 mr-1" />Отмена</Button>
+                        <Button onClick={handleSaveLead}>
+                          <Save className="w-4 h-4 mr-1" />
+                          Сохранить
+                        </Button>
+                        <Button variant="outline" onClick={() => setEditingLead(null)}>
+                          <X className="w-4 h-4 mr-1" />
+                          Отмена
+                        </Button>
                       </div>
                     </div>
                   ) : (
@@ -590,9 +657,18 @@ export function SalesManager() {
                           </div>
                           <p className="text-muted-foreground">{lead.company}</p>
                           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
-                            <div className="flex items-center"><Mail className="w-4 h-4 mr-1" />{lead.email}</div>
-                            <div className="flex items-center"><Phone className="w-4 h-4 mr-1" />{lead.phone}</div>
-                            <div className="flex items-center"><Calendar className="w-4 h-4 mr-1" />{lead.lastContact}</div>
+                            <div className="flex items-center">
+                              <Mail className="w-4 h-4 mr-1" />
+                              {lead.email}
+                            </div>
+                            <div className="flex items-center">
+                              <Phone className="w-4 h-4 mr-1" />
+                              {lead.phone}
+                            </div>
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {lead.lastContact}
+                            </div>
                           </div>
                         </div>
                         <div className="text-right">
@@ -602,13 +678,26 @@ export function SalesManager() {
                       </div>
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="text-sm"><strong>Действие:</strong> {lead.nextAction}</p>
+                          <p className="text-sm">
+                            <strong>Действие:</strong> {lead.nextAction}
+                          </p>
                           <p className="text-xs text-muted-foreground">Ответственный: {lead.assignedTo}</p>
                           {lead.notes && <p className="text-xs text-muted-foreground mt-1">Заметки: {lead.notes}</p>}
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleEditLead(lead)}><Edit className="w-4 h-4 mr-1" />Ред.</Button>
-                          <Button size="sm" variant="outline" onClick={() => handleDeleteLead(lead.id)} className="text-red-600"><Trash2 className="w-4 h-4 mr-1" />Уд.</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleEditLead(lead)}>
+                            <Edit className="w-4 h-4 mr-1" />
+                            Ред.
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteLead(lead.id)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Уд.
+                          </Button>
                         </div>
                       </div>
                     </>
@@ -634,8 +723,12 @@ export function SalesManager() {
                 <CardContent className="p-4">
                   <h4 className="font-medium">{deal.title}</h4>
                   <p className="text-sm text-muted-foreground">{deal.client}</p>
-                  <p className="text-sm mt-2">Сумма: <strong>{deal.value.toLocaleString()} ₽</strong></p>
-                  <p className="text-sm">Этап: <Badge variant="secondary">{deal.stage}</Badge></p>
+                  <p className="text-sm mt-2">
+                    Сумма: <strong>{deal.value.toLocaleString()} ₽</strong>
+                  </p>
+                  <p className="text-sm">
+                    Этап: <Badge variant="secondary">{deal.stage}</Badge>
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">Вероятность: {deal.probability}%</p>
                   <div className="flex gap-2 mt-3">
                     <Button size="sm" variant="outline" onClick={() => alert(`Редактировать сделку: ${deal.title}`)}>
@@ -657,27 +750,58 @@ export function SalesManager() {
       {/* Диалоги */}
       {showEditPipeline && editingStage && (
         <Dialog open={showEditPipeline} onOpenChange={setShowEditPipeline}>
-          <DialogContent>
+          <DialogContent className="enhanced-modal">
             <DialogHeader>
               <DialogTitle>Редактировать этап</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
                 <Label>Название</Label>
-                <Input value={editingStage.stage} onChange={(e) => setEditingStage({ ...editingStage, stage: e.target.value })} />
+                <Input
+                  className="enhanced-input"
+                  value={editingStage.stage}
+                  onChange={(e) => setEditingStage({ ...editingStage, stage: e.target.value })}
+                />
               </div>
               <div>
                 <Label>Количество</Label>
-                <Input type="number" value={editingStage.count} onChange={(e) => setEditingStage({ ...editingStage, count: Number(e.target.value) })} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={editingStage.count}
+                  onChange={(e) => setEditingStage({ ...editingStage, count: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <Label>Сумма (₽)</Label>
-                <Input type="number" value={editingStage.value} onChange={(e) => setEditingStage({ ...editingStage, value: Number(e.target.value) })} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={editingStage.value}
+                  onChange={(e) => setEditingStage({ ...editingStage, value: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <Label>Цвет</Label>
-                <Select value={editingStage.color} onValueChange={(v) => setEditingStage({ ...editingStage, color: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={editingStage.color}
+                  onValueChange={(v) => {
+                    const colorMap = {
+                      blue: { bgClass: "bg-blue-500", textClass: "text-blue-600" },
+                      green: { bgClass: "bg-green-500", textClass: "text-green-600" },
+                      purple: { bgClass: "bg-purple-500", textClass: "text-purple-600" },
+                      orange: { bgClass: "bg-orange-500", textClass: "text-orange-600" },
+                      emerald: { bgClass: "bg-emerald-500", textClass: "text-emerald-600" },
+                      red: { bgClass: "bg-red-500", textClass: "text-red-600" },
+                      yellow: { bgClass: "bg-yellow-500", textClass: "text-yellow-600" },
+                    }
+                    const colorClasses = colorMap[v as keyof typeof colorMap] || colorMap.blue
+                    setEditingStage({ ...editingStage, color: v, ...colorClasses })
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="blue">Синий</SelectItem>
                     <SelectItem value="green">Зеленый</SelectItem>
@@ -691,11 +815,20 @@ export function SalesManager() {
               </div>
               <div>
                 <Label>Ширина (%)</Label>
-                <Input type="number" min="0" max="100" value={editingStage.width} onChange={(e) => setEditingStage({ ...editingStage, width: Number(e.target.value) })} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={editingStage.width}
+                  onChange={(e) => setEditingStage({ ...editingStage, width: Number(e.target.value) })}
+                />
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleSaveStage}>Сохранить</Button>
-                <Button variant="outline" onClick={() => setShowEditPipeline(false)}>Отмена</Button>
+                <Button variant="outline" onClick={() => setShowEditPipeline(false)}>
+                  Отмена
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -704,67 +837,126 @@ export function SalesManager() {
 
       {showEditMetrics && (
         <Dialog open={showEditMetrics} onOpenChange={setShowEditMetrics}>
-          <DialogContent>
+          <DialogContent className="enhanced-modal">
             <DialogHeader>
               <DialogTitle>Редактировать метрики</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
                 <Label>Общая выручка (₽)</Label>
-                <Input type="number" value={salesMetrics.totalRevenue} onChange={(e) => handleUpdateMetrics("totalRevenue", Number(e.target.value))} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={salesMetrics.totalRevenue}
+                  onChange={(e) => handleUpdateMetrics("totalRevenue", Number(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Конверсия (%)</Label>
-                <Input type="number" step="0.1" value={salesMetrics.conversionRate} onChange={(e) => handleUpdateMetrics("conversionRate", Number(e.target.value))} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  step="0.1"
+                  value={salesMetrics.conversionRate}
+                  onChange={(e) => handleUpdateMetrics("conversionRate", Number(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Средний чек (₽)</Label>
-                <Input type="number" value={salesMetrics.avgDealSize} onChange={(e) => handleUpdateMetrics("avgDealSize", Number(e.target.value))} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={salesMetrics.avgDealSize}
+                  onChange={(e) => handleUpdateMetrics("avgDealSize", Number(e.target.value))}
+                />
               </div>
               <div>
                 <Label>В работе (₽)</Label>
-                <Input type="number" value={salesMetrics.activePipeline} onChange={(e) => handleUpdateMetrics("activePipeline", Number(e.target.value))} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={salesMetrics.activePipeline}
+                  onChange={(e) => handleUpdateMetrics("activePipeline", Number(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Всего лидов</Label>
-                <Input type="number" value={salesMetrics.totalLeads} onChange={(e) => handleUpdateMetrics("totalLeads", Number(e.target.value))} />
+                <Input
+                  className="enhanced-input"
+                  type="number"
+                  value={salesMetrics.totalLeads}
+                  onChange={(e) => handleUpdateMetrics("totalLeads", Number(e.target.value))}
+                />
               </div>
-              <Button onClick={() => setShowEditMetrics(false)} className="w-full">Сохранить</Button>
+              <Button onClick={() => setShowEditMetrics(false)} className="w-full">
+                Сохранить
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
       )}
 
       {showAddLead && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <CardTitle className="p-6 pt-6">Добавить лида</CardTitle>
-            <CardContent className="space-y-4">
+        <Dialog open={showAddLead} onOpenChange={setShowAddLead}>
+          <DialogContent className="enhanced-modal max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Добавить лида</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Имя *</Label>
-                  <Input value={newLead.name} onChange={(e) => setNewLead({ ...newLead, name: e.target.value })} placeholder="Иван Иванов" />
+                  <Input
+                    className="enhanced-input"
+                    value={newLead.name}
+                    onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+                    placeholder="Иван Иванов"
+                  />
                 </div>
                 <div>
                   <Label>Компания *</Label>
-                  <Input value={newLead.company} onChange={(e) => setNewLead({ ...newLead, company: e.target.value })} placeholder="ООО Компания" />
+                  <Input
+                    className="enhanced-input"
+                    value={newLead.company}
+                    onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
+                    placeholder="ООО Компания"
+                  />
                 </div>
                 <div>
                   <Label>Email *</Label>
-                  <Input type="email" value={newLead.email} onChange={(e) => setNewLead({ ...newLead, email: e.target.value })} placeholder="email@company.com" />
+                  <Input
+                    className="enhanced-input"
+                    type="email"
+                    value={newLead.email}
+                    onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                    placeholder="email@company.com"
+                  />
                 </div>
                 <div>
                   <Label>Телефон</Label>
-                  <Input value={newLead.phone} onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })} placeholder="+7 (999) 123-45-67" />
+                  <Input
+                    className="enhanced-input"
+                    value={newLead.phone}
+                    onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                    placeholder="+7 (999) 123-45-67"
+                  />
                 </div>
                 <div>
                   <Label>Потенциал (₽)</Label>
-                  <Input type="number" value={newLead.value} onChange={(e) => setNewLead({ ...newLead, value: e.target.value })} placeholder="100000" />
+                  <Input
+                    className="enhanced-input"
+                    type="number"
+                    value={newLead.value}
+                    onChange={(e) => setNewLead({ ...newLead, value: e.target.value })}
+                    placeholder="100000"
+                  />
                 </div>
                 <div>
                   <Label>Источник</Label>
                   <Select value={newLead.source} onValueChange={(v) => setNewLead({ ...newLead, source: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Сайт">Сайт</SelectItem>
                       <SelectItem value="Реклама">Реклама</SelectItem>
@@ -778,7 +970,9 @@ export function SalesManager() {
                 <div>
                   <Label>Ответственный</Label>
                   <Select value={newLead.assignedTo} onValueChange={(v) => setNewLead({ ...newLead, assignedTo: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Михаил Сидоров">Михаил Сидоров</SelectItem>
                       <SelectItem value="Елена Козлова">Елена Козлова</SelectItem>
@@ -789,21 +983,35 @@ export function SalesManager() {
                 </div>
                 <div>
                   <Label>Следующее действие</Label>
-                  <Input value={newLead.nextAction} onChange={(e) => setNewLead({ ...newLead, nextAction: e.target.value })} placeholder="Первичный контакт" />
+                  <Input
+                    className="enhanced-input"
+                    value={newLead.nextAction}
+                    onChange={(e) => setNewLead({ ...newLead, nextAction: e.target.value })}
+                    placeholder="Первичный контакт"
+                  />
                 </div>
               </div>
               <div>
                 <Label>Заметки</Label>
-                <Input value={newLead.notes} onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })} placeholder="Дополнительно..." />
+                <Input
+                  className="enhanced-input"
+                  value={newLead.notes}
+                  onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                  placeholder="Дополнительно..."
+                />
               </div>
-            </CardContent>
-            <div className="flex gap-2 p-6 pt-0">
-              <Button variant="outline" onClick={() => setShowAddLead(false)}>Отмена</Button>
-              <Button onClick={handleAddLead}>Добавить</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowAddLead(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={handleAddLead}>Добавить</Button>
+              </div>
             </div>
-          </Card>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )
 }
+
+export default SalesManager

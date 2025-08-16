@@ -9,6 +9,7 @@ import { ProcessSection } from "@/components/process-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { ROICalculator } from "@/components/roi-calculator"
 import { NeedsAssessment } from "@/components/needs-assessment"
+import { TeamSection } from "@/components/team-section"
 import { Footer } from "@/components/footer"
 import { ChatWidget } from "@/components/chat-widget"
 
@@ -24,6 +25,7 @@ export default function HomePage() {
         <ROICalculator />
         <AIToolsSection />
         <AboutSection />
+        <TeamSection />
         <TestimonialsSection />
         <NeedsAssessment />
         <PersonalizedSection />

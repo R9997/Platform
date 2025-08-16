@@ -31,8 +31,11 @@ interface AnimatedMetricProps {
   trend?: number
   trendLabel?: string
   icon: React.ElementType
-  color: string
-  gradient: string
+  colorClass: string
+  bgClass: string
+  textClass: string
+  iconBgClass: string
+  trendBgClass: string
   delay?: number
   onUpdate?: (newValue: number) => void
   goal?: number
@@ -47,8 +50,11 @@ function AnimatedMetric({
   trend,
   trendLabel,
   icon: Icon,
-  color,
-  gradient,
+  colorClass,
+  bgClass,
+  textClass,
+  iconBgClass,
+  trendBgClass,
   delay = 0,
   onUpdate,
   goal = value * 1.2,
@@ -84,6 +90,11 @@ function AnimatedMetric({
     return () => clearTimeout(timer)
   }, [value, delay])
 
+  useEffect(() => {
+    setDisplayValue(value)
+    setEditValue(value)
+  }, [value])
+
   const handleQuickUpdate = (increment: number) => {
     const newValue = Math.max(0, value + increment)
     onUpdate?.(newValue)
@@ -98,7 +109,7 @@ function AnimatedMetric({
 
   return (
     <Card
-      className={`bg-gradient-to-br ${gradient} border border-${color}/20 hover:shadow-xl hover:shadow-${color}/10 transition-all duration-500 hover:scale-105 group cursor-pointer min-h-[200px] ${isVisible ? "animate-in slide-in-from-bottom-4 fade-in" : "opacity-0"}`}
+      className={`${bgClass} border ${colorClass}/20 hover:shadow-xl transition-all duration-500 hover:scale-105 group cursor-pointer min-h-[200px] enhanced-card ${isVisible ? "animate-in slide-in-from-bottom-4 fade-in" : "opacity-0"}`}
     >
       <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between">
         <div className="flex items-start justify-between">
@@ -121,7 +132,7 @@ function AnimatedMetric({
                         <Settings className="w-3 h-3" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md mx-4">
+                    <DialogContent className="max-w-md mx-4 enhanced-modal">
                       <DialogHeader>
                         <DialogTitle className="text-base sm:text-lg">Редактировать {title}</DialogTitle>
                       </DialogHeader>
@@ -135,7 +146,7 @@ function AnimatedMetric({
                             type="number"
                             value={editValue}
                             onChange={(e) => setEditValue(Number(e.target.value))}
-                            className="mt-1"
+                            className="mt-1 enhanced-input"
                           />
                         </div>
                         <div>
@@ -147,7 +158,7 @@ function AnimatedMetric({
                             type="number"
                             value={editGoal}
                             onChange={(e) => setEditGoal(Number(e.target.value))}
-                            className="mt-1"
+                            className="mt-1 enhanced-input"
                           />
                         </div>
                         <Button onClick={handleSaveEdit} className="w-full">
@@ -169,7 +180,7 @@ function AnimatedMetric({
             </div>
             <div className="flex items-baseline space-x-1 flex-wrap">
               <p
-                className={`text-xl sm:text-2xl lg:text-3xl font-bold text-${color} transition-all duration-300 break-all`}
+                className={`text-xl sm:text-2xl lg:text-3xl font-bold ${textClass} transition-all duration-300 break-all`}
               >
                 {prefix}
                 {displayValue.toLocaleString()}
@@ -177,23 +188,23 @@ function AnimatedMetric({
               </p>
               {trend && (
                 <div
-                  className={`flex items-center text-xs text-${color} bg-${color}/10 px-2 py-1 rounded-full shrink-0`}
+                  className={`flex items-center text-xs ${textClass} ${trendBgClass} px-2 py-1 rounded-full shrink-0`}
                 >
                   <TrendingUp className="w-3 h-3 mr-1" />+{trend}%
                 </div>
               )}
             </div>
             {trendLabel && (
-              <p className={`text-xs text-${color} flex items-center flex-wrap`}>
+              <p className={`text-xs ${textClass} flex items-center flex-wrap`}>
                 <Sparkles className="w-3 h-3 mr-1 shrink-0" />
                 <span className="break-words">{trendLabel}</span>
               </p>
             )}
           </div>
           <div
-            className={`p-2 sm:p-3 bg-${color}/10 rounded-xl group-hover:bg-${color}/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 shrink-0 ml-2`}
+            className={`p-2 sm:p-3 ${iconBgClass} rounded-xl group-hover:scale-110 group-hover:rotate-12 shrink-0 ml-2 transition-all duration-300`}
           >
-            <Icon className={`h-6 w-6 sm:h-8 sm:w-8 text-${color} transition-transform duration-300`} />
+            <Icon className={`h-6 w-6 sm:h-8 sm:w-8 ${textClass} transition-transform duration-300`} />
           </div>
         </div>
 
@@ -228,8 +239,11 @@ export function AnimatedMetrics() {
       trend: 18,
       trendLabel: "рост к прошлому месяцу",
       icon: DollarSign,
-      color: "emerald-500",
-      gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
+      colorClass: "border-emerald-500",
+      bgClass: "bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent",
+      textClass: "text-emerald-500",
+      iconBgClass: "bg-emerald-500/10 hover:bg-emerald-500/20",
+      trendBgClass: "bg-emerald-500/10",
       delay: 0,
       goal: 3000000,
     },
@@ -240,8 +254,11 @@ export function AnimatedMetrics() {
       trend: 25,
       trendLabel: "новых сделок за неделю",
       icon: Briefcase,
-      color: "blue-500",
-      gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
+      colorClass: "border-blue-500",
+      bgClass: "bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent",
+      textClass: "text-blue-500",
+      iconBgClass: "bg-blue-500/10 hover:bg-blue-500/20",
+      trendBgClass: "bg-blue-500/10",
       delay: 200,
       goal: 60,
     },
@@ -253,8 +270,11 @@ export function AnimatedMetrics() {
       trend: 12,
       trendLabel: "улучшение за месяц",
       icon: Target,
-      color: "purple-500",
-      gradient: "from-purple-500/10 via-purple-500/5 to-transparent",
+      colorClass: "border-purple-500",
+      bgClass: "bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent",
+      textClass: "text-purple-500",
+      iconBgClass: "bg-purple-500/10 hover:bg-purple-500/20",
+      trendBgClass: "bg-purple-500/10",
       delay: 400,
       goal: 45,
     },
@@ -266,8 +286,11 @@ export function AnimatedMetrics() {
       trend: 8,
       trendLabel: "эффективность работы",
       icon: Users,
-      color: "orange-500",
-      gradient: "from-orange-500/10 via-orange-500/5 to-transparent",
+      colorClass: "border-orange-500",
+      bgClass: "bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent",
+      textClass: "text-orange-500",
+      iconBgClass: "bg-orange-500/10 hover:bg-orange-500/20",
+      trendBgClass: "bg-orange-500/10",
       delay: 600,
       goal: 95,
     },
@@ -279,8 +302,11 @@ export function AnimatedMetrics() {
       trend: 22,
       trendLabel: "рентабельность 36%",
       icon: BarChart3,
-      color: "green-500",
-      gradient: "from-green-500/10 via-green-500/5 to-transparent",
+      colorClass: "border-green-500",
+      bgClass: "bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent",
+      textClass: "text-green-500",
+      iconBgClass: "bg-green-500/10 hover:bg-green-500/20",
+      trendBgClass: "bg-green-500/10",
       delay: 800,
       goal: 1200000,
     },
@@ -292,8 +318,11 @@ export function AnimatedMetrics() {
       trend: 15,
       trendLabel: "экономия 240ч/месяц",
       icon: Activity,
-      color: "indigo-500",
-      gradient: "from-indigo-500/10 via-indigo-500/5 to-transparent",
+      colorClass: "border-indigo-500",
+      bgClass: "bg-gradient-to-br from-indigo-500/10 via-indigo-500/5 to-transparent",
+      textClass: "text-indigo-500",
+      iconBgClass: "bg-indigo-500/10 hover:bg-indigo-500/20",
+      trendBgClass: "bg-indigo-500/10",
       delay: 1000,
       goal: 90,
     },
@@ -306,7 +335,7 @@ export function AnimatedMetrics() {
           ? {
               ...metric,
               value: newValue,
-              trend: Math.floor(((newValue - metric.value) / metric.value) * 100),
+              trend: metric.value > 0 ? Math.floor(((newValue - metric.value) / metric.value) * 100) : 0,
             }
           : metric,
       ),

@@ -307,25 +307,25 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
     <>
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" />
 
-      <div className="fixed top-4 left-4 right-4 bottom-4 z-50 flex items-center justify-center p-4">
-        <Card className="border-primary/20 shadow-2xl w-full max-w-3xl max-h-full overflow-hidden bg-background/95 backdrop-blur-sm">
-          <CardHeader className="pb-4 px-6 pt-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4 flex-1 min-w-0">
-                <div className="p-3 bg-primary/10 rounded-xl shrink-0">{currentTourStep.icon}</div>
+      <div className="fixed top-2 left-2 right-2 bottom-2 sm:top-4 sm:left-4 sm:right-4 sm:bottom-4 z-50 flex items-center justify-center p-2 sm:p-4">
+        <Card className="border-primary/20 shadow-2xl w-full max-w-5xl max-h-full overflow-hidden bg-background/95 backdrop-blur-sm enhanced-modal">
+          <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                <div className="p-2 sm:p-3 bg-primary/10 rounded-xl shrink-0">{currentTourStep.icon}</div>
                 <div className="min-w-0 flex-1">
-                  <CardTitle className="text-xl lg:text-2xl font-bold leading-tight mb-2">
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight mb-2 break-words">
                     {currentTourStep.title}
                   </CardTitle>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="secondary" className="text-sm">
+                    <Badge variant="secondary" className="text-xs sm:text-sm">
                       Шаг {currentStep + 1} из {tourSteps.length}
                     </Badge>
-                    <Badge className={`${getCategoryColor(currentTourStep.category)} text-sm`}>
+                    <Badge className={`${getCategoryColor(currentTourStep.category)} text-xs sm:text-sm`}>
                       {getCategoryLabel(currentTourStep.category)}
                     </Badge>
                     {currentTourStep.actionRequired && (
-                      <Badge variant="outline" className="text-orange-600 border-orange-500/30 text-sm">
+                      <Badge variant="outline" className="text-orange-600 border-orange-500/30 text-xs sm:text-sm">
                         <Star className="w-3 h-3 mr-1" />
                         Попробуйте
                       </Badge>
@@ -333,8 +333,8 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={completeTour} className="h-9 w-9 p-0 shrink-0">
-                <X className="w-5 h-5" />
+              <Button variant="ghost" size="sm" onClick={completeTour} className="h-8 w-8 sm:h-9 sm:w-9 p-0 shrink-0">
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </div>
 
@@ -347,10 +347,10 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
             </div>
           </CardHeader>
 
-          <CardContent className="px-6 pb-6 max-h-[calc(100vh-300px)] overflow-y-auto">
-            <div className="space-y-6">
-              <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
-                <p className="text-foreground leading-relaxed text-base lg:text-lg font-medium">
+          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="p-4 sm:p-6 bg-primary/5 rounded-xl border border-primary/10">
+                <p className="text-foreground leading-relaxed text-sm sm:text-base lg:text-lg font-medium break-words">
                   {currentTourStep.description}
                 </p>
               </div>
@@ -366,40 +366,51 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
                   Показать подробную информацию
                 </Button>
               ) : (
-                <div className="space-y-4 p-6 bg-muted/30 rounded-xl border border-muted/50">
-                  <p className="text-muted-foreground leading-relaxed text-base">{currentTourStep.detailedInfo}</p>
+                <div className="space-y-4 p-4 sm:p-6 bg-muted/30 rounded-xl border border-muted/50">
+                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base break-words">
+                    {currentTourStep.detailedInfo}
+                  </p>
 
                   {currentTourStep.tips && (
                     <div className="space-y-3">
-                      <h4 className="font-semibold text-foreground flex items-center gap-2 text-base">
-                        <Lightbulb className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold text-foreground flex items-center gap-2 text-sm sm:text-base">
+                        <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
                         Полезные советы:
                       </h4>
-                      <div className="space-y-2 pl-2">
+                      <div className="space-y-2 pl-0 sm:pl-2">
                         {currentTourStep.tips.map((tip, index) => (
-                          <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
-                            <span className="text-primary font-bold text-lg leading-none mt-0.5">•</span>
-                            <span className="text-sm text-muted-foreground leading-relaxed flex-1">{tip}</span>
+                          <div key={index} className="flex items-start gap-3 p-3 sm:p-4 bg-background/50 rounded-lg">
+                            <span className="text-primary font-bold text-base sm:text-lg leading-none mt-0.5 shrink-0">
+                              •
+                            </span>
+                            <span className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 break-words">
+                              {tip}
+                            </span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  <Button variant="ghost" size="sm" onClick={() => setShowDetailedInfo(false)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDetailedInfo(false)}
+                    className="text-xs sm:text-sm"
+                  >
                     Свернуть подробности
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-center gap-2 py-6 mt-6 border-t border-muted/30">
-              <div className="flex items-center gap-1 p-2 bg-muted/20 rounded-full">
+            <div className="flex items-center justify-center gap-2 py-4 sm:py-6 mt-4 sm:mt-6 border-t border-muted/30">
+              <div className="flex items-center gap-1 p-2 bg-muted/20 rounded-full overflow-x-auto max-w-full">
                 {tourSteps.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => jumpToStep(index)}
-                    className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                    className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-300 shrink-0 ${
                       index === currentStep
                         ? "bg-primary scale-125 shadow-lg shadow-primary/30"
                         : completedSteps.has(index)
@@ -412,23 +423,32 @@ export function InteractiveTour({ isOpen, onClose }: InteractiveTourProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between pt-4 gap-3 sm:gap-4">
               <Button
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStep === 0}
-                className="flex items-center gap-2 min-w-[100px] bg-transparent"
+                className="flex items-center gap-2 min-w-[100px] w-full sm:w-auto bg-transparent"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Назад
               </Button>
 
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={completeTour} className="text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={completeTour}
+                  className="text-muted-foreground text-xs sm:text-sm"
+                >
                   Пропустить обучение
                 </Button>
 
-                <Button onClick={nextStep} className="flex items-center gap-2 min-w-[120px]" size="default">
+                <Button
+                  onClick={nextStep}
+                  className="flex items-center gap-2 min-w-[120px] w-full sm:w-auto"
+                  size="default"
+                >
                   {currentStep === tourSteps.length - 1 ? (
                     <>
                       <Award className="w-4 h-4" />
