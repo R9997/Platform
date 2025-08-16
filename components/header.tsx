@@ -20,7 +20,9 @@ export function Header() {
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-accent soft-glow flex items-center justify-center">
             <Zap className="h-5 w-5 text-white" />
           </div>
-          <span className="font-serif font-black text-xl soft-text">Рефрейм Бюро</span>
+          <span className="font-serif font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent tracking-tight">
+            Рефрейм Бюро
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6">

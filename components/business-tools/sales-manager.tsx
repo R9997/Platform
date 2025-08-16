@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import {
   TrendingUp,
   Users,
@@ -26,6 +28,7 @@ import {
   X,
   Save,
   Trash2,
+  Settings,
 } from "lucide-react"
 
 interface Lead {
@@ -63,6 +66,9 @@ export function SalesManager() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [showAddLead, setShowAddLead] = useState(false)
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [showEditPipeline, setShowEditPipeline] = useState(false)
+  const [showEditMetrics, setShowEditMetrics] = useState(false)
+  const [editingStage, setEditingStage] = useState<any>(null)
   const [newLead, setNewLead] = useState({
     name: "",
     company: "",
@@ -85,6 +91,14 @@ export function SalesManager() {
     totalLeads: 156,
     qualifiedLeads: 89,
   })
+
+  const [pipelineStages, setPipelineStages] = useState([
+    { stage: "Лиды", count: 156, value: 2450000, color: "blue", width: 100 },
+    { stage: "Квалифицированные", count: 89, value: 1850000, color: "green", width: 75 },
+    { stage: "Предложения", count: 45, value: 1200000, color: "purple", width: 60 },
+    { stage: "Переговоры", count: 28, value: 950000, color: "orange", width: 45 },
+    { stage: "Закрытые", count: 18, value: 680000, color: "emerald", width: 30 },
+  ])
 
   const [leads, setLeads] = useState<Lead[]>([
     {
@@ -293,6 +307,38 @@ export function SalesManager() {
     return matchesSearch && matchesStatus
   })
 
+  const handleEditStage = (stage: any) => {
+    setEditingStage({ ...stage })
+    setShowEditPipeline(true)
+  }
+
+  const handleSaveStage = () => {
+    if (editingStage) {
+      setPipelineStages(pipelineStages.map((stage) => (stage.stage === editingStage.stage ? editingStage : stage)))
+      setEditingStage(null)
+      setShowEditPipeline(false)
+    }
+  }
+
+  const handleAddStage = () => {
+    const newStage = {
+      stage: "Новый этап",
+      count: 0,
+      value: 0,
+      color: "gray",
+      width: 10,
+    }
+    setPipelineStages([...pipelineStages, newStage])
+  }
+
+  const handleDeleteStage = (stageToDelete: string) => {
+    setPipelineStages(pipelineStages.filter((stage) => stage.stage !== stageToDelete))
+  }
+
+  const handleUpdateMetrics = (field: string, value: number) => {
+    setSalesMetrics({ ...salesMetrics, [field]: value })
+  }
+
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -316,6 +362,14 @@ export function SalesManager() {
         </TabsList>
 
         <TabsContent value="pipeline" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Ключевые метрики</h3>
+            <Button variant="outline" size="sm" onClick={() => setShowEditMetrics(true)}>
+              <Settings className="w-4 h-4 mr-2" />
+              Редактировать метрики
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
               <CardContent className="p-4">
@@ -398,24 +452,44 @@ export function SalesManager() {
 
           <Card className="bg-card/60 backdrop-blur-xl border border-border/50">
             <CardHeader>
-              <CardTitle className="flex items-center text-foreground">
-                <TrendingUp className="w-5 h-5 mr-2 text-primary" />
-                Воронка продаж
-              </CardTitle>
-              <CardDescription>Визуализация этапов продаж и конверсии</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center text-foreground">
+                    <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+                    Воронка продаж
+                  </CardTitle>
+                  <CardDescription>Визуализация этапов продаж и конверсии</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleAddStage}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Добавить этап
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  { stage: "Лиды", count: 156, value: 2450000, color: "blue", width: 100 },
-                  { stage: "Квалифицированные", count: 89, value: 1850000, color: "green", width: 75 },
-                  { stage: "Предложения", count: 45, value: 1200000, color: "purple", width: 60 },
-                  { stage: "Переговоры", count: 28, value: 950000, color: "orange", width: 45 },
-                  { stage: "Закрытые", count: 18, value: 680000, color: "emerald", width: 30 },
-                ].map((stage, index) => (
+                {pipelineStages.map((stage, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-foreground">{stage.stage}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-foreground">{stage.stage}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditStage(stage)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteStage(stage.stage)}
+                          className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                       <div className="flex items-center space-x-4">
                         <span className="text-sm text-muted-foreground">{stage.count} шт.</span>
                         <span className="text-sm font-medium text-foreground">
@@ -788,6 +862,160 @@ export function SalesManager() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {showEditPipeline && editingStage && (
+        <Dialog open={showEditPipeline} onOpenChange={setShowEditPipeline}>
+          <DialogContent className="max-w-md mx-4">
+            <DialogHeader>
+              <DialogTitle>Редактировать этап воронки</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="stage-name">Название этапа</Label>
+                <Input
+                  id="stage-name"
+                  value={editingStage.stage}
+                  onChange={(e) => setEditingStage({ ...editingStage, stage: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="stage-count">Количество</Label>
+                <Input
+                  id="stage-count"
+                  type="number"
+                  value={editingStage.count}
+                  onChange={(e) => setEditingStage({ ...editingStage, count: Number(e.target.value) })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="stage-value">Сумма</Label>
+                <Input
+                  id="stage-value"
+                  type="number"
+                  value={editingStage.value}
+                  onChange={(e) => setEditingStage({ ...editingStage, value: Number(e.target.value) })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="stage-color">Цвет</Label>
+                <Select
+                  value={editingStage.color}
+                  onValueChange={(value) => setEditingStage({ ...editingStage, color: value })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="blue">Синий</SelectItem>
+                    <SelectItem value="green">Зеленый</SelectItem>
+                    <SelectItem value="purple">Фиолетовый</SelectItem>
+                    <SelectItem value="orange">Оранжевый</SelectItem>
+                    <SelectItem value="emerald">Изумрудный</SelectItem>
+                    <SelectItem value="red">Красный</SelectItem>
+                    <SelectItem value="yellow">Желтый</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="stage-width">Ширина (%)</Label>
+                <Input
+                  id="stage-width"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={editingStage.width}
+                  onChange={(e) => setEditingStage({ ...editingStage, width: Number(e.target.value) })}
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex space-x-2">
+                <Button onClick={handleSaveStage} className="flex-1">
+                  Сохранить
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditPipeline(false)
+                    setEditingStage(null)
+                  }}
+                  className="flex-1"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {showEditMetrics && (
+        <Dialog open={showEditMetrics} onOpenChange={setShowEditMetrics}>
+          <DialogContent className="max-w-md mx-4">
+            <DialogHeader>
+              <DialogTitle>Редактировать метрики</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="total-revenue">Общая выручка</Label>
+                <Input
+                  id="total-revenue"
+                  type="number"
+                  value={salesMetrics.totalRevenue}
+                  onChange={(e) => handleUpdateMetrics("totalRevenue", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="conversion-rate">Конверсия (%)</Label>
+                <Input
+                  id="conversion-rate"
+                  type="number"
+                  step="0.1"
+                  value={salesMetrics.conversionRate}
+                  onChange={(e) => handleUpdateMetrics("conversionRate", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="avg-deal-size">Средний чек</Label>
+                <Input
+                  id="avg-deal-size"
+                  type="number"
+                  value={salesMetrics.avgDealSize}
+                  onChange={(e) => handleUpdateMetrics("avgDealSize", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="active-pipeline">В работе</Label>
+                <Input
+                  id="active-pipeline"
+                  type="number"
+                  value={salesMetrics.activePipeline}
+                  onChange={(e) => handleUpdateMetrics("activePipeline", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="total-leads">Всего лидов</Label>
+                <Input
+                  id="total-leads"
+                  type="number"
+                  value={salesMetrics.totalLeads}
+                  onChange={(e) => handleUpdateMetrics("totalLeads", Number(e.target.value))}
+                  className="mt-1"
+                />
+              </div>
+              <Button onClick={() => setShowEditMetrics(false)} className="w-full">
+                Сохранить изменения
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {showAddLead && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

@@ -86,15 +86,15 @@ function AnimatedMetric({
 
   return (
     <Card
-      className={`bg-gradient-to-br ${gradient} border border-${color}/20 hover:shadow-xl hover:shadow-${color}/10 transition-all duration-500 hover:scale-105 group cursor-pointer ${isVisible ? "animate-in slide-in-from-bottom-4 fade-in" : "opacity-0"}`}
+      className={`bg-gradient-to-br ${gradient} border border-${color}/20 hover:shadow-xl hover:shadow-${color}/10 transition-all duration-500 hover:scale-105 group cursor-pointer min-h-[200px] ${isVisible ? "animate-in slide-in-from-bottom-4 fade-in" : "opacity-0"}`}
     >
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2 flex-1">
+      <CardContent className="p-4 sm:p-6 h-full flex flex-col justify-between">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2 flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-muted-foreground">{title}</p>
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">{title}</p>
               {isEditable && (
-                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -109,27 +109,33 @@ function AnimatedMetric({
                         <Settings className="w-3 h-3" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md">
+                    <DialogContent className="max-w-md mx-4">
                       <DialogHeader>
-                        <DialogTitle>Редактировать {title}</DialogTitle>
+                        <DialogTitle className="text-base sm:text-lg">Редактировать {title}</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="current-value">Текущее значение</Label>
+                          <Label htmlFor="current-value" className="text-sm">
+                            Текущее значение
+                          </Label>
                           <Input
                             id="current-value"
                             type="number"
                             value={editValue}
                             onChange={(e) => setEditValue(Number(e.target.value))}
+                            className="mt-1"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="goal-value">Цель</Label>
+                          <Label htmlFor="goal-value" className="text-sm">
+                            Цель
+                          </Label>
                           <Input
                             id="goal-value"
                             type="number"
                             value={editGoal}
                             onChange={(e) => setEditGoal(Number(e.target.value))}
+                            className="mt-1"
                           />
                         </div>
                         <Button onClick={handleSaveEdit} className="w-full">
@@ -149,44 +155,49 @@ function AnimatedMetric({
                 </div>
               )}
             </div>
-            <div className="flex items-baseline space-x-1">
-              <p className={`text-3xl font-bold text-${color} transition-all duration-300`}>
+            <div className="flex items-baseline space-x-1 flex-wrap">
+              <p
+                className={`text-xl sm:text-2xl lg:text-3xl font-bold text-${color} transition-all duration-300 break-all`}
+              >
                 {prefix}
                 {displayValue.toLocaleString()}
                 {suffix}
               </p>
               {trend && (
-                <div className={`flex items-center text-xs text-${color} bg-${color}/10 px-2 py-1 rounded-full`}>
+                <div
+                  className={`flex items-center text-xs text-${color} bg-${color}/10 px-2 py-1 rounded-full shrink-0`}
+                >
                   <TrendingUp className="w-3 h-3 mr-1" />+{trend}%
                 </div>
               )}
             </div>
             {trendLabel && (
-              <p className={`text-xs text-${color} flex items-center`}>
-                <Sparkles className="w-3 h-3 mr-1" />
-                {trendLabel}
+              <p className={`text-xs text-${color} flex items-center flex-wrap`}>
+                <Sparkles className="w-3 h-3 mr-1 shrink-0" />
+                <span className="break-words">{trendLabel}</span>
               </p>
             )}
           </div>
           <div
-            className={`p-3 bg-${color}/10 rounded-xl group-hover:bg-${color}/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12`}
+            className={`p-2 sm:p-3 bg-${color}/10 rounded-xl group-hover:bg-${color}/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 shrink-0 ml-2`}
           >
-            <Icon className={`h-8 w-8 text-${color} transition-transform duration-300`} />
+            <Icon className={`h-6 w-6 sm:h-8 sm:w-8 text-${color} transition-transform duration-300`} />
           </div>
         </div>
 
         <div className="mt-4 space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">Прогресс к цели</span>
-            <span className="text-xs font-medium text-foreground">
-              {progressPercentage}% ({displayValue.toLocaleString()}/{goal.toLocaleString()})
-            </span>
+            <span className="text-xs text-muted-foreground truncate">Прогресс к цели</span>
+            <span className="text-xs font-medium text-foreground shrink-0 ml-2">{progressPercentage}%</span>
+          </div>
+          <div className="text-xs text-muted-foreground mb-1">
+            {displayValue.toLocaleString()}/{goal.toLocaleString()}
           </div>
           <Progress value={progressPercentage} className="h-2 transition-all duration-1000" />
           {progressPercentage >= 100 && (
-            <p className="text-xs text-green-600 flex items-center">
-              <Sparkles className="w-3 h-3 mr-1" />
-              Цель достигнута! 🎉
+            <p className="text-xs text-green-600 flex items-center flex-wrap">
+              <Sparkles className="w-3 h-3 mr-1 shrink-0" />
+              <span>Цель достигнута! 🎉</span>
             </p>
           )}
         </div>
@@ -263,14 +274,14 @@ export function AnimatedMetrics() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Ключевые метрики</h3>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl font-semibold text-foreground truncate">Ключевые метрики</h3>
           <p className="text-sm text-muted-foreground">Наведите курсор на карточку для редактирования</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         {metrics.map((metric) => (
           <AnimatedMetric
             key={metric.id}

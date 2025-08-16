@@ -19,7 +19,6 @@ import {
   MessageSquare,
   Home,
   Shield,
-  ChevronRight,
   LogOut,
   Menu,
   Sparkles,
@@ -268,7 +267,7 @@ export default function Dashboard() {
         <Button
           key={item.key}
           variant={activeTab === item.key ? "default" : "ghost"}
-          className={`w-full justify-start transition-all duration-300 ${
+          className={`w-full justify-start transition-all duration-300 text-sm py-3 px-4 h-auto ${
             activeTab === item.key
               ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25"
               : "text-foreground hover:bg-accent/50"
@@ -278,14 +277,13 @@ export default function Dashboard() {
             onItemClick?.()
           }}
         >
-          <item.icon className="w-4 h-4 mr-3" />
-          <span className="flex-1 text-left">{item.label}</span>
+          <item.icon className="w-4 h-4 mr-3 flex-shrink-0" />
+          <span className="flex-1 text-left truncate">{item.label}</span>
           {item.badge && (
-            <Badge variant="secondary" className="ml-2 text-xs">
+            <Badge variant="secondary" className="ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center">
               {item.badge}
             </Badge>
           )}
-          <ChevronRight className={`w-4 h-4 ml-2 transition-transform ${activeTab === item.key ? "rotate-90" : ""}`} />
         </Button>
       ))}
     </div>
@@ -402,24 +400,24 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-            <div className="hidden lg:block lg:col-span-1">
-              <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5 sticky top-24">
-                <CardHeader>
+            <div className="hidden lg:block lg:col-span-1 xl:col-span-1">
+              <Card className="bg-card/60 backdrop-blur-xl border border-border/50 shadow-xl shadow-primary/5 sticky top-24 min-w-[280px] w-full">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-foreground font-bold text-lg flex items-center">
-                    <div className="p-2 bg-primary/10 rounded-lg mr-3">
+                    <div className="p-2 bg-primary/10 rounded-lg mr-3 flex-shrink-0">
                       <Briefcase className="w-5 h-5 text-primary" />
                     </div>
-                    Управление бизнесом
+                    <span className="truncate">Управление бизнесом</span>
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-sm">Ваша ИИ-платформа роста</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                   <NavigationMenu />
                 </CardContent>
               </Card>
             </div>
 
-            <div className="col-span-1 lg:col-span-3">
+            <div className="col-span-1 lg:col-span-3 xl:col-span-3">
               {activeTab === "overview" && (
                 <div className="space-y-6 sm:space-y-8">
                   <AnimatedMetrics />
