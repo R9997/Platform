@@ -4,67 +4,66 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Улучшенная светлая тема с теплыми профессиональными цветами */
-  --background: oklch(0.99 0 0); /* Чистый белый фон */
-  --foreground: oklch(0.08 0 0); /* Темный текст для отличного контраста */
-  --card: oklch(0.98 0.005 45); /* Слегка теплый оттенок карточек */
-  --card-foreground: oklch(0.08 0 0);
-  --popover: oklch(0.98 0.005 45);
-  --popover-foreground: oklch(0.08 0 0);
-  /* Теплый синий как основной цвет вместо зеленого */
-  --primary: oklch(0.45 0.18 240); /* Профессиональный синий */
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.96 0.01 45); /* Теплый нейтральный */
-  --secondary-foreground: oklch(0.08 0 0);
-  --muted: oklch(0.97 0.01 45); /* Теплый приглушенный */
-  --muted-foreground: oklch(0.35 0 0); /* Темнее для лучшей читаемости */
-  /* Заменил коричневый цвет на мягкий голубо-серый */
-  --accent: oklch(0.65 0.08 220); /* Мягкий голубо-серый вместо коричневого */
-  --accent-foreground: oklch(0.99 0 0);
-  --destructive: oklch(0.52 0.24 15);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.88 0.01 45); /* Теплые границы */
-  --input: oklch(0.98 0.005 45);
-  --ring: oklch(0.45 0.18 240);
-  /* Теплая палитра для графиков */
-  --chart-1: oklch(0.45 0.18 240); /* Синий */
-  /* Заменил коричневый цвет в графиках на мягкий teal */
-  --chart-2: oklch(0.55 0.12 180); /* Мягкий teal вместо коричневого */
-  --chart-3: oklch(0.5 0.12 200); /* Голубой */
-  --chart-4: oklch(0.6 0.14 60); /* Золотистый */
-  --chart-5: oklch(0.4 0.16 280); /* Фиолетовый */
-  --radius: 0.625rem;
-  --sidebar: oklch(0.98 0.005 45);
-  --sidebar-foreground: oklch(0.08 0 0);
-  --sidebar-primary: oklch(0.45 0.18 240);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.01 45);
-  --sidebar-accent-foreground: oklch(0.08 0 0);
-  --sidebar-border: oklch(0.88 0.01 45);
-  --sidebar-ring: oklch(0.45 0.18 240);
+  /* Обновленная светлая тема с современными профессиональными цветами */
+  --background: oklch(1.0 0 0); /* Чистый белый фон */
+  --foreground: oklch(0.25 0.02 240); /* Темно-синий серый для текста */
+  --card: oklch(0.98 0.01 200); /* Очень светлый голубоватый для карточек */
+  --card-foreground: oklch(0.2 0.02 240);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.25 0.02 240);
+  /* Современный профессиональный синий как основной цвет */
+  --primary: oklch(0.35 0.15 200); /* Глубокий профессиональный синий */
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.96 0.01 200); /* Светлый голубоватый */
+  --secondary-foreground: oklch(0.2 0.02 240);
+  --muted: oklch(0.97 0.005 200); /* Очень светлый приглушенный */
+  --muted-foreground: oklch(0.4 0.02 240); /* Средне-серый для лучшей читаемости */
+  /* Заменил коричневый на современный красный акцент */
+  --accent: oklch(0.55 0.22 15); /* Современный красный для акцентов */
+  --accent-foreground: oklch(1.0 0 0);
+  --destructive: oklch(0.55 0.22 15);
+  --destructive-foreground: oklch(1.0 0 0);
+  /* Обновленные границы с голубоватым оттенком */
+  --border: oklch(0.9 0.005 200); /* Светлые голубоватые границы */
+  --input: oklch(0.98 0.005 200);
+  --ring: oklch(0.35 0.15 200);
+  /* Современная палитра для графиков без коричневых тонов */
+  --chart-1: oklch(0.45 0.2 240); /* Синий */
+  --chart-2: oklch(0.5 0.25 280); /* Фиолетовый */
+  --chart-3: oklch(0.6 0.2 60); /* Золотистый */
+  --chart-4: oklch(0.5 0.2 160); /* Зеленый */
+  --chart-5: oklch(0.55 0.22 15); /* Красный */
+  --radius: 0.5rem;
+  --sidebar: oklch(0.98 0.01 200);
+  --sidebar-foreground: oklch(0.2 0.02 240);
+  --sidebar-primary: oklch(0.35 0.15 200);
+  --sidebar-primary-foreground: oklch(1.0 0 0);
+  --sidebar-accent: oklch(0.55 0.22 15);
+  --sidebar-accent-foreground: oklch(1.0 0 0);
+  --sidebar-border: oklch(0.9 0.005 200);
+  --sidebar-ring: oklch(0.35 0.15 200);
 }
 
 .dark {
-  /* Значительно улучшенная темная тема с максимальной контрастностью */
-  --background: oklch(0.02 0 0); /* Максимально темный фон */
-  --foreground: oklch(1.0 0 0); /* Абсолютно белый основной текст */
-  --card: oklch(0.08 0 0); /* Более светлые карточки для лучшего контраста */
+  /* Сохраняем существующую темную тему без изменений */
+  --background: oklch(0.02 0 0);
+  --foreground: oklch(1.0 0 0);
+  --card: oklch(0.08 0 0);
   --card-foreground: oklch(1.0 0 0);
   --popover: oklch(0.08 0 0);
   --popover-foreground: oklch(1.0 0 0);
-  --primary: oklch(0.85 0.3 195); /* Максимально яркий основной цвет */
+  --primary: oklch(0.85 0.3 195);
   --primary-foreground: oklch(0.02 0 0);
-  --secondary: oklch(0.12 0 0); /* Более контрастный вторичный */
+  --secondary: oklch(0.12 0 0);
   --secondary-foreground: oklch(1.0 0 0);
-  --muted: oklch(0.1 0 0); /* Более контрастный приглушенный фон */
-  --muted-foreground: oklch(0.9 0 0); /* Очень яркий приглушенный текст */
-  --accent: oklch(0.78 0.3 220); /* Максимально яркий акцентный цвет */
+  --muted: oklch(0.1 0 0);
+  --muted-foreground: oklch(0.9 0 0);
+  --accent: oklch(0.78 0.3 220);
   --accent-foreground: oklch(0.02 0 0);
   --destructive: oklch(0.78 0.35 15);
   --destructive-foreground: oklch(0.02 0 0);
-  /* Экстремально контрастные границы для максимальной видимости */
-  --border: oklch(0.5 0 0); /* Очень светлые границы для отличной видимости */
-  --input: oklch(0.1 0 0); /* Контрастные поля ввода */
+  --border: oklch(0.5 0 0);
+  --input: oklch(0.1 0 0);
   --ring: oklch(0.85 0.3 195);
   --chart-1: oklch(0.85 0.3 195);
   --chart-2: oklch(0.78 0.3 220);
@@ -77,7 +76,6 @@
   --sidebar-primary-foreground: oklch(0.02 0 0);
   --sidebar-accent: oklch(0.12 0 0);
   --sidebar-accent-foreground: oklch(1.0 0 0);
-  /* Максимально контрастные границы сайдбара */
   --sidebar-border: oklch(0.5 0 0);
   --sidebar-ring: oklch(0.85 0.3 195);
 }
@@ -119,7 +117,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Обновил шрифт с Century Gothic на Nunito Sans для корректного отображения */
   --font-sans: "Nunito Sans", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Courier New", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas,
     "Liberation Mono", monospace;
@@ -131,6 +128,32 @@
   }
   body {
     @apply bg-background text-foreground font-sans transition-colors duration-300;
+  }
+
+  /* Добавлены стили для улучшения современного вида светлой темы */
+  .light h1,
+  .light h2,
+  .light h3,
+  .light h4,
+  .light h5,
+  .light h6,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: oklch(0.2 0.02 240);
+    font-weight: 600;
+  }
+
+  .light .card,
+  .light [data-card],
+  .card,
+  [data-card] {
+    background-color: oklch(0.98 0.01 200);
+    border: 1px solid oklch(0.9 0.005 200);
+    box-shadow: 0 1px 3px oklch(0.2 0.02 240 / 0.1);
   }
 
   /* Дополнительные стили для улучшения видимости в темной теме */
@@ -277,5 +300,3 @@
     min-height: 200px;
   }
 }
-
-/* Removed all custom utility classes that were causing errors and replaced with standard Tailwind approach */

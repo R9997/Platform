@@ -26,6 +26,10 @@ import {
   Bell,
   Settings,
   FilePenLineIcon as Signature,
+  User,
+  MessageSquare,
+  Calendar,
+  XCircle,
 } from "lucide-react"
 
 interface Document {
@@ -49,6 +53,30 @@ interface Counterparty {
   lastActivity: string
 }
 
+interface ApprovalStep {
+  id: string
+  approver: string
+  role: string
+  status: "pending" | "approved" | "rejected"
+  comment?: string
+  date?: string
+  order: number
+}
+
+interface ApprovalDocument {
+  id: string
+  title: string
+  type: string
+  initiator: string
+  created: string
+  deadline: string
+  status: "in-progress" | "approved" | "rejected" | "completed"
+  currentStep: number
+  steps: ApprovalStep[]
+  description: string
+  amount?: number
+}
+
 export default function EDODashboard() {
   const [activeTab, setActiveTab] = useState("documents")
   const [searchTerm, setSearchTerm] = useState("")
@@ -57,6 +85,118 @@ export default function EDODashboard() {
   const [showSignDialog, setShowSignDialog] = useState(false)
   const [showApprovalDialog, setShowApprovalDialog] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
+  const [selectedApprovalDoc, setSelectedApprovalDoc] = useState<ApprovalDocument | null>(null)
+  const [showApprovalHistory, setShowApprovalHistory] = useState(false)
+
+  const [approvalDocuments] = useState<ApprovalDocument[]>([
+    {
+      id: "1",
+      title: "Договор поставки №DS-2024-002",
+      type: "Договор",
+      initiator: "Менеджер по закупкам",
+      created: "2024-01-15",
+      deadline: "2024-01-18",
+      status: "in-progress",
+      currentStep: 2,
+      amount: 500000,
+      description: "Договор на поставку офисного оборудования",
+      steps: [
+        {
+          id: "1",
+          approver: "Финансовый директор",
+          role: "Финансы",
+          status: "approved",
+          comment: "Бюджет согласован, сумма в пределах лимита",
+          date: "2024-01-15",
+          order: 1,
+        },
+        {
+          id: "2",
+          approver: "Юрист",
+          role: "Юридический отдел",
+          status: "pending",
+          order: 2,
+        },
+        {
+          id: "3",
+          approver: "Генеральный директор",
+          role: "Руководство",
+          status: "pending",
+          order: 3,
+        },
+      ],
+    },
+    {
+      id: "2",
+      title: "Соглашение о конфиденциальности",
+      type: "Соглашение",
+      initiator: "HR-менеджер",
+      created: "2024-01-14",
+      deadline: "2024-01-16",
+      status: "approved",
+      currentStep: 3,
+      description: "NDA с новым партнером",
+      steps: [
+        {
+          id: "1",
+          approver: "Юрист",
+          role: "Юридический отдел",
+          status: "approved",
+          comment: "Стандартные условия, замечаний нет",
+          date: "2024-01-14",
+          order: 1,
+        },
+        {
+          id: "2",
+          approver: "Коммерческий директор",
+          role: "Коммерция",
+          status: "approved",
+          comment: "Согласовано",
+          date: "2024-01-15",
+          order: 2,
+        },
+        {
+          id: "3",
+          approver: "Генеральный директор",
+          role: "Руководство",
+          status: "approved",
+          comment: "Утверждено к подписанию",
+          date: "2024-01-15",
+          order: 3,
+        },
+      ],
+    },
+    {
+      id: "3",
+      title: "Договор аренды помещения",
+      type: "Договор",
+      initiator: "Административный менеджер",
+      created: "2024-01-13",
+      deadline: "2024-01-17",
+      status: "rejected",
+      currentStep: 1,
+      amount: 150000,
+      description: "Аренда дополнительного офисного помещения",
+      steps: [
+        {
+          id: "1",
+          approver: "Финансовый директор",
+          role: "Финансы",
+          status: "rejected",
+          comment: "Превышен бюджет на аренду. Необходимо пересмотреть условия или найти более дешевый вариант",
+          date: "2024-01-14",
+          order: 1,
+        },
+        {
+          id: "2",
+          approver: "Генеральный директор",
+          role: "Руководство",
+          status: "pending",
+          order: 2,
+        },
+      ],
+    },
+  ])
 
   const [documents] = useState<Document[]>([
     {
@@ -120,6 +260,22 @@ export default function EDODashboard() {
     }
   }
 
+  const getApprovalStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+      case "completed":
+        return "bg-green-100 text-green-800"
+      case "in-progress":
+        return "bg-blue-100 text-blue-800"
+      case "rejected":
+        return "bg-red-100 text-red-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "signed":
@@ -130,6 +286,19 @@ export default function EDODashboard() {
         return <AlertCircle className="w-4 h-4" />
       default:
         return <FileText className="w-4 h-4" />
+    }
+  }
+
+  const getApprovalStatusIcon = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <CheckCircle className="w-4 h-4 text-green-500" />
+      case "rejected":
+        return <XCircle className="w-4 h-4 text-red-500" />
+      case "pending":
+        return <Clock className="w-4 h-4 text-yellow-500" />
+      default:
+        return <Clock className="w-4 h-4 text-gray-400" />
     }
   }
 
@@ -456,37 +625,108 @@ export default function EDODashboard() {
         <TabsContent value="approval" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Согласование документов</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                <span>Согласование документов</span>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Отправить на согласование
+                </Button>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Внутренний процесс визирования документов</p>
-              <div className="mt-4 space-y-4">
-                <div className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">Договор поставки №DS-2024-002</h4>
-                    <Badge className="bg-yellow-100 text-yellow-800">На согласовании</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-sm">Финансовый директор - Одобрено</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-yellow-500" />
-                      <span className="text-sm">Юрист - Ожидает проверки</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-muted-foreground">Генеральный директор - Ожидает</span>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" variant="outline">
-                      Просмотреть
-                    </Button>
-                    <Button size="sm">Согласовать</Button>
-                  </div>
-                </div>
+              <p className="text-muted-foreground mb-6">Внутренний процесс визирования документов</p>
+
+              <div className="space-y-4">
+                {approvalDocuments.map((doc) => (
+                  <Card key={doc.id} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                            <h4 className="font-semibold text-lg truncate">{doc.title}</h4>
+                            <Badge className={getApprovalStatusColor(doc.status)}>
+                              {doc.status === "in-progress" && "На согласовании"}
+                              {doc.status === "approved" && "Согласовано"}
+                              {doc.status === "rejected" && "Отклонено"}
+                              {doc.status === "completed" && "Завершено"}
+                            </Badge>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
+                            <div className="flex items-center gap-1">
+                              <User className="w-4 h-4" />
+                              <span>{doc.initiator}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>Создан: {doc.created}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              <span>Срок: {doc.deadline}</span>
+                            </div>
+                            {doc.amount && (
+                              <div className="font-medium text-foreground">{doc.amount.toLocaleString()} ₽</div>
+                            )}
+                          </div>
+
+                          {/* Прогресс согласования */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <span>Прогресс согласования</span>
+                              <span>
+                                {doc.steps.filter((s) => s.status === "approved").length} из {doc.steps.length}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{
+                                  width: `${(doc.steps.filter((s) => s.status === "approved").length / doc.steps.length) * 100}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+
+                          {/* Текущие согласующие */}
+                          <div className="mt-4">
+                            <p className="text-sm font-medium mb-2">Этапы согласования:</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                              {doc.steps.map((step) => (
+                                <div key={step.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+                                  {getApprovalStatusIcon(step.status)}
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium truncate">{step.approver}</p>
+                                    <p className="text-xs text-muted-foreground">{step.role}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-auto w-full">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full sm:w-auto bg-transparent"
+                            onClick={() => {
+                              setSelectedApprovalDoc(doc)
+                              setShowApprovalHistory(true)
+                            }}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            История
+                          </Button>
+                          <Button size="sm" className="w-full sm:w-auto">
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Согласовать
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -560,6 +800,81 @@ export default function EDODashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={showApprovalHistory} onOpenChange={setShowApprovalHistory}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>История согласования</DialogTitle>
+          </DialogHeader>
+          {selectedApprovalDoc && (
+            <div className="space-y-6">
+              <div className="border-b pb-4">
+                <h3 className="text-lg font-semibold">{selectedApprovalDoc.title}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 text-sm text-muted-foreground">
+                  <div>Инициатор: {selectedApprovalDoc.initiator}</div>
+                  <div>Создан: {selectedApprovalDoc.created}</div>
+                  <div>Срок: {selectedApprovalDoc.deadline}</div>
+                  {selectedApprovalDoc.amount && <div>Сумма: {selectedApprovalDoc.amount.toLocaleString()} ₽</div>}
+                </div>
+                <p className="mt-2 text-sm">{selectedApprovalDoc.description}</p>
+              </div>
+
+              <div>
+                <h4 className="font-semibold mb-4">Этапы согласования</h4>
+                <div className="space-y-4">
+                  {selectedApprovalDoc.steps.map((step, index) => (
+                    <div key={step.id} className="flex gap-4 p-4 border rounded-lg">
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            step.status === "approved"
+                              ? "bg-green-100"
+                              : step.status === "rejected"
+                                ? "bg-red-100"
+                                : step.status === "pending"
+                                  ? "bg-yellow-100"
+                                  : "bg-gray-100"
+                          }`}
+                        >
+                          {getApprovalStatusIcon(step.status)}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <div>
+                            <p className="font-medium">{step.approver}</p>
+                            <p className="text-sm text-muted-foreground">{step.role}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className={getApprovalStatusColor(step.status)}>
+                              {step.status === "approved" && "Одобрено"}
+                              {step.status === "rejected" && "Отклонено"}
+                              {step.status === "pending" && "Ожидает"}
+                            </Badge>
+                            {step.date && <span className="text-sm text-muted-foreground">{step.date}</span>}
+                          </div>
+                        </div>
+                        {step.comment && (
+                          <div className="mt-2 p-3 bg-muted/50 rounded-lg">
+                            <p className="text-sm">{step.comment}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowApprovalHistory(false)}>
+                  Закрыть
+                </Button>
+                <Button>Скачать документ</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Sign Dialog */}
       <Dialog open={showSignDialog} onOpenChange={setShowSignDialog}>

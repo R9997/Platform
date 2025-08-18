@@ -50,6 +50,7 @@ import EDODashboard from "@/components/edo/edo-dashboard"
 import LegalDashboard from "@/components/legal/legal-dashboard"
 import StrategyDashboard from "@/components/strategy/strategy-dashboard"
 import MarketingDashboard from "@/components/marketing/marketing-dashboard"
+import { ChevronDown } from "lucide-react"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -319,59 +320,133 @@ export default function Dashboard() {
     )
   }
 
-  const NavigationMenu = ({ onItemClick }: { onItemClick?: () => void }) => (
-    <div className="space-y-2">
-      {[
-        { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
-        { key: "goals", icon: Target, label: "🎯 Стратегия и цели", badge: "NEW" },
-        { key: "strategy", icon: Brain, label: "ИИ-Агент для бизнеса", badge: "NEW" },
-        { key: "tools", icon: Rocket, label: "ИИ-инструменты", badge: 5 },
-        { key: "sales", icon: TrendingUp, label: "Продажи", badge: 156 },
-        { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
-        { key: "marketing", icon: MessageSquare, label: "📣 Маркетинг и клиенты", badge: "NEW" },
-        { key: "projects", icon: Target, label: "Активные проекты", badge: 3 },
-        { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
-        { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
-        { key: "edo", icon: FileText, label: "ЭДО | Документооборот", badge: "NEW" },
-        { key: "legal", icon: Shield, label: "⚖️ Правовой контур", badge: "NEW" },
-        { key: "team", icon: Users, label: "Команда", badge: null },
-        { key: "hr", icon: Users, label: "HR и развитие команды", badge: "NEW" },
-        { key: "roles", icon: Shield, label: "Роли и права", badge: null },
-        { key: "settings", icon: Settings, label: "Настройки", badge: null },
-      ].map((item, index) => (
-        <Button
-          key={item.key}
-          variant={activeTab === item.key ? "default" : "ghost"}
-          className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto ${
-            activeTab === item.key
-              ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
-              : "text-foreground"
-          }`}
-          onClick={() => {
-            setActiveTab(item.key)
-            onItemClick?.()
-          }}
-        >
-          <item.icon
-            className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-300 ${activeTab === item.key ? "" : ""}`}
-          />
-          <span className="flex-1 text-left truncate font-medium">{item.label}</span>
-          {item.badge && (
-            <Badge
-              variant={item.badge === "NEW" ? "default" : "secondary"}
-              className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-colors duration-300 ${
-                item.badge === "NEW"
-                  ? "bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white shadow-lg shadow-purple-500/30"
-                  : "bg-gradient-to-r from-accent to-accent/80"
-              }`}
+  const NavigationMenu = ({ onItemClick }: { onItemClick?: () => void }) => {
+    const [expandedGroups, setExpandedGroups] = useState<string[]>(["business", "finance", "hr", "ai"])
+
+    const toggleGroup = (groupKey: string) => {
+      setExpandedGroups((prev) =>
+        prev.includes(groupKey) ? prev.filter((key) => key !== groupKey) : [...prev, groupKey],
+      )
+    }
+
+    const navigationGroups = [
+      {
+        key: "business",
+        label: "Управление бизнесом",
+        icon: Briefcase,
+        items: [
+          { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
+          { key: "goals", icon: Target, label: "Стратегия и цели", badge: "NEW" },
+          { key: "projects", icon: Target, label: "Активные проекты", badge: 3 },
+          { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
+        ],
+      },
+      {
+        key: "finance",
+        label: "Финансы и документооборот",
+        icon: DollarSign,
+        items: [
+          { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
+          { key: "sales", icon: TrendingUp, label: "Продажи", badge: 156 },
+          { key: "edo", icon: FileText, label: "ЭДО | Документооборот", badge: "NEW" },
+          { key: "legal", icon: Shield, label: "Правовой контур", badge: "NEW" },
+        ],
+      },
+      {
+        key: "hr",
+        label: "Кадры и команда",
+        icon: Users,
+        items: [
+          { key: "hr", icon: Users, label: "HR и развитие команды", badge: "NEW" },
+          { key: "team", icon: Users, label: "Команда", badge: null },
+          { key: "roles", icon: Shield, label: "Роли и права", badge: null },
+        ],
+      },
+      {
+        key: "ai",
+        label: "ИИ-инструменты",
+        icon: Brain,
+        items: [
+          { key: "strategy", icon: Brain, label: "ИИ-Агент для бизнеса", badge: "NEW" },
+          { key: "tools", icon: Rocket, label: "ИИ-инструменты", badge: 5 },
+        ],
+      },
+      {
+        key: "marketing",
+        label: "Маркетинг и клиенты",
+        icon: MessageSquare,
+        items: [{ key: "marketing", icon: MessageSquare, label: "Маркетинг и клиенты", badge: "NEW" }],
+      },
+      {
+        key: "system",
+        label: "Система",
+        icon: Settings,
+        items: [
+          { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
+          { key: "settings", icon: Settings, label: "Настройки", badge: null },
+        ],
+      },
+    ]
+
+    return (
+      <div className="space-y-1">
+        {navigationGroups.map((group) => (
+          <div key={group.key} className="space-y-1">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-xs font-semibold text-muted-foreground hover:text-foreground py-2 px-3 h-auto uppercase tracking-wide"
+              onClick={() => toggleGroup(group.key)}
             >
-              {item.badge}
-            </Badge>
-          )}
-        </Button>
-      ))}
-    </div>
-  )
+              <group.icon className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="flex-1 text-left">{group.label}</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  expandedGroups.includes(group.key) ? "rotate-180" : ""
+                }`}
+              />
+            </Button>
+
+            {expandedGroups.includes(group.key) && (
+              <div className="space-y-1 ml-2 border-l border-border/50 pl-2">
+                {group.items.map((item) => (
+                  <Button
+                    key={item.key}
+                    variant={activeTab === item.key ? "default" : "ghost"}
+                    className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto ${
+                      activeTab === item.key
+                        ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
+                        : "text-foreground hover:bg-muted/50"
+                    }`}
+                    onClick={() => {
+                      setActiveTab(item.key)
+                      onItemClick?.()
+                    }}
+                  >
+                    <item.icon
+                      className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-300 ${activeTab === item.key ? "" : ""}`}
+                    />
+                    <span className="flex-1 text-left truncate font-medium">{item.label}</span>
+                    {item.badge && (
+                      <Badge
+                        variant={item.badge === "NEW" ? "default" : "secondary"}
+                        className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-colors duration-300 ${
+                          activeTab === item.key
+                            ? "bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
+                            : ""
+                        }`}
+                      >
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   const handleViewProjectDetails = (project) => {
     setSelectedProject(project)
