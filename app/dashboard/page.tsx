@@ -46,6 +46,10 @@ import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
 import { SupportChat } from "@/components/support/support-chat"
 import { GanttChart } from "@/components/project-management/gantt-chart"
 import { HRDashboard } from "@/components/hr-management/hr-dashboard"
+import EDODashboard from "@/components/edo/edo-dashboard"
+import LegalDashboard from "@/components/legal/legal-dashboard"
+import StrategyDashboard from "@/components/strategy/strategy-dashboard"
+import MarketingDashboard from "@/components/marketing/marketing-dashboard"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -319,13 +323,17 @@ export default function Dashboard() {
     <div className="space-y-2">
       {[
         { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
+        { key: "goals", icon: Target, label: "🎯 Стратегия и цели", badge: "NEW" },
         { key: "strategy", icon: Brain, label: "ИИ-Агент для бизнеса", badge: "NEW" },
         { key: "tools", icon: Rocket, label: "ИИ-инструменты", badge: 5 },
         { key: "sales", icon: TrendingUp, label: "Продажи", badge: 156 },
         { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
+        { key: "marketing", icon: MessageSquare, label: "📣 Маркетинг и клиенты", badge: "NEW" },
         { key: "projects", icon: Target, label: "Активные проекты", badge: 3 },
         { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
         { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
+        { key: "edo", icon: FileText, label: "ЭДО | Документооборот", badge: "NEW" },
+        { key: "legal", icon: Shield, label: "⚖️ Правовой контур", badge: "NEW" },
         { key: "team", icon: Users, label: "Команда", badge: null },
         { key: "hr", icon: Users, label: "HR и развитие команды", badge: "NEW" },
         { key: "roles", icon: Shield, label: "Роли и права", badge: null },
@@ -540,6 +548,12 @@ export default function Dashboard() {
                 {activeTab === "strategy" && (
                   <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
                     <AIBusinessAgent />
+                  </div>
+                )}
+
+                {activeTab === "goals" && (
+                  <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                    <StrategyDashboard />
                   </div>
                 )}
 
@@ -985,7 +999,29 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                {activeTab === "hr" && <HRDashboard />}
+                {activeTab === "hr" && (
+                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                    <HRDashboard />
+                  </div>
+                )}
+
+                {activeTab === "edo" && (
+                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                    <EDODashboard />
+                  </div>
+                )}
+
+                {activeTab === "legal" && (
+                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                    <LegalDashboard />
+                  </div>
+                )}
+
+                {activeTab === "marketing" && (
+                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                    <MarketingDashboard />
+                  </div>
+                )}
               </div>
             </div>
           </div>
