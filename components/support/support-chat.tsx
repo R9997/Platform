@@ -212,19 +212,19 @@ export function SupportChat() {
               </div>
             </ScrollArea>
 
-            <div className="p-6 border-t border-border bg-background/50">
-              <div className="flex gap-3">
+            <div className="p-4 border-t border-border bg-background/95 backdrop-blur-sm">
+              <div className="flex gap-3 items-end">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Напишите ваш вопрос..."
-                  className={`flex-1 text-base ${isFullscreen ? "min-h-[50px]" : "min-h-[44px]"} rounded-xl border-2 focus:border-primary/50`}
+                  className={`flex-1 text-base ${isFullscreen ? "min-h-[48px]" : "min-h-[42px]"} rounded-xl border-2 focus:border-primary/50`}
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isTyping}
-                  className={`${isFullscreen ? "px-6 py-3 h-[50px]" : "px-5 py-2 h-[44px]"} rounded-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70`}
+                  className={`${isFullscreen ? "px-6 py-3 h-[48px]" : "px-5 py-2 h-[42px]"} rounded-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 flex-shrink-0`}
                 >
                   <Send className="h-5 w-5" />
                 </Button>
