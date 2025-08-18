@@ -139,6 +139,9 @@ function FileManager() {
   const [showCreateFolderDialog, setShowCreateFolderDialog] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<string[]>([])
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
   const [newFolder, setNewFolder] = useState({
     name: "",
@@ -246,13 +249,67 @@ function FileManager() {
 
     const droppedFiles = Array.from(e.dataTransfer.files)
     console.log("Загружаемые файлы:", droppedFiles)
-    // Здесь будет логика загрузки файлов
+    if (droppedFiles.length > 0) {
+      processFileUpload(droppedFiles)
+    }
   }, [])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFiles = Array.from(event.target.files || [])
     console.log("Загружаемые файлы:", uploadedFiles)
-    // Здесь будет логика загрузки файлов
+    if (uploadedFiles.length > 0) {
+      processFileUpload(uploadedFiles)
+    }
+  }
+
+  const processFileUpload = async (filesToUpload: File[]) => {
+    setIsUploading(true)
+    setUploadProgress(0)
+    setUploadedFiles(filesToUpload)
+
+    try {
+      const newFiles: FileItem[] = []
+
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i]
+
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        const newFile: FileItem = {
+          id: Date.now().toString() + i,
+          name: file.name,
+          type: "file",
+          size: file.size,
+          mimeType: file.type,
+          createdAt: new Date(),
+          modifiedAt: new Date(),
+          owner: { id: "current", name: "Текущий пользователь" },
+          permissions: "team",
+          tags: [],
+          isShared: false,
+          downloadCount: 0,
+          parentId: currentFolder,
+          preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
+        }
+
+        newFiles.push(newFile)
+        setUploadProgress(((i + 1) / filesToUpload.length) * 100)
+      }
+
+      setFiles((prevFiles) => [...prevFiles, ...newFiles])
+
+      setTimeout(() => {
+        setShowUploadDialog(false)
+        setIsUploading(false)
+        setUploadProgress(0)
+        setUploadedFiles([])
+      }, 1000)
+    } catch (error) {
+      console.error("Ошибка загрузки файлов:", error)
+      setIsUploading(false)
+      setUploadProgress(0)
+      setUploadedFiles([])
+    }
   }
 
   const handleCreateFolder = () => {
@@ -282,7 +339,6 @@ function FileManager() {
 
   const handleFileAction = (action: string, fileId: string) => {
     console.log(`Действие ${action} для файла ${fileId}`)
-    // Здесь будет логика для различных действий с файлами
   }
 
   const toggleFileSelection = (fileId: string) => {
@@ -369,23 +425,45 @@ function FileManager() {
                 <DialogTitle>Загрузить файлы</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
+                {isUploading && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-foreground">Загрузка файлов...</span>
+                      <span className="text-sm text-muted-foreground">{Math.round(uploadProgress)}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="h-2" />
+                    <div className="text-xs text-muted-foreground">Загружено {uploadedFiles.length} файл(ов)</div>
+                  </div>
+                )}
+
                 <div
                   className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                     isDragOver
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50 hover:bg-primary/5"
-                  }`}
+                  } ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                 >
                   <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-foreground font-medium mb-2">Перетащите файлы сюда</p>
-                  <p className="text-sm text-muted-foreground mb-4">или выберите файлы для загрузки</p>
-                  <input type="file" multiple onChange={handleFileUpload} className="hidden" id="file-upload" />
-                  <Button asChild variant="outline">
+                  <p className="text-foreground font-medium mb-2">
+                    {isUploading ? "Загрузка..." : "Перетащите файлы сюда"}
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {isUploading ? "Пожалуйста, подождите..." : "или выберите файлы для загрузки"}
+                  </p>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="file-upload"
+                    disabled={isUploading}
+                  />
+                  <Button asChild variant="outline" disabled={isUploading}>
                     <label htmlFor="file-upload" className="cursor-pointer">
-                      Выбрать файлы
+                      {isUploading ? "Загрузка..." : "Выбрать файлы"}
                     </label>
                   </Button>
                 </div>
@@ -395,7 +473,6 @@ function FileManager() {
         </div>
       </div>
 
-      {/* Storage stats */}
       <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
         <CardContent className="p-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -428,7 +505,6 @@ function FileManager() {
         </CardContent>
       </Card>
 
-      {/* Filters and controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <div className="relative flex-1 max-w-md">
@@ -475,7 +551,6 @@ function FileManager() {
         </div>
       </div>
 
-      {/* Breadcrumb navigation */}
       {currentFolder && (
         <div className="flex items-center space-x-2 text-sm">
           <Button variant="ghost" size="sm" onClick={() => setCurrentFolder(null)}>
@@ -486,7 +561,6 @@ function FileManager() {
         </div>
       )}
 
-      {/* Files grid/list */}
       <div
         className={
           viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" : "space-y-2"
@@ -656,7 +730,6 @@ function FileManager() {
         </div>
       )}
 
-      {/* Selected files actions */}
       {selectedFiles.length > 0 && (
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-card border border-border rounded-lg shadow-lg p-4 flex items-center space-x-2">
           <span className="text-sm text-foreground">Выбрано: {selectedFiles.length}</span>
