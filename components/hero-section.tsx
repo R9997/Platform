@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Download, MessageSquare } from "lucide-react"
+import { ArrowRight, Download, MessageSquare, TrendingUp, Users, Zap } from "lucide-react"
 import Link from "next/link"
 
 export function HeroSection() {
@@ -20,7 +20,7 @@ export function HeroSection() {
 
           <div className="flex flex-col gap-3 sm:gap-4 justify-center items-stretch sm:items-center px-2 sm:px-4 max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-              <Link href="/platform" className="flex-1 sm:flex-initial">
+              <Link href="/register" className="flex-1 sm:flex-initial">
                 <Button
                   size="lg"
                   className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 min-h-[48px] sm:min-h-[52px]"
@@ -45,7 +45,7 @@ export function HeroSection() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 bg-transparent border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto"
+              className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 bg-gradient-to-r from-accent/10 to-primary/10 border-primary/30 hover:border-primary/50 hover:from-accent/20 hover:to-primary/20 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group"
               asChild
             >
               <a
@@ -54,43 +54,70 @@ export function HeroSection() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center"
               >
-                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                <span className="text-center leading-tight">
+                <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-primary group-hover:scale-110 transition-transform" />
+                <span className="text-center leading-tight font-medium">
                   <span className="hidden sm:inline">Бесплатный материал по ИИ-диагностике</span>
                   <span className="sm:hidden">Бесплатный материал по ИИ</span>
                 </span>
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-primary group-hover:translate-x-1 transition-transform" />
               </a>
             </Button>
           </div>
 
           <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto px-2">
-            <div className="text-center p-4 sm:p-6 bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg enhanced-card">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            <Link href="/register" className="group">
+              <div className="text-center p-6 sm:p-8 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm border border-primary/20 rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer h-full">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h3 className="font-bold text-base sm:text-lg text-foreground mb-3 group-hover:text-primary transition-colors">
+                  ИИ-инструменты
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
+                  Генерация контента, анализ данных, автоматизация процессов
+                </p>
+                <div className="inline-flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+                  Попробовать бесплатно
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </div>
               </div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground mb-2">ИИ-инструменты</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Генерация контента, анализ данных, автоматизация
-              </p>
-            </div>
-            <div className="text-center p-4 sm:p-6 bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg enhanced-card">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            </Link>
+
+            <Link href="/register" className="group">
+              <div className="text-center p-6 sm:p-8 bg-gradient-to-br from-accent/5 to-primary/5 backdrop-blur-sm border border-accent/20 rounded-xl hover:border-accent/40 hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 cursor-pointer h-full">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h3 className="font-bold text-base sm:text-lg text-foreground mb-3 group-hover:text-accent transition-colors">
+                  Управление проектами
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
+                  Отслеживание прогресса и ROI в реальном времени
+                </p>
+                <div className="inline-flex items-center text-sm font-medium text-accent group-hover:translate-x-1 transition-transform">
+                  Начать управлять
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </div>
               </div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground mb-2">Управление проектами</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Отслеживание прогресса и ROI в реальном времени
-              </p>
-            </div>
-            <div className="text-center p-4 sm:p-6 bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg enhanced-card">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Download className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            </Link>
+
+            <Link href="/register" className="group">
+              <div className="text-center p-6 sm:p-8 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm border border-primary/20 rounded-xl hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer h-full">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Users className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h3 className="font-bold text-base sm:text-lg text-foreground mb-3 group-hover:text-primary transition-colors">
+                  Персональный консультант
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
+                  ИИ-помощник для стратегических решений
+                </p>
+                <div className="inline-flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
+                  Получить консультацию
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </div>
               </div>
-              <h3 className="font-semibold text-sm sm:text-base text-foreground mb-2">Персональный консультант</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                ИИ-помощник для стратегических решений
-              </p>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
