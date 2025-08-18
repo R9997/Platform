@@ -44,6 +44,8 @@ import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
 import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
 import { SupportChat } from "@/components/support/support-chat"
+import { GanttChart } from "@/components/project-management/gantt-chart"
+import { HRDashboard } from "@/components/hr-management/hr-dashboard"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -325,6 +327,7 @@ export default function Dashboard() {
         { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
         { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
         { key: "team", icon: Users, label: "Команда", badge: null },
+        { key: "hr", icon: Users, label: "HR и развитие команды", badge: "NEW" },
         { key: "roles", icon: Shield, label: "Роли и права", badge: null },
         { key: "settings", icon: Settings, label: "Настройки", badge: null },
       ].map((item, index) => (
@@ -741,6 +744,8 @@ export default function Dashboard() {
                       </Button>
                     </div>
 
+                    <GanttChart projects={projects} />
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                       {projects.map((project) => (
                         <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
@@ -979,6 +984,8 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
+
+                {activeTab === "hr" && <HRDashboard />}
               </div>
             </div>
           </div>

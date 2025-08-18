@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { MessageSquare, X, Send, Bot, User, Minimize2, Maximize2 } from "lucide-react"
+import { MessageSquare, X, Send, Bot, User, Minimize2, Maximize2, Expand } from "lucide-react"
 
 interface Message {
   id: string
@@ -20,6 +20,7 @@ interface Message {
 export function SupportChat() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -100,81 +101,99 @@ export function SupportChat() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className={`fixed z-50 ${isFullscreen ? "inset-0 bg-background/95 backdrop-blur-sm" : "bottom-6 right-6"}`}>
       <Card
-        className={`w-80 sm:w-96 transition-all duration-300 shadow-2xl border-2 border-primary/20 ${
-          isMinimized ? "h-16 w-80 sm:w-96" : "h-[500px] w-96 sm:w-[450px] md:w-[500px]"
+        className={`transition-all duration-300 shadow-2xl border-2 border-primary/20 ${
+          isFullscreen
+            ? "w-full h-full max-w-none rounded-none"
+            : isMinimized
+              ? "h-16 w-80 sm:w-96"
+              : "h-[600px] w-[400px] sm:w-[500px] md:w-[600px] lg:w-[700px]"
         }`}
       >
-        <CardHeader className="pb-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
-          <CardTitle className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
+        <CardHeader className="pb-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+          <CardTitle className="flex items-center justify-between text-base">
+            <div className="flex items-center gap-3">
               <div className="relative">
-                <Bot className="h-5 w-5" />
+                <Bot className="h-6 w-6" />
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
               <div>
-                <div className="font-semibold">Поддержка Рефрейм</div>
-                <div className="text-xs opacity-90">Всегда рядом с вами</div>
+                <div className="font-semibold text-lg">Поддержка Рефрейм</div>
+                <div className="text-sm opacity-90">Всегда рядом с вами</div>
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsMinimized(!isMinimized)}
-                className="h-8 w-8 p-0 hover:bg-white/20"
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                className="h-9 w-9 p-0 hover:bg-white/20"
+                title={isFullscreen ? "Выйти из полноэкранного режима" : "Открыть на весь экран"}
               >
-                {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+                <Expand className="h-5 w-5" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsOpen(false)}
-                className="h-8 w-8 p-0 hover:bg-white/20"
+                onClick={() => setIsMinimized(!isMinimized)}
+                className="h-9 w-9 p-0 hover:bg-white/20"
+                title={isMinimized ? "Развернуть" : "Свернуть"}
               >
-                <X className="h-4 w-4" />
+                {isMinimized ? <Maximize2 className="h-5 w-5" /> : <Minimize2 className="h-5 w-5" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setIsOpen(false)
+                  setIsFullscreen(false)
+                }}
+                className="h-9 w-9 p-0 hover:bg-white/20"
+                title="Закрыть чат"
+              >
+                <X className="h-5 w-5" />
               </Button>
             </div>
           </CardTitle>
         </CardHeader>
 
         {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-[436px]">
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+          <CardContent className={`p-0 flex flex-col ${isFullscreen ? "h-[calc(100vh-80px)]" : "h-[520px]"}`}>
+            <ScrollArea className="flex-1 p-6">
+              <div className="space-y-6">
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex gap-2 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex gap-3 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {message.sender === "bot" && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Bot className="h-4 w-4 text-primary" />
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Bot className="h-5 w-5 text-primary" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[75%] p-3 rounded-lg text-sm leading-relaxed ${
+                      className={`${isFullscreen ? "max-w-[60%]" : "max-w-[80%]"} p-4 rounded-xl text-base leading-relaxed ${
                         message.sender === "user"
-                          ? "bg-primary text-primary-foreground ml-auto"
-                          : "bg-muted text-muted-foreground"
+                          ? "bg-primary text-primary-foreground ml-auto rounded-br-md"
+                          : "bg-muted text-muted-foreground rounded-bl-md"
                       }`}
                     >
                       {message.text}
                     </div>
                     {message.sender === "user" && (
-                      <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 text-accent" />
+                      <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <User className="h-5 w-5 text-accent" />
                       </div>
                     )}
                   </div>
                 ))}
                 {isTyping && (
-                  <div className="flex gap-2 justify-start">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Bot className="h-4 w-4 text-primary" />
+                  <div className="flex gap-3 justify-start">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Bot className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="bg-muted text-muted-foreground p-3 rounded-lg text-sm">
+                    <div className="bg-muted text-muted-foreground p-4 rounded-xl rounded-bl-md text-base">
                       <div className="flex gap-1">
                         <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
                         <div
@@ -193,17 +212,21 @@ export function SupportChat() {
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t border-border">
-              <div className="flex gap-2">
+            <div className="p-6 border-t border-border bg-background/50">
+              <div className="flex gap-3">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Напишите ваш вопрос..."
-                  className="flex-1 text-sm min-h-[40px]"
+                  className={`flex-1 text-base ${isFullscreen ? "min-h-[50px]" : "min-h-[44px]"} rounded-xl border-2 focus:border-primary/50`}
                 />
-                <Button onClick={handleSendMessage} disabled={!inputValue.trim() || isTyping} className="px-4 py-2">
-                  <Send className="h-4 w-4" />
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!inputValue.trim() || isTyping}
+                  className={`${isFullscreen ? "px-6 py-3 h-[50px]" : "px-5 py-2 h-[44px]"} rounded-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70`}
+                >
+                  <Send className="h-5 w-5" />
                 </Button>
               </div>
             </div>
