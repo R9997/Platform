@@ -330,10 +330,10 @@ export default function Dashboard() {
         <Button
           key={item.key}
           variant={activeTab === item.key ? "default" : "ghost"}
-          className={`w-full justify-start transition-all duration-500 ease-out text-sm py-3 px-4 h-auto transform hover:scale-[1.02] hover:translate-x-1 ${
+          className={`w-full justify-start transition-all duration-300 ease-out text-sm py-3 px-4 h-auto ${
             activeTab === item.key
-              ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-xl shadow-primary/30 scale-[1.02] translate-x-1"
-              : "text-foreground hover:bg-gradient-to-r hover:from-accent/30 hover:to-accent/10 hover:shadow-lg"
+              ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
+              : "text-foreground hover:bg-gradient-to-r hover:from-accent/30 hover:to-accent/10"
           }`}
           style={{
             animationDelay: `${index * 50}ms`,
@@ -345,9 +345,7 @@ export default function Dashboard() {
           }}
         >
           <item.icon
-            className={`w-4 h-4 mr-3 flex-shrink-0 transition-all duration-300 ${
-              activeTab === item.key ? "animate-pulse" : "group-hover:rotate-12"
-            }`}
+            className={`w-4 h-4 mr-3 flex-shrink-0 transition-all duration-300 ${activeTab === item.key ? "" : ""}`}
           />
           <span className="flex-1 text-left truncate font-medium">{item.label}</span>
           {item.badge && (
@@ -355,8 +353,8 @@ export default function Dashboard() {
               variant={item.badge === "NEW" ? "default" : "secondary"}
               className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-all duration-300 ${
                 item.badge === "NEW"
-                  ? "bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white animate-pulse shadow-lg shadow-purple-500/30"
-                  : "bg-gradient-to-r from-accent to-accent/80 hover:scale-110"
+                  ? "bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white shadow-lg shadow-purple-500/30"
+                  : "bg-gradient-to-r from-accent to-accent/80"
               }`}
             >
               {item.badge}
@@ -434,26 +432,22 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex items-center space-x-1">
-                  <div className="animate-bounce" style={{ animationDelay: "1s", animationDuration: "2s" }}>
-                    <InteractiveTour />
-                  </div>
-                  <div className="animate-bounce" style={{ animationDelay: "1.5s", animationDuration: "2s" }}>
-                    <FeatureGuide />
-                  </div>
+                  <InteractiveTour />
+                  <FeatureGuide />
                 </div>
 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative hover:bg-muted/80 dark:hover:bg-muted/40 transition-all duration-300 hover:scale-110 group"
+                  className="relative hover:bg-muted/80 dark:hover:bg-muted/40 transition-all duration-300 group"
                   onClick={() => {
                     setShowNotificationsModal(true)
                     console.log("[v0] Notifications button clicked")
                   }}
                 >
-                  <Bell className="h-5 w-5 text-foreground group-hover:animate-swing" />
+                  <Bell className="h-5 w-5 text-foreground" />
                   {notifications > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-background animate-bounce shadow-lg shadow-red-500/30">
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-background shadow-lg shadow-red-500/30">
                       {notifications}
                     </Badge>
                   )}
@@ -1437,15 +1431,7 @@ export default function Dashboard() {
           }
         }
         
-        @keyframes swing {
-          0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(15deg); }
-          75% { transform: rotate(-15deg); }
-        }
-        
-        .animate-swing {
-          animation: swing 1s ease-in-out;
-        }
+        /* Убрал анимацию swing, которая вызывала скачки */
         
         .shadow-3xl {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
