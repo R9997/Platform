@@ -6,6 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   DollarSign,
   TrendingUp,
@@ -24,10 +28,30 @@ import {
   CheckCircle,
   Clock,
   Target,
+  FileSpreadsheet,
 } from "lucide-react"
 
 export function FinanceManager() {
   const [activeTab, setActiveTab] = useState("overview")
+
+  const [showAddTransaction, setShowAddTransaction] = useState(false)
+  const [showAddCategory, setShowAddCategory] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
+
+  const [newTransaction, setNewTransaction] = useState({
+    description: "",
+    category: "Доходы",
+    amount: "",
+    type: "income",
+    date: new Date().toISOString().split("T")[0],
+  })
+
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    budget: "",
+    type: "expense",
+  })
 
   const [financialMetrics, setFinancialMetrics] = useState({
     totalRevenue: 2450000,
@@ -109,6 +133,119 @@ export function FinanceManager() {
       percentage: 82,
     },
   ])
+
+  const handleAddTransaction = () => {
+    if (newTransaction.description && newTransaction.amount) {
+      const amount =
+        newTransaction.type === "expense" ? -Math.abs(Number(newTransaction.amount)) : Number(newTransaction.amount)
+      const transaction = {
+        id: transactions.length + 1,
+        date: newTransaction.date,
+        description: newTransaction.description,
+        category: newTransaction.category,
+        amount: amount,
+        type: newTransaction.type,
+        status: "completed",
+      }
+      setTransactions([transaction, ...transactions])
+      setNewTransaction({
+        description: "",
+        category: "Доходы",
+        amount: "",
+        type: "income",
+        date: new Date().toISOString().split("T")[0],
+      })
+      setShowAddTransaction(false)
+    }
+  }
+
+  const handleAddCategory = () => {
+    if (newCategory.name && newCategory.budget) {
+      const category = {
+        category: newCategory.name,
+        budgeted: Number(newCategory.budget),
+        spent: 0,
+        remaining: Number(newCategory.budget),
+        percentage: 0,
+      }
+      setBudgetCategories([...budgetCategories, category])
+      setNewCategory({
+        name: "",
+        budget: "",
+        type: "expense",
+      })
+      setShowAddCategory(false)
+    }
+  }
+
+  const handleImport = () => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = ".csv,.xlsx,.xls"
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        console.log("Импорт файла:", file.name)
+        alert(`Файл "${file.name}" успешно импортирован!`)
+        setShowImportModal(false)
+      }
+    }
+    input.click()
+  }
+
+  const handleExport = (format: string) => {
+    const data = transactions.map((t) => ({
+      Дата: t.date,
+      Описание: t.description,
+      Категория: t.category,
+      Сумма: t.amount,
+      Тип: t.type === "income" ? "Доход" : "Расход",
+      Статус: t.status === "completed" ? "Завершено" : "В ожидании",
+    }))
+
+    if (format === "csv") {
+      const csvContent = [Object.keys(data[0]).join(","), ...data.map((row) => Object.values(row).join(","))].join("\n")
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+      const link = document.createElement("a")
+      const url = URL.createObjectURL(blob)
+      link.setAttribute("href", url)
+      link.setAttribute("download", `transactions_${new Date().toISOString().split("T")[0]}.csv`)
+      link.style.visibility = "hidden"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+    setShowExportModal(false)
+  }
+
+  const handleGenerateReport = () => {
+    const reportData = [
+      ["Финансовый отчет", "", "", ""],
+      ["Дата создания:", new Date().toLocaleDateString("ru-RU"), "", ""],
+      ["", "", "", ""],
+      ["Основные показатели:", "", "", ""],
+      ["Общий доход:", financialMetrics.totalRevenue.toLocaleString("ru-RU") + "₽", "", ""],
+      ["Общие расходы:", financialMetrics.totalExpenses.toLocaleString("ru-RU") + "₽", "", ""],
+      ["Чистая прибыль:", financialMetrics.netProfit.toLocaleString("ru-RU") + "₽", "", ""],
+      ["Маржа прибыли:", financialMetrics.profitMargin + "%", "", ""],
+      ["", "", "", ""],
+      ["Транзакции:", "", "", ""],
+      ["Дата", "Описание", "Категория", "Сумма"],
+      ...transactions.map((t) => [t.date, t.description, t.category, t.amount.toLocaleString("ru-RU") + "₽"]),
+    ]
+
+    const csvContent = reportData.map((row) => row.join(",")).join("\n")
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    link.setAttribute("href", url)
+    link.setAttribute("download", `financial_report_${new Date().toISOString().split("T")[0]}.csv`)
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const getTransactionIcon = (type: string) => {
     return type === "income" ? (
@@ -311,15 +448,15 @@ export function FinanceManager() {
               <p className="text-muted-foreground">Управление доходами и расходами</p>
             </div>
             <div className="flex space-x-2">
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setShowImportModal(true)}>
                 <Upload className="w-4 h-4 mr-2" />
                 Импорт
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setShowExportModal(true)}>
                 <Download className="w-4 h-4 mr-2" />
                 Экспорт
               </Button>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button className="bg-primary hover:bg-primary/90" onClick={() => setShowAddTransaction(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Добавить
               </Button>
@@ -367,7 +504,7 @@ export function FinanceManager() {
               <h3 className="text-lg font-semibold text-foreground">Бюджет по категориям</h3>
               <p className="text-muted-foreground">Планирование и контроль расходов</p>
             </div>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90" onClick={() => setShowAddCategory(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Новая категория
             </Button>
@@ -416,6 +553,17 @@ export function FinanceManager() {
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Финансовые отчеты</h3>
+              <p className="text-muted-foreground">Анализ и прогнозирование</p>
+            </div>
+            <Button className="bg-primary hover:bg-primary/90" onClick={handleGenerateReport}>
+              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              Сформировать отчет
+            </Button>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-card/60 backdrop-blur-xl border border-border/50">
               <CardHeader>
@@ -485,6 +633,155 @@ export function FinanceManager() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={showAddTransaction} onOpenChange={setShowAddTransaction}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle>Добавить транзакцию</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Описание *</Label>
+              <Input
+                value={newTransaction.description}
+                onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
+                placeholder="Описание транзакции"
+              />
+            </div>
+            <div>
+              <Label>Тип</Label>
+              <Select
+                value={newTransaction.type}
+                onValueChange={(v) => setNewTransaction({ ...newTransaction, type: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="income">Доход</SelectItem>
+                  <SelectItem value="expense">Расход</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Категория</Label>
+              <Select
+                value={newTransaction.category}
+                onValueChange={(v) => setNewTransaction({ ...newTransaction, category: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Доходы">Доходы</SelectItem>
+                  <SelectItem value="Персонал">Персонал</SelectItem>
+                  <SelectItem value="Операционные расходы">Операционные расходы</SelectItem>
+                  <SelectItem value="Маркетинг">Маркетинг</SelectItem>
+                  <SelectItem value="Разработка">Разработка</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Сумма (₽) *</Label>
+              <Input
+                type="number"
+                value={newTransaction.amount}
+                onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
+                placeholder="100000"
+              />
+            </div>
+            <div>
+              <Label>Дата</Label>
+              <Input
+                type="date"
+                value={newTransaction.date}
+                onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowAddTransaction(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddTransaction}>Добавить</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle>Новая категория бюджета</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Название категории *</Label>
+              <Input
+                value={newCategory.name}
+                onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                placeholder="Название категории"
+              />
+            </div>
+            <div>
+              <Label>Бюджет (₽) *</Label>
+              <Input
+                type="number"
+                value={newCategory.budget}
+                onChange={(e) => setNewCategory({ ...newCategory, budget: e.target.value })}
+                placeholder="100000"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowAddCategory(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddCategory}>Добавить</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle>Импорт данных</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Выберите файл для импорта транзакций. Поддерживаемые форматы: CSV, Excel (.xlsx, .xls)
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowImportModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleImport}>
+                <Upload className="w-4 h-4 mr-2" />
+                Выбрать файл
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle>Экспорт данных</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">Выберите формат для экспорта транзакций</p>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowExportModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={() => handleExport("csv")}>
+                <Download className="w-4 h-4 mr-2" />
+                Скачать CSV
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   FileText,
   BarChart3,
@@ -128,8 +128,10 @@ export function AIToolsShowcase() {
   ])
 
   const [selectedTool, setSelectedTool] = useState<AITool | null>(null)
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [viewingTool, setViewingTool] = useState<AITool | null>(null)
 
-  // Симуляция реального времени обновления данных
   useEffect(() => {
     const interval = setInterval(() => {
       setTools((prevTools) =>
@@ -153,6 +155,42 @@ export function AIToolsShowcase() {
     setTools((prevTools) =>
       prevTools.map((tool) => (tool.id === toolId ? { ...tool, isRunning: !tool.isRunning } : tool)),
     )
+  }
+
+  const handleViewTool = (tool: AITool) => {
+    setViewingTool(tool)
+    setShowViewModal(true)
+  }
+
+  const handleGenerateReport = (tool: AITool) => {
+    setViewingTool(tool)
+    setShowReportModal(true)
+  }
+
+  const downloadReport = (tool: AITool) => {
+    const reportData = [
+      ["Инструмент", "Статус", "Задач сегодня", "Эффективность", "Использование", "ROI"],
+      [
+        tool.name,
+        tool.isRunning ? "Активен" : "Остановлен",
+        tool.realTimeData.tasksToday.toString(),
+        `${Math.floor(tool.realTimeData.efficiency)}%`,
+        `${tool.usage}%`,
+        tool.roi,
+      ],
+    ]
+
+    const csvContent = reportData.map((row) => row.join(",")).join("\n")
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    link.setAttribute("href", url)
+    link.setAttribute("download", `${tool.name}_report.csv`)
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    setShowReportModal(false)
   }
 
   return (
@@ -220,7 +258,6 @@ export function AIToolsShowcase() {
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">{tool.description}</p>
 
-              {/* Real-time status */}
               <div className="p-3 bg-background/30 rounded-lg border border-border/30">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-muted-foreground">Статус</span>
@@ -246,7 +283,6 @@ export function AIToolsShowcase() {
                 </div>
               </div>
 
-              {/* Usage progress */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Использование</span>
@@ -255,7 +291,6 @@ export function AIToolsShowcase() {
                 <Progress value={tool.usage} className="h-2 transition-all duration-1000" />
               </div>
 
-              {/* Stats grid */}
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="text-center">
                   <p className="text-lg font-bold text-foreground">{tool.monthlyTasks}</p>
@@ -267,14 +302,29 @@ export function AIToolsShowcase() {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div className="flex items-center justify-between pt-4 border-t border-border/30">
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline" className="h-8 hover:bg-primary/10 bg-transparent">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 hover:bg-primary/10 bg-transparent"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleViewTool(tool)
+                    }}
+                  >
                     <Eye className="w-3 h-3 mr-1" />
                     Просмотр
                   </Button>
-                  <Button size="sm" variant="outline" className="h-8 hover:bg-primary/10 bg-transparent">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 hover:bg-primary/10 bg-transparent"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleGenerateReport(tool)
+                    }}
+                  >
                     <Download className="w-3 h-3 mr-1" />
                     Отчет
                   </Button>
@@ -292,7 +342,6 @@ export function AIToolsShowcase() {
                 </Button>
               </div>
 
-              {/* Expanded details */}
               {selectedTool?.id === tool.id && (
                 <div className="mt-4 p-4 bg-background/50 rounded-lg border border-border/30 animate-in slide-in-from-top-2 fade-in">
                   <h4 className="font-semibold text-foreground mb-3 flex items-center">
@@ -327,6 +376,107 @@ export function AIToolsShowcase() {
           </Card>
         ))}
       </div>
+
+      <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <DialogContent className="max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {viewingTool && <viewingTool.icon className="w-5 h-5 text-primary" />}
+              Детальный просмотр: {viewingTool?.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          {viewingTool && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-2">Статус</h4>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${viewingTool.isRunning ? "bg-green-500" : "bg-gray-400"}`} />
+                    <span>{viewingTool.isRunning ? "Активен" : "Остановлен"}</span>
+                  </div>
+                </Card>
+
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-2">Категория</h4>
+                  <Badge variant="outline">{viewingTool.category}</Badge>
+                </Card>
+              </div>
+
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3">Производительность</h4>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">{viewingTool.realTimeData.tasksToday}</p>
+                    <p className="text-sm text-muted-foreground">Задач сегодня</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-green-600">
+                      {Math.floor(viewingTool.realTimeData.efficiency)}%
+                    </p>
+                    <p className="text-sm text-muted-foreground">Эффективность</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-blue-600">{viewingTool.usage}%</p>
+                    <p className="text-sm text-muted-foreground">Использование</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3">Текущая активность</h4>
+                <p className="text-muted-foreground">{viewingTool.realTimeData.status}</p>
+                <div className="mt-3">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>Прогресс выполнения</span>
+                    <span>{viewingTool.usage}%</span>
+                  </div>
+                  <Progress value={viewingTool.usage} className="h-2" />
+                </div>
+              </Card>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Download className="w-5 h-5 text-primary" />
+              Генерация отчета
+            </DialogTitle>
+          </DialogHeader>
+
+          {viewingTool && (
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Создать детальный отчет по работе инструмента "{viewingTool.name}"?
+              </p>
+
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Отчет будет содержать:</h4>
+                <ul className="text-sm space-y-1 text-muted-foreground">
+                  <li>• Статистику использования</li>
+                  <li>• Показатели эффективности</li>
+                  <li>• Выполненные задачи</li>
+                  <li>• ROI и экономию времени</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={() => downloadReport(viewingTool)} className="flex-1">
+                  <Download className="w-4 h-4 mr-2" />
+                  Скачать CSV
+                </Button>
+                <Button variant="outline" onClick={() => setShowReportModal(false)} className="flex-1">
+                  Отмена
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

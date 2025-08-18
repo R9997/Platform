@@ -9,7 +9,24 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { TrendingUp, Target, BarChart3, Plus, Settings, Edit, Eye, Trash2, RussianRubleIcon as Ruble, Phone, Mail, Calendar, Search, X, Save, Filter } from 'lucide-react'
+import {
+  TrendingUp,
+  Target,
+  BarChart3,
+  Plus,
+  Settings,
+  Edit,
+  Eye,
+  Trash2,
+  RussianRubleIcon as Ruble,
+  Phone,
+  Mail,
+  Calendar,
+  Search,
+  X,
+  Save,
+  Filter,
+} from "lucide-react"
 
 interface Lead {
   id: number
@@ -41,13 +58,15 @@ interface Deal {
 }
 
 export function SalesManager() {
-  const [activeTab, setActiveTab] = useState("pipeline")
+  const [activeTab, setActiveTab] = useState("overview")
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [showAddLead, setShowAddLead] = useState(false)
-  const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [showAddDeal, setShowAddDeal] = useState(false)
   const [showEditPipeline, setShowEditPipeline] = useState(false)
-  const [showEditMetrics, setShowEditMetrics] = useState(false)
+  const [showAddStage, setShowAddStage] = useState(false)
+  const [newStageName, setNewStageName] = useState("")
+  const [editingLead, setEditingLead] = useState<Lead | null>(null)
   const [editingStage, setEditingStage] = useState<any>(null)
 
   const [newLead, setNewLead] = useState({
@@ -62,6 +81,16 @@ export function SalesManager() {
     notes: "",
   })
 
+  const [newDeal, setNewDeal] = useState({
+    title: "",
+    client: "",
+    value: "",
+    stage: "Квалификация",
+    probability: 25,
+    closeDate: "",
+    assignedTo: "Михаил Сидоров",
+  })
+
   const [salesMetrics, setSalesMetrics] = useState({
     totalRevenue: 2450000,
     monthlyGrowth: 18.5,
@@ -71,6 +100,8 @@ export function SalesManager() {
     closedDeals: 28,
     totalLeads: 156,
     qualifiedLeads: 89,
+    totalDeals: 3,
+    totalValue: 950000,
   })
 
   const [pipelineStages, setPipelineStages] = useState([
@@ -172,7 +203,7 @@ export function SalesManager() {
     },
   ])
 
-  const [deals] = useState<Deal[]>([
+  const [deals, setDeals] = useState<Deal[]>([
     {
       id: 1,
       title: "Автоматизация склада ТехноСтрой",
@@ -240,6 +271,38 @@ export function SalesManager() {
         notes: "",
       })
       setShowAddLead(false)
+    }
+  }
+
+  const handleAddDeal = () => {
+    if (newDeal.title && newDeal.client && newDeal.value) {
+      const deal: Deal = {
+        id: deals.length + 1,
+        title: newDeal.title,
+        client: newDeal.client,
+        value: Number.parseInt(newDeal.value) || 0,
+        stage: newDeal.stage,
+        probability: newDeal.probability,
+        closeDate: newDeal.closeDate,
+        assignedTo: newDeal.assignedTo,
+        activities: 0,
+      }
+      setDeals([...deals, deal])
+      setSalesMetrics({
+        ...salesMetrics,
+        totalDeals: salesMetrics.totalDeals + 1,
+        totalValue: salesMetrics.totalValue + deal.value,
+      })
+      setNewDeal({
+        title: "",
+        client: "",
+        value: "",
+        stage: "Квалификация",
+        probability: 25,
+        closeDate: "",
+        assignedTo: "Михаил Сидоров",
+      })
+      setShowAddDeal(false)
     }
   }
 
@@ -343,7 +406,7 @@ export function SalesManager() {
 
   const handleAddStage = () => {
     const newStage = {
-      stage: "Новый этап",
+      stage: newStageName,
       count: 0,
       value: 0,
       color: "gray",
@@ -352,6 +415,8 @@ export function SalesManager() {
       textClass: "text-gray-600",
     }
     setPipelineStages([...pipelineStages, newStage])
+    setNewStageName("")
+    setShowAddStage(false)
   }
 
   const handleDeleteStage = (stageToDelete: string) => {
@@ -383,7 +448,7 @@ export function SalesManager() {
         <TabsContent value="pipeline" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Ключевые метрики</h3>
-            <Button variant="outline" size="sm" onClick={() => setShowEditMetrics(true)}>
+            <Button variant="outline" size="sm" onClick={() => setShowEditPipeline(true)}>
               <Settings className="w-4 h-4 mr-2" />
               Редактировать
             </Button>
@@ -412,7 +477,7 @@ export function SalesManager() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Активные сделки</p>
-                    <p className="text-2xl font-bold text-blue-600">47</p>
+                    <p className="text-2xl font-bold text-blue-600">{salesMetrics.totalDeals}</p>
                   </div>
                   <div className="p-2 bg-blue-500/10 rounded-lg">
                     <Target className="w-5 h-5 text-blue-600" />
@@ -500,7 +565,7 @@ export function SalesManager() {
                   </div>
                 ))}
               </div>
-              <Button variant="outline" size="sm" className="mt-4 bg-transparent" onClick={handleAddStage}>
+              <Button variant="outline" size="sm" className="mt-4 bg-transparent" onClick={() => setShowAddStage(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Добавить этап
               </Button>
@@ -712,7 +777,7 @@ export function SalesManager() {
         <TabsContent value="deals" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Активные сделки</h3>
-            <Button onClick={() => setShowAddLead(true)}>
+            <Button onClick={() => setShowAddDeal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Добавить сделку
             </Button>
@@ -835,62 +900,98 @@ export function SalesManager() {
         </Dialog>
       )}
 
-      {showEditMetrics && (
-        <Dialog open={showEditMetrics} onOpenChange={setShowEditMetrics}>
-          <DialogContent className="enhanced-modal">
+      {showAddDeal && (
+        <Dialog open={showAddDeal} onOpenChange={setShowAddDeal}>
+          <DialogContent className="enhanced-modal max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Редактировать метрики</DialogTitle>
+              <DialogTitle>Добавить сделку</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div>
-                <Label>Общая выручка (₽)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={salesMetrics.totalRevenue}
-                  onChange={(e) => handleUpdateMetrics("totalRevenue", Number(e.target.value))}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Название сделки *</Label>
+                  <Input
+                    className="enhanced-input"
+                    value={newDeal.title}
+                    onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
+                    placeholder="Автоматизация склада"
+                  />
+                </div>
+                <div>
+                  <Label>Клиент *</Label>
+                  <Input
+                    className="enhanced-input"
+                    value={newDeal.client}
+                    onChange={(e) => setNewDeal({ ...newDeal, client: e.target.value })}
+                    placeholder="ООО Компания"
+                  />
+                </div>
+                <div>
+                  <Label>Сумма сделки (₽) *</Label>
+                  <Input
+                    className="enhanced-input"
+                    type="number"
+                    value={newDeal.value}
+                    onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
+                    placeholder="150000"
+                  />
+                </div>
+                <div>
+                  <Label>Этап сделки</Label>
+                  <Select value={newDeal.stage} onValueChange={(v) => setNewDeal({ ...newDeal, stage: v })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Квалификация">Квалификация</SelectItem>
+                      <SelectItem value="Предложение">Предложение</SelectItem>
+                      <SelectItem value="Переговоры">Переговоры</SelectItem>
+                      <SelectItem value="Закрытие">Закрытие</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Вероятность (%)</Label>
+                  <Input
+                    className="enhanced-input"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={newDeal.probability}
+                    onChange={(e) => setNewDeal({ ...newDeal, probability: Number(e.target.value) })}
+                    placeholder="25"
+                  />
+                </div>
+                <div>
+                  <Label>Дата закрытия</Label>
+                  <Input
+                    className="enhanced-input"
+                    type="date"
+                    value={newDeal.closeDate}
+                    onChange={(e) => setNewDeal({ ...newDeal, closeDate: e.target.value })}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Ответственный</Label>
+                  <Select value={newDeal.assignedTo} onValueChange={(v) => setNewDeal({ ...newDeal, assignedTo: v })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Михаил Сидоров">Михаил Сидоров</SelectItem>
+                      <SelectItem value="Елена Козлова">Елена Козлова</SelectItem>
+                      <SelectItem value="Анна Петрова">Анна Петрова</SelectItem>
+                      <SelectItem value="Дмитрий Волков">Дмитрий Волков</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <Label>Конверсия (%)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  step="0.1"
-                  value={salesMetrics.conversionRate}
-                  onChange={(e) => handleUpdateMetrics("conversionRate", Number(e.target.value))}
-                />
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowAddDeal(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={handleAddDeal}>Добавить сделку</Button>
               </div>
-              <div>
-                <Label>Средний чек (₽)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={salesMetrics.avgDealSize}
-                  onChange={(e) => handleUpdateMetrics("avgDealSize", Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>В работе (₽)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={salesMetrics.activePipeline}
-                  onChange={(e) => handleUpdateMetrics("activePipeline", Number(e.target.value))}
-                />
-              </div>
-              <div>
-                <Label>Всего лидов</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={salesMetrics.totalLeads}
-                  onChange={(e) => handleUpdateMetrics("totalLeads", Number(e.target.value))}
-                />
-              </div>
-              <Button onClick={() => setShowEditMetrics(false)} className="w-full">
-                Сохранить
-              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -1005,6 +1106,32 @@ export function SalesManager() {
                   Отмена
                 </Button>
                 <Button onClick={handleAddLead}>Добавить</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {showAddStage && (
+        <Dialog open={showAddStage} onOpenChange={setShowAddStage}>
+          <DialogContent className="enhanced-modal">
+            <DialogHeader>
+              <DialogTitle>Добавить этап</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label>Название этапа</Label>
+                <Input
+                  className="enhanced-input"
+                  value={newStageName}
+                  onChange={(e) => setNewStageName(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleAddStage}>Добавить</Button>
+                <Button variant="outline" onClick={() => setShowAddStage(false)}>
+                  Отмена
+                </Button>
               </div>
             </div>
           </DialogContent>
