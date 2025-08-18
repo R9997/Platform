@@ -7,7 +7,7 @@ export function HeroSection() {
     <section className="relative py-12 sm:py-16 md:py-24 lg:py-32 overflow-hidden">
       <div className="container mx-auto px-3 sm:px-4">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-[1.1] sm:leading-tight mb-4 sm:mb-6 tracking-tight px-2">
+          <h1 className="font-sans font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-[1.1] sm:leading-tight mb-4 sm:mb-6 tracking-tight px-2">
             Платформа ИИ-роста для{" "}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               вашего бизнеса
@@ -34,7 +34,7 @@ export function HeroSection() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-transparent border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 min-h-[48px] sm:min-h-[52px]"
+                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-transparent border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group"
                 >
                   <span className="truncate">Получить консультацию</span>
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform flex-shrink-0" />

@@ -103,7 +103,7 @@ export function SupportChat() {
     <div className="fixed bottom-6 right-6 z-50">
       <Card
         className={`w-80 sm:w-96 transition-all duration-300 shadow-2xl border-2 border-primary/20 ${
-          isMinimized ? "h-16" : "h-96"
+          isMinimized ? "h-16 w-80 sm:w-96" : "h-[500px] w-96 sm:w-[450px] md:w-[500px]"
         }`}
       >
         <CardHeader className="pb-2 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
@@ -140,7 +140,7 @@ export function SupportChat() {
         </CardHeader>
 
         {!isMinimized && (
-          <CardContent className="p-0 flex flex-col h-80">
+          <CardContent className="p-0 flex flex-col h-[436px]">
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
                 {messages.map((message) => (
@@ -154,7 +154,7 @@ export function SupportChat() {
                       </div>
                     )}
                     <div
-                      className={`max-w-[70%] p-3 rounded-lg text-sm ${
+                      className={`max-w-[75%] p-3 rounded-lg text-sm leading-relaxed ${
                         message.sender === "user"
                           ? "bg-primary text-primary-foreground ml-auto"
                           : "bg-muted text-muted-foreground"
@@ -200,9 +200,9 @@ export function SupportChat() {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Напишите ваш вопрос..."
-                  className="flex-1 text-sm"
+                  className="flex-1 text-sm min-h-[40px]"
                 />
-                <Button onClick={handleSendMessage} disabled={!inputValue.trim() || isTyping} className="px-3">
+                <Button onClick={handleSendMessage} disabled={!inputValue.trim() || isTyping} className="px-4 py-2">
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
