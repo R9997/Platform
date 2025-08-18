@@ -330,28 +330,24 @@ export default function Dashboard() {
         <Button
           key={item.key}
           variant={activeTab === item.key ? "default" : "ghost"}
-          className={`w-full justify-start transition-all duration-300 ease-out text-sm py-3 px-4 h-auto ${
+          className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto ${
             activeTab === item.key
               ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
               : "text-foreground hover:bg-gradient-to-r hover:from-accent/30 hover:to-accent/10"
           }`}
-          style={{
-            animationDelay: `${index * 50}ms`,
-            animation: "slideInLeft 0.6s ease-out forwards",
-          }}
           onClick={() => {
             setActiveTab(item.key)
             onItemClick?.()
           }}
         >
           <item.icon
-            className={`w-4 h-4 mr-3 flex-shrink-0 transition-all duration-300 ${activeTab === item.key ? "" : ""}`}
+            className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-300 ${activeTab === item.key ? "" : ""}`}
           />
           <span className="flex-1 text-left truncate font-medium">{item.label}</span>
           {item.badge && (
             <Badge
               variant={item.badge === "NEW" ? "default" : "secondary"}
-              className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-all duration-300 ${
+              className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-colors duration-300 ${
                 item.badge === "NEW"
                   ? "bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white shadow-lg shadow-purple-500/30"
                   : "bg-gradient-to-r from-accent to-accent/80"
@@ -394,7 +390,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden hover:bg-accent/50 transition-all duration-300 hover:scale-110"
+                  className="lg:hidden hover:bg-accent/50 transition-colors duration-300"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                   <Menu className="h-5 w-5" />
@@ -402,9 +398,9 @@ export default function Dashboard() {
 
                 <Link
                   href="/"
-                  className="flex items-center space-x-2 hover:opacity-80 transition-all duration-300 group"
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300 group"
                 >
-                  <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
+                  <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl group-hover:from-primary/30 group-hover:to-accent/30 transition-colors duration-300">
                     <Home className="h-5 w-5 text-primary group-hover:animate-pulse" />
                   </div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent hidden sm:block">
@@ -439,7 +435,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative hover:bg-muted/80 dark:hover:bg-muted/40 transition-all duration-300 group"
+                  className="relative hover:bg-muted/80 dark:hover:bg-muted/40 transition-colors duration-300 group"
                   onClick={() => {
                     setShowNotificationsModal(true)
                     console.log("[v0] Notifications button clicked")
@@ -453,12 +449,12 @@ export default function Dashboard() {
                   )}
                 </Button>
 
-                <div className="hover:scale-110 transition-transform duration-300">
+                <div className="transition-opacity duration-300">
                   <ThemeToggle />
                 </div>
 
                 <div className="hidden md:flex items-center space-x-2 group">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-xl group-hover:shadow-primary/30 transition-all duration-300 group-hover:scale-110">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-xl group-hover:shadow-primary/30 transition-all duration-300">
                     <span className="text-xs font-bold text-white">Д</span>
                   </div>
                   <span className="text-foreground font-medium max-w-24 truncate group-hover:text-primary transition-colors duration-300">
@@ -470,7 +466,7 @@ export default function Dashboard() {
                   onClick={() => (window.location.href = "/login")}
                   variant="outline"
                   size="sm"
-                  className="border-border/50 hover:border-primary/50 hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="border-border/50 hover:border-primary/50 hover:bg-gradient-to-r hover:from-muted/50 hover:to-accent/20 transition-all duration-300 hover:shadow-lg"
                 >
                   <LogOut className="w-4 h-4 sm:mr-2 text-foreground" />
                   <span className="hidden sm:inline text-foreground">Войти</span>
@@ -504,12 +500,12 @@ export default function Dashboard() {
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <div className="hidden lg:block lg:col-span-1 xl:col-span-1">
-              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 min-w-[280px] w-full overflow-hidden group hover:shadow-3xl hover:shadow-primary/15 transition-all duration-500">
+              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 min-w-[280px] w-full overflow-hidden group transition-shadow duration-500">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <CardHeader className="pb-4 relative z-10">
                   <CardTitle className="text-foreground font-bold text-lg flex items-center">
-                    <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl mr-3 flex-shrink-0 group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300 group-hover:scale-110">
+                    <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl mr-3 flex-shrink-0 group-hover:from-primary/30 group-hover:to-accent/30 transition-colors duration-300">
                       <Briefcase className="w-5 h-5 text-primary group-hover:animate-pulse" />
                     </div>
                     <span className="truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
@@ -1420,18 +1416,6 @@ export default function Dashboard() {
       </div>
 
       <style jsx global>{`
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        /* Убрал анимацию swing, которая вызывала скачки */
         
         .shadow-3xl {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
