@@ -43,6 +43,7 @@ import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
 import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
+import { SupportChat } from "@/components/support/support-chat"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -368,7 +369,7 @@ export default function Dashboard() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/30 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95 relative overflow-hidden container-fix">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
           <div
@@ -494,7 +495,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 relative z-10">
+        <main className="max-w-7xl mx-auto mobile-padding py-4 sm:py-6 lg:py-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <div className="hidden lg:block lg:col-span-1 xl:col-span-1">
               <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 min-w-[280px] w-full overflow-hidden transition-shadow duration-500">
@@ -544,8 +545,10 @@ export default function Dashboard() {
                     <AIToolsShowcase />
                     <Card className="enhanced-card backdrop-blur-xl border border-border/50">
                       <CardHeader className="pb-3 sm:pb-4">
-                        <CardTitle className="text-base sm:text-lg lg:text-xl">Активные ИИ-инструменты</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">
+                        <CardTitle className="text-base sm:text-lg lg:text-xl overflow-fix">
+                          Активные ИИ-инструменты
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm overflow-fix">
                           Управление и мониторинг ИИ-инструментов
                         </CardDescription>
                       </CardHeader>
@@ -565,15 +568,15 @@ export default function Dashboard() {
                   <div className="space-y-4 sm:space-y-6">
                     <div className="flex flex-col gap-3 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground overflow-fix">
                           Управление командой
                         </h2>
-                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
+                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
                           Сотрудники, роли и права доступа
                         </p>
                       </div>
                       <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
+                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base button-responsive"
                         onClick={() => setShowAddEmployeeModal(true)}
                       >
                         <UserPlus className="w-4 h-4 mr-2" />
@@ -581,12 +584,14 @@ export default function Dashboard() {
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 grid-responsive">
                       <div className="xl:col-span-2">
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50">
+                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
                           <CardHeader className="pb-3 sm:pb-4">
                             <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="text-base sm:text-lg lg:text-xl">Команда ({employees.length})</span>
+                              <span className="text-base sm:text-lg lg:text-xl overflow-fix">
+                                Команда ({employees.length})
+                              </span>
                               <Badge variant="secondary" className="self-start sm:self-center text-xs">
                                 {employees.filter((e) => e.status === "Активен").length} активных
                               </Badge>
@@ -597,7 +602,7 @@ export default function Dashboard() {
                               {employees.map((employee) => (
                                 <div
                                   key={employee.id}
-                                  className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30"
+                                  className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
                                 >
                                   <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
                                     <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
@@ -656,24 +661,30 @@ export default function Dashboard() {
                       </div>
 
                       <div className="space-y-4 sm:space-y-6">
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50">
+                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
                           <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-sm sm:text-base lg:text-lg">Статистика команды</CardTitle>
+                            <CardTitle className="text-sm sm:text-base lg:text-lg overflow-fix">
+                              Статистика команды
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
                             <div className="space-y-3 sm:space-y-4">
                               <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground">Всего сотрудников</span>
+                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
+                                  Всего сотрудников
+                                </span>
                                 <span className="font-bold text-sm sm:text-base">{employees.length}</span>
                               </div>
                               <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground">Активных</span>
+                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">Активных</span>
                                 <span className="font-bold text-green-600 text-sm sm:text-base">
                                   {employees.filter((e) => e.status === "Активен").length}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground">Средняя продуктивность</span>
+                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
+                                  Средняя продуктивность
+                                </span>
                                 <span className="font-bold text-sm sm:text-base">
                                   {Math.round(
                                     employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
@@ -685,9 +696,11 @@ export default function Dashboard() {
                           </CardContent>
                         </Card>
 
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50">
+                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
                           <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-sm sm:text-base lg:text-lg">Роли в команде</CardTitle>
+                            <CardTitle className="text-sm sm:text-base lg:text-lg overflow-fix">
+                              Роли в команде
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
                             <div className="space-y-2">
@@ -695,7 +708,7 @@ export default function Dashboard() {
                                 const count = employees.filter((emp) => emp.role === role).length
                                 return (
                                   <div key={role} className="flex justify-between items-center">
-                                    <span className="text-xs sm:text-sm truncate flex-1 mr-2">{role}</span>
+                                    <span className="text-xs sm:text-sm truncate flex-1 mr-2 overflow-fix">{role}</span>
                                     <Badge variant="secondary" className="shrink-0 text-xs px-1.5 py-0.5">
                                       {count}
                                     </Badge>
@@ -1410,12 +1423,52 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
         )}
+        <SupportChat />
       </div>
 
       <style jsx global>{`
         
         .shadow-3xl {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+        }
+        .container-fix {
+          padding-left: max(16px, calc((100% - 1280px)/2));
+          padding-right: max(16px, calc((100% - 1280px)/2));
+        }
+        .mobile-padding {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        .overflow-fix {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .button-responsive {
+          width: auto;
+        }
+        .grid-responsive {
+          grid-template-columns: 1fr;
+        }
+        .card-responsive {
+          width: 100%;
+        }
+        @media (min-width: 640px) {
+          .mobile-padding {
+            padding-left: 24px;
+            padding-right: 24px;
+          }
+        }
+        @media (min-width: 1024px) {
+          .button-responsive {
+            width: auto;
+          }
+          .grid-responsive {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          }
+          .card-responsive {
+            width: auto;
+          }
         }
       `}</style>
     </TooltipProvider>

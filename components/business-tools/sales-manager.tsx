@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
@@ -26,6 +28,8 @@ import {
   X,
   Save,
   Filter,
+  Upload,
+  FileText,
 } from "lucide-react"
 
 interface Lead {
@@ -55,6 +59,7 @@ interface Deal {
   closeDate: string
   assignedTo: string
   activities: number
+  files?: File[]
 }
 
 export function SalesManager() {
@@ -89,7 +94,51 @@ export function SalesManager() {
     probability: 25,
     closeDate: "",
     assignedTo: "Михаил Сидоров",
+    files: [] as File[],
   })
+
+  const [dragActiveDeal, setDragActiveDeal] = useState(false)
+
+  const handleDealFileUpload = (files: FileList | null) => {
+    if (files) {
+      const fileArray = Array.from(files)
+      setNewDeal((prev) => ({
+        ...prev,
+        files: [...prev.files, ...fileArray],
+      }))
+    }
+  }
+
+  const handleDealDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActiveDeal(false)
+    handleDealFileUpload(e.dataTransfer.files)
+  }
+
+  const handleDealDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActiveDeal(true)
+  }
+
+  const handleDealDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActiveDeal(false)
+  }
+
+  const removeDealFile = (index: number) => {
+    setNewDeal((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, i) => i !== index),
+    }))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
 
   const [salesMetrics, setSalesMetrics] = useState({
     totalRevenue: 2450000,
@@ -286,6 +335,7 @@ export function SalesManager() {
         closeDate: newDeal.closeDate,
         assignedTo: newDeal.assignedTo,
         activities: 0,
+        files: newDeal.files,
       }
       setDeals([...deals, deal])
       setSalesMetrics({
@@ -301,6 +351,7 @@ export function SalesManager() {
         probability: 25,
         closeDate: "",
         assignedTo: "Михаил Сидоров",
+        files: [],
       })
       setShowAddDeal(false)
     }
@@ -986,6 +1037,61 @@ export function SalesManager() {
                   </Select>
                 </div>
               </div>
+
+              <div>
+                <Label>Прикрепить документы</Label>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                    dragActiveDeal ? "border-primary bg-primary/5" : "border-border"
+                  }`}
+                  onDrop={handleDealDrop}
+                  onDragOver={handleDealDragOver}
+                  onDragLeave={handleDealDragLeave}
+                >
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mb-2">Перетащите файлы сюда или нажмите для выбора</p>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => handleDealFileUpload(e.target.files)}
+                    className="hidden"
+                    id="deal-file-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("deal-file-upload")?.click()}
+                  >
+                    Выбрать файлы
+                  </Button>
+                </div>
+
+                {newDeal.files.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <Label className="text-sm font-medium">Прикрепленные документы:</Label>
+                    {newDeal.files.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                          <span className="text-xs text-muted-foreground">({formatFileSize(file.size)})</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeDealFile(index)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setShowAddDeal(false)}>
                   Отмена

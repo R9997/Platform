@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -22,6 +24,9 @@ import {
   MoreHorizontal,
   MessageSquare,
   Paperclip,
+  Upload,
+  X,
+  FileText,
 } from "lucide-react"
 import { format } from "date-fns"
 import { ru } from "date-fns/locale"
@@ -43,6 +48,7 @@ interface Task {
   tags: string[]
   comments: number
   attachments: number
+  files?: File[]
 }
 
 interface TeamMember {
@@ -67,6 +73,7 @@ const TaskManager = () => {
       tags: ["ИИ", "Веб-разработка"],
       comments: 3,
       attachments: 2,
+      files: [],
     },
     {
       id: "2",
@@ -81,6 +88,7 @@ const TaskManager = () => {
       tags: ["Аналитика", "CRM"],
       comments: 1,
       attachments: 0,
+      files: [],
     },
     {
       id: "3",
@@ -95,6 +103,7 @@ const TaskManager = () => {
       tags: ["Продажи", "Автоматизация"],
       comments: 5,
       attachments: 3,
+      files: [],
     },
   ])
 
@@ -106,7 +115,10 @@ const TaskManager = () => {
     priority: "medium" as const,
     dueDate: new Date(),
     tags: "",
+    files: [] as File[],
   })
+
+  const [dragActive, setDragActive] = useState(false)
 
   const teamMembers: TeamMember[] = [
     { id: "1", name: "Анна Петрова", avatar: "/team-1.jpg", role: "ИИ-разработчик" },
@@ -114,6 +126,47 @@ const TaskManager = () => {
     { id: "3", name: "Елена Сидорова", avatar: "/team-3.jpg", role: "Менеджер продаж" },
     { id: "4", name: "Дмитрий Козлов", avatar: "/team-4.jpg", role: "UX/UI дизайнер" },
   ]
+
+  const handleFileUpload = (files: FileList | null) => {
+    if (files) {
+      const fileArray = Array.from(files)
+      setNewTask((prev) => ({
+        ...prev,
+        files: [...prev.files, ...fileArray],
+      }))
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(false)
+    handleFileUpload(e.dataTransfer.files)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(false)
+  }
+
+  const removeFile = (index: number) => {
+    setNewTask((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, i) => i !== index),
+    }))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -162,7 +215,8 @@ const TaskManager = () => {
         .map((t) => t.trim())
         .filter(Boolean),
       comments: 0,
-      attachments: 0,
+      attachments: newTask.files.length,
+      files: newTask.files,
     }
 
     setTasks([...tasks, task])
@@ -173,6 +227,7 @@ const TaskManager = () => {
       priority: "medium",
       dueDate: new Date(),
       tags: "",
+      files: [],
     })
     setShowCreateTask(false)
   }
@@ -208,7 +263,7 @@ const TaskManager = () => {
               Создать задачу
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Новая задача</DialogTitle>
             </DialogHeader>
@@ -305,6 +360,61 @@ const TaskManager = () => {
                   placeholder="ИИ, Разработка, Аналитика"
                 />
               </div>
+
+              <div>
+                <Label>Прикрепить файлы</Label>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                    dragActive ? "border-primary bg-primary/5" : "border-border"
+                  }`}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mb-2">Перетащите файлы сюда или нажмите для выбора</p>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("file-upload")?.click()}
+                  >
+                    Выбрать файлы
+                  </Button>
+                </div>
+
+                {newTask.files.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <Label className="text-sm font-medium">Прикрепленные файлы:</Label>
+                    {newTask.files.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                          <span className="text-xs text-muted-foreground">({formatFileSize(file.size)})</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <Button onClick={handleCreateTask} className="w-full">
                 Создать задачу
               </Button>
