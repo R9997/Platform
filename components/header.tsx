@@ -49,6 +49,59 @@ export function Header() {
             </span>
           </Link>
 
+          {isMenuOpen && isScrolled && (
+            <div className="hidden lg:block absolute top-full left-0 right-0 bg-background/98 backdrop-blur-md animate-in slide-in-from-top-2 duration-300 border-b border-border/50 shadow-xl">
+              <nav className="container mx-auto px-4 py-6 flex justify-center">
+                <div className="flex items-center space-x-6">
+                  <Link
+                    href="/"
+                    className="text-sm font-medium hover:text-primary transition-colors flex items-center py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Home className="w-4 h-4 mr-1" />
+                    Главная
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    О нас
+                  </Link>
+                  <Link
+                    href="/services"
+                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Услуги и решения
+                  </Link>
+                  <Link
+                    href="/team"
+                    className="text-sm font-medium hover:text-primary transition-colors flex items-center py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Users className="w-4 h-4 mr-1" />
+                    Команда
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Контакты
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Личный кабинет
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
+
           <nav
             className={`hidden lg:flex items-center space-x-4 xl:space-x-6 transition-all duration-300 ${
               isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -204,7 +257,8 @@ export function Header() {
       {showScrollTop && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground soft-glow shadow-lg transition-all duration-300"
+          className="fixed bottom-6 left-6 z-50 h-12 w-12 rounded-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground soft-glow shadow-2xl transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-4"
+          style={{ zIndex: 9999 }}
           aria-label="Наверх"
         >
           <ChevronUp className="h-5 w-5" />
