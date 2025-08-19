@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import {
   Brain,
   TrendingUp,
@@ -71,6 +73,7 @@ export function AIBusinessStrategist() {
   const [showInsightDetails, setShowInsightDetails] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [showStrategistSettings, setShowStrategistSettings] = useState(false)
 
   const [strategicInsights, setStrategicInsights] = useState<StrategicInsight[]>([
     {
@@ -619,7 +622,7 @@ export function AIBusinessStrategist() {
         <TabsContent value="roadmap" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Стратегическая дорожная карта</h3>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setShowStrategistSettings(true)}>
               <Settings className="w-4 h-4 mr-2" />
               Настроить
             </Button>
@@ -825,6 +828,124 @@ export function AIBusinessStrategist() {
                 <Button variant="outline" onClick={() => setShowAddGoal(false)} className="flex-1">
                   Отмена
                 </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Модальное окно настроек ИИ-стратега */}
+      {showStrategistSettings && (
+        <Dialog open={showStrategistSettings} onOpenChange={setShowStrategistSettings}>
+          <DialogContent className="max-w-2xl mx-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Settings className="w-5 h-5 text-primary" />
+                <span>Настройки ИИ-стратега</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label>Отрасль бизнеса</Label>
+                  <Select defaultValue="technology">
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="technology">Технологии</SelectItem>
+                      <SelectItem value="retail">Розничная торговля</SelectItem>
+                      <SelectItem value="manufacturing">Производство</SelectItem>
+                      <SelectItem value="services">Услуги</SelectItem>
+                      <SelectItem value="finance">Финансы</SelectItem>
+                      <SelectItem value="healthcare">Здравоохранение</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Размер компании</Label>
+                  <Select defaultValue="small">
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="startup">Стартап (1-10 сотрудников)</SelectItem>
+                      <SelectItem value="small">Малый бизнес (11-50 сотрудников)</SelectItem>
+                      <SelectItem value="medium">Средний бизнес (51-250 сотрудников)</SelectItem>
+                      <SelectItem value="large">Крупный бизнес (250+ сотрудников)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Основные цели</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="growth" defaultChecked />
+                      <Label htmlFor="growth" className="text-sm">
+                        Рост выручки
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="efficiency" defaultChecked />
+                      <Label htmlFor="efficiency" className="text-sm">
+                        Повышение эффективности
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="innovation" />
+                      <Label htmlFor="innovation" className="text-sm">
+                        Инновации
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="market" />
+                      <Label htmlFor="market" className="text-sm">
+                        Расширение рынка
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Настройки анализа</Label>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Частота анализа</Label>
+                    <p className="text-xs text-muted-foreground">Автоматический анализ данных</p>
+                  </div>
+                  <Select defaultValue="weekly">
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Ежедневно</SelectItem>
+                      <SelectItem value="weekly">Еженедельно</SelectItem>
+                      <SelectItem value="monthly">Ежемесячно</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Уведомления о рекомендациях</Label>
+                    <p className="text-xs text-muted-foreground">Получать уведомления о новых рекомендациях</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Детальная аналитика</Label>
+                    <p className="text-xs text-muted-foreground">Включить расширенные метрики</p>
+                  </div>
+                  <Switch />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowStrategistSettings(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={() => setShowStrategistSettings(false)}>Сохранить настройки</Button>
               </div>
             </div>
           </DialogContent>

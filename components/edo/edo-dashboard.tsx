@@ -31,6 +31,7 @@ import {
   Calendar,
   XCircle,
 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
 
 interface Document {
   id: string
@@ -78,11 +79,13 @@ interface ApprovalDocument {
   amount?: number
 }
 
+export { EDODashboard }
 export default function EDODashboard() {
   const [activeTab, setActiveTab] = useState("documents")
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
   const [showAddDocument, setShowAddDocument] = useState(false)
+  const [showEDOSettings, setShowEDOSettings] = useState(false)
   const [showSignDialog, setShowSignDialog] = useState(false)
   const [showApprovalDialog, setShowApprovalDialog] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
@@ -550,7 +553,7 @@ export default function EDODashboard() {
           <p className="text-muted-foreground">Управление электронными документами и подписями</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setActiveTab("settings")}>
+          <Button variant="outline" size="sm" onClick={() => setShowEDOSettings(true)}>
             <Settings className="w-4 h-4 mr-2" />
             Настройки
           </Button>
@@ -1503,6 +1506,152 @@ export default function EDODashboard() {
           </div>
         </DialogContent>
       </Dialog>
+      {showEDOSettings && (
+        <Dialog open={showEDOSettings} onOpenChange={setShowEDOSettings}>
+          <DialogContent className="max-w-2xl mx-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Settings className="w-5 h-5 text-primary" />
+                <span>Настройки ЭДО</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label>Тип электронной подписи</Label>
+                  <Select defaultValue="qualified">
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="simple">Простая ЭП</SelectItem>
+                      <SelectItem value="enhanced">Усиленная неквалифицированная ЭП</SelectItem>
+                      <SelectItem value="qualified">Усиленная квалифицированная ЭП</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Удостоверяющий центр</Label>
+                  <Select defaultValue="cryptopro">
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cryptopro">КриптоПро УЦ</SelectItem>
+                      <SelectItem value="skb">СКБ Контур</SelectItem>
+                      <SelectItem value="tensor">Тензор</SelectItem>
+                      <SelectItem value="sbis">СБИС</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Срок хранения документов (лет)</Label>
+                  <Input type="number" defaultValue="5" className="mt-1" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Настройки уведомлений</Label>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Уведомления о новых документах</Label>
+                    <p className="text-xs text-muted-foreground">Получать уведомления при поступлении документов</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Напоминания о подписании</Label>
+                    <p className="text-xs text-muted-foreground">Напоминать о документах, ожидающих подписи</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Отчеты о статусе документов</Label>
+                    <p className="text-xs text-muted-foreground">Еженедельные отчеты о состоянии документооборота</p>
+                  </div>
+                  <Switch />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Безопасность</Label>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Двухфакторная аутентификация</Label>
+                    <p className="text-xs text-muted-foreground">Дополнительная защита при подписании</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Автоматическое архивирование</Label>
+                    <p className="text-xs text-muted-foreground">Автоматически архивировать старые документы</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm">Журналирование действий</Label>
+                    <p className="text-xs text-muted-foreground">Ведение подробного журнала всех операций</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Интеграции</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">1С:Предприятие</h4>
+                        <p className="text-sm text-muted-foreground">Синхронизация документов</p>
+                      </div>
+                      <Switch />
+                    </div>
+                  </Card>
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">СЭД Directum</h4>
+                        <p className="text-sm text-muted-foreground">Интеграция с СЭД</p>
+                      </div>
+                      <Switch />
+                    </div>
+                  </Card>
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">Росреестр</h4>
+                        <p className="text-sm text-muted-foreground">Подача документов в Росреестр</p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                  </Card>
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">ФНС России</h4>
+                        <p className="text-sm text-muted-foreground">Электронная отчетность</p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                  </Card>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowEDOSettings(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={() => setShowEDOSettings(false)}>Сохранить настройки</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

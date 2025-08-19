@@ -26,7 +26,7 @@ import {
   Phone,
 } from "lucide-react"
 
-export default function MarketingDashboard() {
+function MarketingDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [showCampaignModal, setShowCampaignModal] = useState(false)
   const [showSegmentModal, setShowSegmentModal] = useState(false)
@@ -778,3 +778,6 @@ export default function MarketingDashboard() {
     </div>
   )
 }
+
+export { MarketingDashboard }
+export default MarketingDashboard

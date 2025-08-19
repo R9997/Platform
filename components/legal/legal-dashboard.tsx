@@ -1,33 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  FileText,
-  AlertTriangle,
-  Calendar,
-  Search,
-  Plus,
-  Eye,
-  Download,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Shield,
-  Gavel,
-  FileCheck,
-  Bell,
-  Upload,
-  X,
-} from "lucide-react"
+import { Download, Bell, Plus, FileText, AlertTriangle, Scale, Settings } from "lucide-react"
 
 interface Contract {
   id: string
@@ -75,18 +55,28 @@ interface Notification {
   title: string
   message: string
   type: "warning" | "info" | "urgent"
-  date: string
+  timestamp: Date
   read: boolean
 }
 
 export default function LegalDashboard() {
+  const [activeTab, setActiveTab] = useState("overview")
   const [showNotifications, setShowNotifications] = useState(false)
-  const [notifications, setNotifications] = useState([
+  const [showReportDialog, setShowReportDialog] = useState(false)
+  const [showAddContract, setShowAddContract] = useState(false)
+  const [showAddTask, setShowAddTask] = useState(false)
+  const [showAddLicense, setShowAddLicense] = useState(false)
+  const [showAddCase, setShowAddCase] = useState(false)
+  const [showAddTemplate, setShowAddTemplate] = useState(false)
+  const [showAddRisk, setShowAddRisk] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+
+  const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
       title: "Истекает лицензия",
       message: "Лицензия на осуществление деятельности истекает через 15 дней",
-      type: "warning" as const,
+      type: "warning",
       timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
       read: false,
     },
@@ -94,55 +84,11 @@ export default function LegalDashboard() {
       id: "2",
       title: "Новое судебное дело",
       message: "Поступило уведомление о новом судебном деле №А40-123456/24",
-      type: "error" as const,
+      type: "urgent",
       timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
       read: false,
     },
-    {
-      id: "3",
-      title: "Договор требует внимания",
-      message: "Договор поставки №789 требует продления до 31.12.2024",
-      type: "info" as const,
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
-      read: true,
-    },
   ])
-
-  const markNotificationAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
-  }
-
-  const markAllNotificationsAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-  }
-
-  const [activeTab, setActiveTab] = useState("overview")
-  const [showReportDialog, setShowReportDialog] = useState(false)
-  const [reportType, setReportType] = useState("")
-  const [reportPeriod, setReportPeriod] = useState("")
-  const [reportFormat, setReportFormat] = useState("pdf")
-  const [showAddContract, setShowAddContract] = useState(false)
-  const [showAddTask, setShowAddTask] = useState(false)
-  const [showAddLicense, setShowAddLicense] = useState(false)
-  const [showAddCase, setShowAddCase] = useState(false)
-  const [showAddTemplate, setShowAddTemplate] = useState(false)
-  const [showAddRisk, setShowAddRisk] = useState(false)
-  const [newTemplate, setNewTemplate] = useState({
-    name: "",
-    type: "",
-    description: "",
-    category: "",
-  })
-  const [newRisk, setNewRisk] = useState({
-    title: "",
-    description: "",
-    category: "",
-    probability: "",
-    impact: "",
-    mitigation: "",
-  })
-  const [templateFiles, setTemplateFiles] = useState<File[]>([])
-  const [riskFiles, setRiskFiles] = useState<File[]>([])
 
   const [newContract, setNewContract] = useState({
     title: "",
@@ -155,10 +101,30 @@ export default function LegalDashboard() {
   })
   const [contractFiles, setContractFiles] = useState<File[]>([])
 
-  const [searchTerm, setSearchTerm] = useState("")
+  const [newTemplate, setNewTemplate] = useState({
+    name: "",
+    type: "",
+    description: "",
+    category: "",
+  })
+  const [templateFiles, setTemplateFiles] = useState<File[]>([])
+
+  const [newRisk, setNewRisk] = useState({
+    title: "",
+    description: "",
+    category: "",
+    probability: "",
+    impact: "",
+    mitigation: "",
+  })
+  const [riskFiles, setRiskFiles] = useState<File[]>([])
+
+  const [reportType, setReportType] = useState("")
+  const [reportPeriod, setReportPeriod] = useState("")
+  const [reportFormat, setReportFormat] = useState("pdf")
 
   // Mock data
-  const [contracts] = useState<Contract[]>([
+  const contracts: Contract[] = [
     {
       id: "1",
       title: "Договор поставки оборудования",
@@ -171,21 +137,9 @@ export default function LegalDashboard() {
       files: [],
       description: "",
     },
-    {
-      id: "2",
-      title: "Соглашение о неразглашении",
-      counterparty: "ИП Иванов А.А.",
-      status: "review",
-      startDate: "2024-08-01",
-      endDate: "2025-08-01",
-      amount: 0,
-      type: "nda",
-      files: [],
-      description: "",
-    },
-  ])
+  ]
 
-  const [legalTasks] = useState<LegalTask[]>([
+  const legalTasks: LegalTask[] = [
     {
       id: "1",
       title: "Продлить лицензию на деятельность",
@@ -195,18 +149,9 @@ export default function LegalDashboard() {
       dueDate: "2024-09-01",
       status: "pending",
     },
-    {
-      id: "2",
-      title: "Ответить на претензию",
-      description: 'Подготовить ответ на претензию от ООО "Партнер"',
-      assignee: "Сидоров И.П.",
-      priority: "medium",
-      dueDate: "2024-08-25",
-      status: "in-progress",
-    },
-  ])
+  ]
 
-  const [licenses] = useState<License[]>([
+  const licenses: License[] = [
     {
       id: "1",
       name: "Лицензия на образовательную деятельность",
@@ -215,17 +160,9 @@ export default function LegalDashboard() {
       expiryDate: "2025-03-15",
       status: "active",
     },
-    {
-      id: "2",
-      name: "Лицензия на медицинскую деятельность",
-      issuer: "Росздравнадзор",
-      issueDate: "2023-06-01",
-      expiryDate: "2024-12-01",
-      status: "expiring",
-    },
-  ])
+  ]
 
-  const [legalCases] = useState<LegalCase[]>([
+  const legalCases: LegalCase[] = [
     {
       id: "1",
       title: 'Взыскание задолженности с ООО "Должник"',
@@ -234,7 +171,7 @@ export default function LegalDashboard() {
       nextHearing: "2024-09-15",
       amount: 850000,
     },
-  ])
+  ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -278,25 +215,12 @@ export default function LegalDashboard() {
     }
   }
 
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case "urgent":
-        return "bg-red-100 text-red-800"
-      case "warning":
-        return "bg-yellow-100 text-yellow-800"
-      case "info":
-        return "bg-blue-100 text-blue-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
   const handleFileUpload = (files: FileList | null, setFiles: (files: File[]) => void) => {
     if (files) {
       const newFiles = Array.from(files).filter((file) => {
         const validTypes = [".pdf", ".doc", ".docx", ".txt"]
         const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
-        return validTypes.includes(fileExtension) && file.size <= 10 * 1024 * 1024 // 10MB limit
+        return validTypes.includes(fileExtension) && file.size <= 10 * 1024 * 1024
       })
       setFiles((prev) => [...prev, ...newFiles])
     }
@@ -306,75 +230,8 @@ export default function LegalDashboard() {
     setFiles(files.filter((_, i) => i !== index))
   }
 
-  const handleCreateContract = () => {
-    console.log("Создание договора:", {
-      contract: newContract,
-      files: contractFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
-    })
-
-    // Здесь будет логика сохранения договора и файлов
-    setShowAddContract(false)
-    setNewContract({
-      title: "",
-      counterparty: "",
-      type: "",
-      amount: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-    })
-    setContractFiles([])
-  }
-
-  const handleCreateTemplate = () => {
-    console.log("Создание шаблона:", {
-      template: newTemplate,
-      files: templateFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
-    })
-
-    setShowAddTemplate(false)
-    setNewTemplate({
-      name: "",
-      type: "",
-      description: "",
-      category: "",
-    })
-    setTemplateFiles([])
-  }
-
-  const handleCreateRisk = () => {
-    console.log("Создание риска:", {
-      risk: newRisk,
-      files: riskFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
-    })
-
-    setShowAddRisk(false)
-    setNewRisk({
-      title: "",
-      description: "",
-      category: "",
-      probability: "",
-      impact: "",
-      mitigation: "",
-    })
-    setRiskFiles([])
-  }
-
   const generateReport = () => {
-    const reportData = {
-      type: reportType,
-      period: reportPeriod,
-      format: reportFormat,
-      generated: new Date().toISOString(),
-    }
-
-    console.log("Генерация отчета:", reportData)
-
-    // Создаем CSV данные для примера
-    const csvData = `Тип отчета,Период,Дата генерации
-${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
-
-    // Создаем и скачиваем файл
+    const csvData = `Тип отчета,Период,Дата генерации\n${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" })
     const link = document.createElement("a")
     const url = URL.createObjectURL(blob)
@@ -384,8 +241,11 @@ ${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-
     setShowReportDialog(false)
+  }
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
   }
 
   return (
@@ -412,63 +272,22 @@ ${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Bell className="h-5 w-5" />
-                    Правовые уведомления
-                  </span>
-                  <Button variant="ghost" size="sm" onClick={markAllNotificationsAsRead}>
-                    Отметить все как прочитанные
-                  </Button>
-                </DialogTitle>
+                <DialogTitle>Правовые уведомления</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 max-h-96 overflow-y-auto">
-                {notifications.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Нет уведомлений</p>
+                {notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    className={`p-4 rounded-lg border cursor-pointer ${
+                      notif.read ? "bg-muted/30" : "bg-background shadow-sm"
+                    }`}
+                    onClick={() => markNotificationAsRead(notif.id)}
+                  >
+                    <h4 className="font-medium">{notif.title}</h4>
+                    <p className="text-sm text-muted-foreground">{notif.message}</p>
+                    <p className="text-xs text-muted-foreground mt-2">{notif.timestamp.toLocaleString("ru-RU")}</p>
                   </div>
-                ) : (
-                  notifications.map((notif) => (
-                    <div
-                      key={notif.id}
-                      className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                        notif.read ? "bg-muted/30 border-border/50" : "bg-background border-border shadow-sm"
-                      }`}
-                      onClick={() => markNotificationAsRead(notif.id)}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div
-                              className={`w-2 h-2 rounded-full ${
-                                notif.type === "success"
-                                  ? "bg-green-500"
-                                  : notif.type === "warning"
-                                    ? "bg-yellow-500"
-                                    : notif.type === "error"
-                                      ? "bg-red-500"
-                                      : "bg-blue-500"
-                              }`}
-                            />
-                            <h4
-                              className={`font-medium text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}
-                            >
-                              {notif.title}
-                            </h4>
-                          </div>
-                          <p className={`text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}>
-                            {notif.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {notif.timestamp.toLocaleString("ru-RU")}
-                          </p>
-                        </div>
-                        {!notif.read && <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />}
-                      </div>
-                    </div>
-                  ))
-                )}
+                ))}
               </div>
             </DialogContent>
           </Dialog>
@@ -496,8 +315,6 @@ ${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
                       <SelectItem value="tasks">Отчет по задачам</SelectItem>
                       <SelectItem value="cases">Отчет по судебным делам</SelectItem>
                       <SelectItem value="licenses">Отчет по лицензиям</SelectItem>
-                      <SelectItem value="risks">Отчет по рискам</SelectItem>
-                      <SelectItem value="full">Полный отчет</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -508,189 +325,127 @@ ${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
                       <SelectValue placeholder="Выберите период" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="week">За неделю</SelectItem>
-                      <SelectItem value="month">За месяц</SelectItem>
-                      <SelectItem value="quarter">За квартал</SelectItem>
-                      <SelectItem value="year">За год</SelectItem>
-                      <SelectItem value="custom">Произвольный период</SelectItem>
+                      <SelectItem value="week">Неделя</SelectItem>
+                      <SelectItem value="month">Месяц</SelectItem>
+                      <SelectItem value="quarter">Квартал</SelectItem>
+                      <SelectItem value="year">Год</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                {reportPeriod === "custom" && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Дата начала</Label>
-                      <Input type="date" />
-                    </div>
-                    <div>
-                      <Label>Дата окончания</Label>
-                      <Input type="date" />
-                    </div>
-                  </div>
-                )}
-                <div>
-                  <Label>Формат отчета</Label>
-                  <Select value={reportFormat} onValueChange={setReportFormat}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pdf">PDF</SelectItem>
-                      <SelectItem value="excel">Excel</SelectItem>
-                      <SelectItem value="word">Word</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowReportDialog(false)}>
-                  Отмена
-                </Button>
-                <Button onClick={generateReport} disabled={!reportType || !reportPeriod}>
+                <Button onClick={generateReport} className="w-full">
                   Сгенерировать отчет
                 </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showSettings} onOpenChange={setShowSettings}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Настройки правового контура</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Уведомления</Label>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">Истечение лицензий</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">Судебные заседания</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">Срочные задачи</span>
+                    </label>
+                  </div>
+                </div>
+                <Button className="w-full">Сохранить настройки</Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
+      {/* Navigation Tabs */}
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg">
+        {[
+          { id: "overview", label: "Обзор", icon: Scale },
+          { id: "contracts", label: "Договоры", icon: FileText },
+          { id: "tasks", label: "Задачи", icon: AlertTriangle },
+          { id: "cases", label: "Судебные дела", icon: Scale },
+          { id: "licenses", label: "Лицензии", icon: FileText },
+          { id: "templates", label: "Шаблоны", icon: FileText },
+          { id: "risks", label: "Риски", icon: AlertTriangle },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === tab.id
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {activeTab === "overview" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-card p-6 rounded-lg border">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Активные договоры</p>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{contracts.length}</p>
               </div>
-              <FileText className="h-8 w-8 text-blue-600" />
+              <FileText className="h-8 w-8 text-muted-foreground" />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
+          </div>
+          <div className="bg-card p-6 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Открытые задачи</p>
+                <p className="text-2xl font-bold">{legalTasks.length}</p>
+              </div>
+              <AlertTriangle className="h-8 w-8 text-muted-foreground" />
+            </div>
+          </div>
+          <div className="bg-card p-6 rounded-lg border">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Судебные дела</p>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">{legalCases.length}</p>
               </div>
-              <Gavel className="h-8 w-8 text-red-600" />
+              <Scale className="h-8 w-8 text-muted-foreground" />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Истекающие лицензии</p>
-                <p className="text-2xl font-bold">2</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-yellow-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Задачи в работе</p>
-                <p className="text-2xl font-bold">8</p>
-              </div>
-              <Clock className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="overview">Обзор</TabsTrigger>
-          <TabsTrigger value="contracts">Договоры</TabsTrigger>
-          <TabsTrigger value="tasks">Задачи</TabsTrigger>
-          <TabsTrigger value="cases">Дела</TabsTrigger>
-          <TabsTrigger value="licenses">Лицензии</TabsTrigger>
-          <TabsTrigger value="templates">Шаблоны</TabsTrigger>
-          <TabsTrigger value="risks">Риски</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recent Contracts */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Последние договоры
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {contracts.slice(0, 3).map((contract) => (
-                    <div key={contract.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{contract.title}</p>
-                        <p className="text-sm text-muted-foreground">{contract.counterparty}</p>
-                      </div>
-                      <Badge className={getStatusColor(contract.status)}>
-                        {contract.status === "signed"
-                          ? "Подписан"
-                          : contract.status === "review"
-                            ? "На согласовании"
-                            : contract.status === "draft"
-                              ? "Проект"
-                              : "Исполнен"}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Urgent Tasks */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Срочные задачи
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {legalTasks
-                    .filter((task) => task.priority === "high")
-                    .map((task) => (
-                      <div key={task.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <p className="font-medium">{task.title}</p>
-                          <p className="text-sm text-muted-foreground">До: {task.dueDate}</p>
-                        </div>
-                        <Badge className={getPriorityColor(task.priority)}>Высокий</Badge>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="contracts" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Поиск по договорам..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-80"
-                />
+          <div className="bg-card p-6 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Лицензии</p>
+                <p className="text-2xl font-bold">{licenses.length}</p>
               </div>
+              <FileText className="h-8 w-8 text-muted-foreground" />
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "contracts" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Договоры</h2>
             <Dialog open={showAddContract} onOpenChange={setShowAddContract}>
               <DialogTrigger asChild>
                 <Button>
@@ -698,895 +453,114 @@ ${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
                   Добавить договор
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+              <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Новый договор</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Название договора *</Label>
-                      <Input
-                        placeholder="Введите название"
-                        value={newContract.title}
-                        onChange={(e) => setNewContract({ ...newContract, title: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Контрагент *</Label>
-                      <Input
-                        placeholder="Название организации"
-                        value={newContract.counterparty}
-                        onChange={(e) => setNewContract({ ...newContract, counterparty: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Тип договора *</Label>
-                      <Select
-                        value={newContract.type}
-                        onValueChange={(value) => setNewContract({ ...newContract, type: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите тип" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="supply">Поставка</SelectItem>
-                          <SelectItem value="service">Услуги</SelectItem>
-                          <SelectItem value="nda">NDA</SelectItem>
-                          <SelectItem value="employment">Трудовой</SelectItem>
-                          <SelectItem value="lease">Аренда</SelectItem>
-                          <SelectItem value="partnership">Партнерство</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Сумма договора</Label>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        value={newContract.amount}
-                        onChange={(e) => setNewContract({ ...newContract, amount: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Дата начала *</Label>
-                      <Input
-                        type="date"
-                        value={newContract.startDate}
-                        onChange={(e) => setNewContract({ ...newContract, startDate: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Дата окончания *</Label>
-                      <Input
-                        type="date"
-                        value={newContract.endDate}
-                        onChange={(e) => setNewContract({ ...newContract, endDate: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
+                <div className="space-y-4">
                   <div>
-                    <Label>Описание договора</Label>
-                    <Textarea
-                      placeholder="Краткое описание предмета договора, основных условий и особенностей"
-                      value={newContract.description}
-                      onChange={(e) => setNewContract({ ...newContract, description: e.target.value })}
-                      rows={3}
+                    <Label>Название договора</Label>
+                    <Input
+                      value={newContract.title}
+                      onChange={(e) => setNewContract({ ...newContract, title: e.target.value })}
+                      placeholder="Введите название договора"
                     />
                   </div>
-
-                  {/* File Upload Section */}
-                  <div className="border-t pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h4 className="font-medium">Файлы договора</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Загрузите текст договора, приложения и дополнительные документы
-                        </p>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="file"
-                          multiple
-                          accept=".pdf,.doc,.docx,.txt"
-                          onChange={(e) => handleFileUpload(e.target.files, setContractFiles)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          id="contract-files"
-                        />
-                        <Button variant="outline" size="sm" asChild>
-                          <label htmlFor="contract-files" className="cursor-pointer">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Выбрать файлы
-                          </label>
-                        </Button>
-                      </div>
-                    </div>
-
-                    {contractFiles.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Загруженные файлы ({contractFiles.length}):</p>
-                        <div className="space-y-2 max-h-32 overflow-y-auto">
-                          {contractFiles.map((file, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-2 border rounded-lg bg-muted/50"
-                            >
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-blue-600" />
-                                <div>
-                                  <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                                  </p>
-                                </div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFile(index, contractFiles, setContractFiles)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                      <div className="flex items-start gap-2">
-                        <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
-                        <div className="text-sm">
-                          <p className="font-medium text-blue-900">Требования к файлам:</p>
-                          <ul className="text-blue-700 mt-1 space-y-1">
-                            <li>• Поддерживаемые форматы: PDF, DOC, DOCX, TXT</li>
-                            <li>• Максимальный размер файла: 10 МБ</li>
-                            <li>• Рекомендуется загружать основной текст договора и все приложения</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
+                  <div>
+                    <Label>Контрагент</Label>
+                    <Input
+                      value={newContract.counterparty}
+                      onChange={(e) => setNewContract({ ...newContract, counterparty: e.target.value })}
+                      placeholder="Введите название контрагента"
+                    />
                   </div>
-                </div>
-
-                <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
-                  <Button variant="outline" onClick={() => setShowAddContract(false)}>
-                    Отмена
-                  </Button>
-                  <Button
-                    onClick={handleCreateContract}
-                    disabled={
-                      !newContract.title ||
-                      !newContract.counterparty ||
-                      !newContract.type ||
-                      !newContract.startDate ||
-                      !newContract.endDate
-                    }
-                  >
+                  <div>
+                    <Label>Загрузить файлы договора</Label>
+                    <Input
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={(e) => handleFileUpload(e.target.files, setContractFiles)}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Поддерживаемые форматы: PDF, DOC, DOCX, TXT. Максимальный размер: 10 МБ
+                    </p>
+                  </div>
+                  {contractFiles.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Загруженные файлы:</Label>
+                      {contractFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                          <span className="text-sm">{file.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index, contractFiles, setContractFiles)}
+                          >
+                            Удалить
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Button onClick={() => setShowAddContract(false)} className="w-full">
                     Создать договор
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
-
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="text-left p-4">Договор</th>
-                      <th className="text-left p-4">Контрагент</th>
-                      <th className="text-left p-4">Статус</th>
-                      <th className="text-left p-4">Сумма</th>
-                      <th className="text-left p-4">Срок действия</th>
-                      <th className="text-left p-4">Действия</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contracts.map((contract) => (
-                      <tr key={contract.id} className="border-b">
-                        <td className="p-4">
-                          <div>
-                            <p className="font-medium">{contract.title}</p>
-                            <p className="text-sm text-muted-foreground">{contract.type}</p>
-                          </div>
-                        </td>
-                        <td className="p-4">{contract.counterparty}</td>
-                        <td className="p-4">
-                          <Badge className={getStatusColor(contract.status)}>
-                            {contract.status === "signed"
-                              ? "Подписан"
-                              : contract.status === "review"
-                                ? "На согласовании"
-                                : contract.status === "draft"
-                                  ? "Проект"
-                                  : "Исполнен"}
-                          </Badge>
-                        </td>
-                        <td className="p-4">{contract.amount.toLocaleString()} ₽</td>
-                        <td className="p-4">
-                          {contract.startDate} - {contract.endDate}
-                        </td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="grid gap-4">
+            {contracts.map((contract) => (
+              <div key={contract.id} className="bg-card p-4 rounded-lg border">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold">{contract.title}</h3>
+                    <p className="text-sm text-muted-foreground">{contract.counterparty}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {contract.startDate} - {contract.endDate}
+                    </p>
+                  </div>
+                  <Badge className={getStatusColor(contract.status)}>{contract.status}</Badge>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            ))}
+          </div>
+        </div>
+      )}
 
-        <TabsContent value="tasks" className="space-y-4">
+      {/* Add other tab content as needed */}
+      {activeTab === "tasks" && (
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Юридические задачи</h2>
-            <Dialog open={showAddTask} onOpenChange={setShowAddTask}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Новая задача
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Новая юридическая задача</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Название задачи</Label>
-                    <Input placeholder="Введите название задачи" />
-                  </div>
-                  <div>
-                    <Label>Описание</Label>
-                    <Textarea placeholder="Подробное описание задачи" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Исполнитель</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите исполнителя" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="petrov">Петрова М.В.</SelectItem>
-                          <SelectItem value="sidorov">Сидоров И.П.</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Приоритет</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите приоритет" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="high">Высокий</SelectItem>
-                          <SelectItem value="medium">Средний</SelectItem>
-                          <SelectItem value="low">Низкий</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Срок выполнения</Label>
-                    <Input type="date" />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button variant="outline" onClick={() => setShowAddTask(false)}>
-                    Отмена
-                  </Button>
-                  <Button onClick={() => setShowAddTask(false)}>Создать задачу</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setShowAddTask(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Добавить задачу
+            </Button>
           </div>
-
           <div className="grid gap-4">
             {legalTasks.map((task) => (
-              <Card key={task.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{task.title}</h3>
-                        <Badge className={getPriorityColor(task.priority)}>
-                          {task.priority === "high" ? "Высокий" : task.priority === "medium" ? "Средний" : "Низкий"}
-                        </Badge>
-                        <Badge className={getStatusColor(task.status)}>
-                          {task.status === "pending"
-                            ? "Ожидает"
-                            : task.status === "in-progress"
-                              ? "В работе"
-                              : "Выполнено"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Исполнитель: {task.assignee}</span>
-                        <span>Срок: {task.dueDate}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <CheckCircle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="cases" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Судебные дела и претензии</h2>
-            <Dialog open={showAddCase} onOpenChange={setShowAddCase}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Новое дело
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Новое судебное дело</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
+              <div key={task.id} className="bg-card p-4 rounded-lg border">
+                <div className="flex justify-between items-start">
                   <div>
-                    <Label>Название дела</Label>
-                    <Input placeholder="Введите название дела" />
+                    <h3 className="font-semibold">{task.title}</h3>
+                    <p className="text-sm text-muted-foreground">{task.description}</p>
+                    <p className="text-sm text-muted-foreground">Исполнитель: {task.assignee}</p>
+                    <p className="text-sm text-muted-foreground">Срок: {task.dueDate}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Тип дела</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите тип" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="lawsuit">Судебный иск</SelectItem>
-                          <SelectItem value="claim">Претензия</SelectItem>
-                          <SelectItem value="arbitration">Арбитраж</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Сумма спора</Label>
-                      <Input type="number" placeholder="0" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Дата следующего заседания</Label>
-                    <Input type="date" />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button variant="outline" onClick={() => setShowAddCase(false)}>
-                    Отмена
-                  </Button>
-                  <Button onClick={() => setShowAddCase(false)}>Создать дело</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid gap-4">
-            {legalCases.map((legalCase) => (
-              <Card key={legalCase.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{legalCase.title}</h3>
-                        <Badge className={getStatusColor(legalCase.status)}>
-                          {legalCase.status === "active"
-                            ? "Активное"
-                            : legalCase.status === "pending"
-                              ? "Ожидает"
-                              : "Закрыто"}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>
-                          Тип:{" "}
-                          {legalCase.type === "lawsuit"
-                            ? "Судебный иск"
-                            : legalCase.type === "claim"
-                              ? "Претензия"
-                              : "Арбитраж"}
-                        </span>
-                        <span>Сумма: {legalCase.amount.toLocaleString()} ₽</span>
-                        <span>Следующее заседание: {legalCase.nextHearing}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Calendar className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="licenses" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Лицензии и разрешения</h2>
-            <Dialog open={showAddLicense} onOpenChange={setShowAddLicense}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Добавить лицензию
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Новая лицензия</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Название лицензии</Label>
-                    <Input placeholder="Введите название лицензии" />
-                  </div>
-                  <div>
-                    <Label>Орган выдачи</Label>
-                    <Input placeholder="Название органа" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Дата выдачи</Label>
-                      <Input type="date" />
-                    </div>
-                    <div>
-                      <Label>Дата окончания</Label>
-                      <Input type="date" />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 mt-4">
-                  <Button variant="outline" onClick={() => setShowAddLicense(false)}>
-                    Отмена
-                  </Button>
-                  <Button onClick={() => setShowAddLicense(false)}>Добавить лицензию</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid gap-4">
-            {licenses.map((license) => (
-              <Card key={license.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{license.name}</h3>
-                        <Badge className={getStatusColor(license.status)}>
-                          {license.status === "active"
-                            ? "Активна"
-                            : license.status === "expiring"
-                              ? "Истекает"
-                              : "Просрочена"}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Орган: {license.issuer}</span>
-                        <span>Выдана: {license.issueDate}</span>
-                        <span>Действует до: {license.expiryDate}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="templates" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Шаблоны документов</h2>
-            <Dialog open={showAddTemplate} onOpenChange={setShowAddTemplate}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Добавить шаблон
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Новый шаблон документа</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Название шаблона *</Label>
-                      <Input
-                        value={newTemplate.name}
-                        onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
-                        placeholder="Договор поставки"
-                      />
-                    </div>
-                    <div>
-                      <Label>Тип документа *</Label>
-                      <Select
-                        value={newTemplate.type}
-                        onValueChange={(value) => setNewTemplate({ ...newTemplate, type: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите тип" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="contract">Договор</SelectItem>
-                          <SelectItem value="agreement">Соглашение</SelectItem>
-                          <SelectItem value="nda">NDA</SelectItem>
-                          <SelectItem value="order">Приказ</SelectItem>
-                          <SelectItem value="policy">Положение</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Категория</Label>
-                    <Select
-                      value={newTemplate.category}
-                      onValueChange={(value) => setNewTemplate({ ...newTemplate, category: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите категорию" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="commercial">Коммерческие</SelectItem>
-                        <SelectItem value="hr">Кадровые</SelectItem>
-                        <SelectItem value="corporate">Корпоративные</SelectItem>
-                        <SelectItem value="regulatory">Регулятивные</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label>Описание</Label>
-                    <Textarea
-                      value={newTemplate.description}
-                      onChange={(e) => setNewTemplate({ ...newTemplate, description: e.target.value })}
-                      placeholder="Краткое описание шаблона и его применения"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Файлы шаблона</Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                      <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.txt"
-                        onChange={(e) => handleFileUpload(e.target.files, setTemplateFiles)}
-                        className="hidden"
-                        id="template-file-upload"
-                      />
-                      <label
-                        htmlFor="template-file-upload"
-                        className="cursor-pointer flex flex-col items-center justify-center"
-                      >
-                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">Нажмите для выбора файлов или перетащите сюда</p>
-                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, TXT (макс. 10 МБ)</p>
-                      </label>
-                    </div>
-
-                    {templateFiles.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        <Label>Загруженные файлы:</Label>
-                        {templateFiles.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4" />
-                              <span className="text-sm">{file.name}</span>
-                              <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} МБ)</span>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeFile(index, templateFiles, setTemplateFiles)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2 mt-6">
-                  <Button variant="outline" onClick={() => setShowAddTemplate(false)}>
-                    Отмена
-                  </Button>
-                  <Button onClick={handleCreateTemplate} disabled={!newTemplate.name || !newTemplate.type}>
-                    Создать шаблон
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: "Договор поставки", type: "supply", downloads: 45 },
-              { name: "Соглашение о неразглашении (NDA)", type: "nda", downloads: 32 },
-              { name: "Договор оказания услуг", type: "service", downloads: 28 },
-              { name: "Трудовой договор", type: "employment", downloads: 67 },
-              { name: "Договор подряда", type: "contract", downloads: 19 },
-              { name: "Лицензионное соглашение", type: "license", downloads: 12 },
-            ].map((template, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <FileCheck className="h-8 w-8 text-blue-600" />
-                    <Badge variant="outline">{template.downloads} загрузок</Badge>
-                  </div>
-                  <h3 className="font-medium mb-2">{template.name}</h3>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                      <Eye className="h-4 w-4 mr-1" />
-                      Просмотр
-                    </Button>
-                    <Button size="sm" className="flex-1">
-                      <Download className="h-4 w-4 mr-1" />
-                      Скачать
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="risks" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Риски и комплаенс</h2>
-            <Dialog open={showAddRisk} onOpenChange={setShowAddRisk}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Добавить риск
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Новый юридический риск</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Название риска *</Label>
-                    <Input
-                      value={newRisk.title}
-                      onChange={(e) => setNewRisk({ ...newRisk, title: e.target.value })}
-                      placeholder="Нарушение требований GDPR"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Описание риска *</Label>
-                    <Textarea
-                      value={newRisk.description}
-                      onChange={(e) => setNewRisk({ ...newRisk, description: e.target.value })}
-                      placeholder="Подробное описание риска и его потенциальных последствий"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label>Категория</Label>
-                      <Select
-                        value={newRisk.category}
-                        onValueChange={(value) => setNewRisk({ ...newRisk, category: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите категорию" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="regulatory">Регулятивный</SelectItem>
-                          <SelectItem value="contractual">Договорной</SelectItem>
-                          <SelectItem value="compliance">Комплаенс</SelectItem>
-                          <SelectItem value="litigation">Судебный</SelectItem>
-                          <SelectItem value="intellectual">Интеллектуальная собственность</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label>Вероятность</Label>
-                      <Select
-                        value={newRisk.probability}
-                        onValueChange={(value) => setNewRisk({ ...newRisk, probability: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Низкая</SelectItem>
-                          <SelectItem value="medium">Средняя</SelectItem>
-                          <SelectItem value="high">Высокая</SelectItem>
-                          <SelectItem value="critical">Критическая</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label>Воздействие</Label>
-                      <Select
-                        value={newRisk.impact}
-                        onValueChange={(value) => setNewRisk({ ...newRisk, impact: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Низкое</SelectItem>
-                          <SelectItem value="medium">Среднее</SelectItem>
-                          <SelectItem value="high">Высокое</SelectItem>
-                          <SelectItem value="critical">Критическое</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Меры по снижению риска</Label>
-                    <Textarea
-                      value={newRisk.mitigation}
-                      onChange={(e) => setNewRisk({ ...newRisk, mitigation: e.target.value })}
-                      placeholder="Описание мер и действий для снижения или устранения риска"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Документы и материалы</Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                      <input
-                        type="file"
-                        multiple
-                        accept=".pdf,.doc,.docx,.txt"
-                        onChange={(e) => handleFileUpload(e.target.files, setRiskFiles)}
-                        className="hidden"
-                        id="risk-file-upload"
-                      />
-                      <label
-                        htmlFor="risk-file-upload"
-                        className="cursor-pointer flex flex-col items-center justify-center"
-                      >
-                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">Нажмите для выбора файлов или перетащите сюда</p>
-                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, TXT (макс. 10 МБ)</p>
-                      </label>
-                    </div>
-
-                    {riskFiles.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        <Label>Загруженные файлы:</Label>
-                        {riskFiles.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4" />
-                              <span className="text-sm">{file.name}</span>
-                              <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} МБ)</span>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeFile(index, riskFiles, setRiskFiles)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
+                    <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
                   </div>
                 </div>
-
-                <div className="flex justify-end gap-2 mt-6">
-                  <Button variant="outline" onClick={() => setShowAddRisk(false)}>
-                    Отмена
-                  </Button>
-                  <Button onClick={handleCreateRisk} disabled={!newRisk.title || !newRisk.description}>
-                    Добавить риск
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid gap-4">
-            {[
-              {
-                title: "Истечение лицензии на медицинскую деятельность",
-                level: "high",
-                category: "Лицензирование",
-                deadline: "2024-12-01",
-                description: "Необходимо подготовить документы для продления лицензии",
-              },
-              {
-                title: "Проверка налоговой службы",
-                level: "medium",
-                category: "Налоговое право",
-                deadline: "2024-09-15",
-                description: "Плановая проверка соблюдения налогового законодательства",
-              },
-              {
-                title: "Изменения в трудовом законодательстве",
-                level: "low",
-                category: "Трудовое право",
-                deadline: "2024-10-01",
-                description: "Необходимо актуализировать трудовые договоры",
-              },
-            ].map((risk, index) => (
-              <Card key={index}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{risk.title}</h3>
-                        <Badge className={getPriorityColor(risk.level)}>
-                          {risk.level === "high" ? "Высокий" : risk.level === "medium" ? "Средний" : "Низкий"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">{risk.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>Категория: {risk.category}</span>
-                        <span>Срок: {risk.deadline}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Shield className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <AlertTriangle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              </div>
             ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   )
 }
+
+export { LegalDashboard }

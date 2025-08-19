@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import {
   Users,
   TrendingUp,
@@ -27,8 +29,14 @@ import {
   CheckSquare,
   Brain,
   X,
+  User,
+  Zap,
+  Palette,
+  Database,
+  Download,
+  Mail,
+  Calendar,
 } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Link from "next/link"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
@@ -43,14 +51,12 @@ import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
 import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
-import { SupportChat } from "@/components/support/support-chat"
 import { GanttChart } from "@/components/project-management/gantt-chart"
-import { HRDashboard } from "@/components/hr-management/hr-dashboard"
-import EDODashboard from "@/components/edo/edo-dashboard"
-import LegalDashboard from "@/components/legal/legal-dashboard"
 import StrategyDashboard from "@/components/strategy/strategy-dashboard"
-import MarketingDashboard from "@/components/marketing/marketing-dashboard"
 import { ChevronDown } from "lucide-react"
+import { EDODashboard } from "@/components/edo/edo-dashboard"
+import { LegalDashboard } from "@/components/legal/legal-dashboard"
+import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -216,6 +222,9 @@ export default function Dashboard() {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false)
   const [tasks, setTasks] = useState([])
 
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [settingsCategory, setSettingsCategory] = useState<string>("")
+
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
       const project = {
@@ -258,9 +267,69 @@ export default function Dashboard() {
     }
   }
 
-  const handleSaveSettings = () => {
-    console.log("Настройки сохранены:", userSettings)
-    alert("Настройки успешно сохранены!")
+  const handleSaveSettings = (category: string, settings: any) => {
+    console.log(`Настройки ${category} сохранены:`, settings)
+
+    // Обновляем состояние настроек
+    setUserSettings((prev) => ({
+      ...prev,
+      [category]: { ...prev[category], ...settings },
+    }))
+
+    // Показываем уведомление об успешном сохранении
+    setNotifications((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        title: "Настройки сохранены",
+        message: `Настройки ${category} успешно обновлены`,
+        type: "success",
+        timestamp: new Date(),
+        read: false,
+      },
+    ])
+
+    setShowSettingsModal(false)
+  }
+
+  const handleModuleSettings = (moduleName: string, action: string) => {
+    console.log(`Настройки модуля ${moduleName}: ${action}`)
+
+    switch (action) {
+      case "configure":
+        setSettingsCategory(moduleName)
+        setShowSettingsModal(true)
+        break
+      case "reset":
+        if (confirm(`Сбросить настройки модуля ${moduleName}?`)) {
+          setUserSettings((prev) => ({
+            ...prev,
+            [moduleName]: {},
+          }))
+          setNotifications((prev) => [
+            ...prev,
+            {
+              id: Date.now().toString(),
+              title: "Настройки сброшены",
+              message: `Настройки модуля ${moduleName} сброшены к значениям по умолчанию`,
+              type: "info",
+              timestamp: new Date(),
+              read: false,
+            },
+          ])
+        }
+        break
+      case "export":
+        const settingsData = JSON.stringify(userSettings[moduleName] || {}, null, 2)
+        const blob = new Blob([settingsData], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `${moduleName}-settings.json`
+        a.click()
+        URL.revokeObjectURL(url)
+        break
+    }
   }
 
   const handleAddEmployee = () => {
@@ -545,6 +614,11 @@ export default function Dashboard() {
   const handleViewProjectDetails = (project) => {
     setSelectedProject(project)
     setShowProjectDetailsModal(true)
+  }
+
+  const handleOpenSettings = (category: string) => {
+    setSettingsCategory(category)
+    setShowSettingsModal(true)
   }
 
   return (
@@ -1085,702 +1159,405 @@ export default function Dashboard() {
               )}
 
               {activeTab === "settings" && (
-                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                    <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                      <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Настройки аккаунта</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">
-                        Управление профилем и предпочтениями
-                      </CardDescription>
+                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-foreground">
+                        <Settings className="w-5 h-5 mr-2 text-primary" />
+                        Настройки системы
+                      </CardTitle>
+                      <CardDescription>Управление параметрами платформы и персонализация</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
-                      <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-4">
-                        <div>
-                          <label className="text-xs sm:text-sm font-medium">Имя</label>
-                          <Input
-                            value={userSettings.name}
-                            onChange={(e) => setUserSettings({ ...userSettings, name: e.target.value })}
-                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs sm:text-sm font-medium">Email</label>
-                          <Input
-                            value={userSettings.email}
-                            onChange={(e) => setUserSettings({ ...userSettings, email: e.target.value })}
-                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs sm:text-sm font-medium">Компания</label>
-                          <Input
-                            value={userSettings.company}
-                            onChange={(e) => setUserSettings({ ...userSettings, company: e.target.value })}
-                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                          />
-                        </div>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("profile")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-blue-500/10 rounded-lg">
+                                <User className="w-5 h-5 text-blue-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Профиль</h3>
+                                <p className="text-sm text-muted-foreground">Личные данные и аватар</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("notifications")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-green-500/10 rounded-lg">
+                                <Bell className="w-5 h-5 text-green-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Уведомления</h3>
+                                <p className="text-sm text-muted-foreground">Email и push-уведомления</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("security")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-red-500/10 rounded-lg">
+                                <Shield className="w-5 h-5 text-red-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Безопасность</h3>
+                                <p className="text-sm text-muted-foreground">Пароль и двухфакторная аутентификация</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("integrations")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-purple-500/10 rounded-lg">
+                                <Zap className="w-5 h-5 text-purple-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Интеграции</h3>
+                                <p className="text-sm text-muted-foreground">API и внешние сервисы</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("appearance")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-orange-500/10 rounded-lg">
+                                <Palette className="w-5 h-5 text-orange-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Внешний вид</h3>
+                                <p className="text-sm text-muted-foreground">Тема и персонализация</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => handleOpenSettings("data")}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-teal-500/10 rounded-lg">
+                                <Database className="w-5 h-5 text-teal-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-foreground">Данные</h3>
+                                <p className="text-sm text-muted-foreground">Экспорт и резервное копирование</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
-                      <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-auto"
-                        onClick={handleSaveSettings}
-                      >
-                        Сохранить изменения
-                      </Button>
                     </CardContent>
                   </Card>
+                </div>
+              )}
 
-                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                    <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                      <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Уведомления</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">
-                        Настройка уведомлений и оповещений
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                        <div className="flex-1">
-                          <p className="font-medium text-xs sm:text-sm lg:text-base">Email уведомления</p>
-                          <p className="text-xs text-muted-foreground">Получать уведомления на почту</p>
+              {showSettingsModal && (
+                <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+                  <DialogContent className="max-w-2xl mx-4">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center space-x-2">
+                        <Settings className="w-5 h-5 text-primary" />
+                        <span>
+                          {settingsCategory === "profile" && "Настройки профиля"}
+                          {settingsCategory === "notifications" && "Настройки уведомлений"}
+                          {settingsCategory === "security" && "Настройки безопасности"}
+                          {settingsCategory === "integrations" && "Настройки интеграций"}
+                          {settingsCategory === "appearance" && "Настройки внешнего вида"}
+                          {settingsCategory === "data" && "Управление данными"}
+                        </span>
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-6">
+                      {settingsCategory === "profile" && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label>Имя</Label>
+                              <Input defaultValue="Иван Петров" className="mt-1" />
+                            </div>
+                            <div>
+                              <Label>Email</Label>
+                              <Input defaultValue="ivan@company.com" className="mt-1" />
+                            </div>
+                          </div>
+                          <div>
+                            <Label>Должность</Label>
+                            <Input defaultValue="Генеральный директор" className="mt-1" />
+                          </div>
+                          <div>
+                            <Label>Компания</Label>
+                            <Input defaultValue="ООО 'Инновации'" className="mt-1" />
+                          </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
-                        >
-                          Включено
+                      )}
+
+                      {settingsCategory === "notifications" && (
+                        <div className="space-y-4">
+                          <div className="space-y-3">
+                            <Label>Уведомления по email</Label>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <Label className="text-sm">Новые задачи</Label>
+                                  <p className="text-xs text-muted-foreground">Уведомления о назначенных задачах</p>
+                                </div>
+                                <Switch
+                                  checked={userSettings.notifications?.newTasks ?? true}
+                                  onCheckedChange={(checked) =>
+                                    setUserSettings((prev) => ({
+                                      ...prev,
+                                      notifications: { ...prev.notifications, newTasks: checked },
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <Label className="text-sm">Просроченные задачи</Label>
+                                  <p className="text-xs text-muted-foreground">Напоминания о просроченных задачах</p>
+                                </div>
+                                <Switch
+                                  checked={userSettings.notifications?.overdueTasks ?? true}
+                                  onCheckedChange={(checked) =>
+                                    setUserSettings((prev) => ({
+                                      ...prev,
+                                      notifications: { ...prev.notifications, overdueTasks: checked },
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <Label className="text-sm">Системные уведомления</Label>
+                                  <p className="text-xs text-muted-foreground">Важные системные сообщения</p>
+                                </div>
+                                <Switch
+                                  checked={userSettings.notifications?.system ?? true}
+                                  onCheckedChange={(checked) =>
+                                    setUserSettings((prev) => ({
+                                      ...prev,
+                                      notifications: { ...prev.notifications, system: checked },
+                                    }))
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsCategory === "security" && (
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Изменить пароль</Label>
+                            <div className="space-y-2 mt-2">
+                              <Input type="password" placeholder="Текущий пароль" />
+                              <Input type="password" placeholder="Новый пароль" />
+                              <Input type="password" placeholder="Подтвердите новый пароль" />
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            <Label>Настройки безопасности</Label>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label className="text-sm">Двухфакторная аутентификация</Label>
+                                <p className="text-xs text-muted-foreground">Дополнительная защита аккаунта</p>
+                              </div>
+                              <Switch
+                                checked={userSettings.security?.twoFactor ?? false}
+                                onCheckedChange={(checked) =>
+                                  setUserSettings((prev) => ({
+                                    ...prev,
+                                    security: { ...prev.security, twoFactor: checked },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label className="text-sm">Автоматический выход</Label>
+                                <p className="text-xs text-muted-foreground">Выход после 30 минут неактивности</p>
+                              </div>
+                              <Switch
+                                checked={userSettings.security?.autoLogout ?? true}
+                                onCheckedChange={(checked) =>
+                                  setUserSettings((prev) => ({
+                                    ...prev,
+                                    security: { ...prev.security, autoLogout: checked },
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsCategory === "integrations" && (
+                        <div className="space-y-4">
+                          <div className="space-y-3">
+                            <Label>Подключенные интеграции</Label>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                                    <Mail className="w-4 h-4 text-blue-600" />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm">Email интеграция</Label>
+                                    <p className="text-xs text-muted-foreground">Подключено к Gmail</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleModuleSettings("email", "configure")}
+                                >
+                                  Настроить
+                                </Button>
+                              </div>
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
+                                    <Calendar className="w-4 h-4 text-green-600" />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm">Календарь</Label>
+                                    <p className="text-xs text-muted-foreground">Подключено к Google Calendar</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleModuleSettings("calendar", "configure")}
+                                >
+                                  Настроить
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsCategory === "appearance" && (
+                        <div className="space-y-4">
+                          <div className="space-y-3">
+                            <Label>Внешний вид</Label>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label className="text-sm">Темная тема</Label>
+                                <p className="text-xs text-muted-foreground">
+                                  Переключение между светлой и темной темой
+                                </p>
+                              </div>
+                              <Switch
+                                checked={userSettings.appearance?.darkMode ?? false}
+                                onCheckedChange={(checked) =>
+                                  setUserSettings((prev) => ({
+                                    ...prev,
+                                    appearance: { ...prev.appearance, darkMode: checked },
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <Label className="text-sm">Компактный режим</Label>
+                                <p className="text-xs text-muted-foreground">Уменьшенные отступы и размеры элементов</p>
+                              </div>
+                              <Switch
+                                checked={userSettings.appearance?.compact ?? false}
+                                onCheckedChange={(checked) =>
+                                  setUserSettings((prev) => ({
+                                    ...prev,
+                                    appearance: { ...prev.appearance, compact: checked },
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsCategory === "data" && (
+                        <div className="space-y-4">
+                          <div className="space-y-3">
+                            <Label>Управление данными</Label>
+                            <div className="grid grid-cols-2 gap-4">
+                              <Button variant="outline" onClick={() => handleModuleSettings("data", "export")}>
+                                <Download className="w-4 h-4 mr-2" />
+                                Экспорт данных
+                              </Button>
+                              <Button variant="outline" onClick={() => handleModuleSettings("data", "backup")}>
+                                <Shield className="w-4 h-4 mr-2" />
+                                Создать резервную копию
+                              </Button>
+                            </div>
+                            <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
+                              <Label className="text-sm text-red-600">Опасная зона</Label>
+                              <p className="text-xs text-muted-foreground mt-1">Необратимые действия с данными</p>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="mt-2"
+                                onClick={() => {
+                                  if (confirm("Вы уверены, что хотите удалить все данные? Это действие необратимо!")) {
+                                    alert("Функция удаления данных будет реализована в следующих версиях")
+                                  }
+                                }}
+                              >
+                                Удалить все данные
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex justify-end space-x-2 pt-4 border-t">
+                        <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
+                          Отмена
+                        </Button>
+                        <Button onClick={() => handleSaveSettings(settingsCategory, userSettings[settingsCategory])}>
+                          Сохранить изменения
                         </Button>
                       </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                        <div className="flex-1">
-                          <p className="font-medium text-xs sm:text-sm lg:text-base">Push уведомления</p>
-                          <p className="text-xs text-muted-foreground">Уведомления в браузере</p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
-                        >
-                          Отключено
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               )}
 
-              {activeTab === "hr" && (
-                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                  <HRDashboard />
-                </div>
-              )}
-
-              {activeTab === "edo" && (
-                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                  <EDODashboard />
-                </div>
-              )}
-
-              {activeTab === "legal" && (
-                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                  <LegalDashboard />
-                </div>
-              )}
-
-              {activeTab === "marketing" && (
-                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                  <MarketingDashboard />
-                </div>
-              )}
+              {activeTab === "edo" && <EDODashboard />}
+              {activeTab === "legal" && <LegalDashboard />}
+              {activeTab === "marketing" && <MarketingDashboard />}
             </div>
           </div>
         </main>
-
-        <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
-          <DialogContent className="w-[calc(100vw-16px)] max-w-md mx-2 max-h-[85vh] overflow-y-auto enhanced-modal">
-            <DialogHeader className="pb-2 sm:pb-4">
-              <div className="flex items-center justify-between gap-2">
-                <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                  Уведомления
-                </DialogTitle>
-                {notifications > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="text-xs hover:bg-primary/10 px-2 py-1 h-auto"
-                  >
-                    Отметить все
-                  </Button>
-                )}
-              </div>
-            </DialogHeader>
-
-            <ScrollArea className="max-h-[60vh] sm:max-h-96">
-              <div className="space-y-2 sm:space-y-3">
-                {notificationsList.length === 0 ? (
-                  <div className="text-center py-6 sm:py-8">
-                    <Bell className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
-                    <p className="text-muted-foreground text-sm">Нет новых уведомлений</p>
-                  </div>
-                ) : (
-                  notificationsList.map((notification) => (
-                    <Card
-                      key={notification.id}
-                      className={`cursor-pointer transition-all duration-200 enhanced-card ${
-                        notification.read ? "bg-card/30 border-border/30" : "bg-card/80 border-primary/20 shadow-sm"
-                      }`}
-                      onClick={() => markNotificationAsRead(notification.id)}
-                    >
-                      <CardContent className="p-3 sm:p-4">
-                        <div className="flex items-start space-x-2 sm:space-x-3">
-                          <div className="flex-shrink-0 mt-0.5 sm:mt-1">{getNotificationIcon(notification.type)}</div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-1 gap-2">
-                              <h4
-                                className={`text-xs sm:text-sm font-medium break-words ${
-                                  notification.read ? "text-muted-foreground" : "text-foreground"
-                                }`}
-                              >
-                                {notification.title}
-                              </h4>
-                              {!notification.read && <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />}
-                            </div>
-                            <p
-                              className={`text-xs mb-2 break-words ${
-                                notification.read ? "text-muted-foreground/70" : "text-muted-foreground"
-                              }`}
-                            >
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-muted-foreground/60">{notification.time}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-
-            {notificationsList.length > 0 && (
-              <div className="flex justify-center pt-3 sm:pt-4 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs hover:bg-primary/10 bg-transparent w-full sm:w-auto"
-                  onClick={() => {
-                    console.log("[v0] View all notifications clicked")
-                    setShowNotificationsModal(false)
-                  }}
-                >
-                  Посмотреть все уведомления
-                </Button>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {showAddProjectModal && (
-          <Dialog open={showAddProjectModal} onOpenChange={setShowAddProjectModal}>
-            <DialogContent className="max-w-[95vw] sm:max-w-md mx-2 sm:mx-4 enhanced-modal">
-              <DialogHeader className="pb-3 sm:pb-4">
-                <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                  Создать новый проект
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3 sm:space-y-4">
-                <div>
-                  <label className="text-xs sm:text-sm font-medium">Название проекта</label>
-                  <Input
-                    value={newProject.name}
-                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                    placeholder="Введите название проекта"
-                    className="mt-1 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium">Описание</label>
-                  <textarea
-                    value={newProject.description}
-                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                    placeholder="Краткое описание проекта"
-                    className="w-full mt-1 p-2 border border-border rounded-md bg-background min-h-[60px] sm:min-h-[80px] resize-none text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium">Срок выполнения</label>
-                  <Input
-                    type="date"
-                    value={newProject.deadline}
-                    onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
-                    className="mt-1 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium">Приоритет</label>
-                  <select
-                    value={newProject.priority || "Средний"}
-                    onChange={(e) => setNewProject({ ...newProject, priority: e.target.value })}
-                    className="w-full mt-1 p-2 border border-border rounded-md bg-background text-sm"
-                  >
-                    <option value="Низкий">Низкий</option>
-                    <option value="Средний">Средний</option>
-                    <option value="Высокий">Высокий</option>
-                    <option value="Критический">Критический</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-2 pt-3 sm:pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowAddProjectModal(false)
-                    setNewProject({ name: "", deadline: "", team: [], description: "" })
-                  }}
-                  className="text-sm w-full sm:w-auto"
-                >
-                  Отмена
-                </Button>
-                <Button
-                  onClick={handleAddProject}
-                  disabled={!newProject.name || !newProject.deadline}
-                  className="text-sm w-full sm:w-auto"
-                >
-                  Создать проект
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {showProjectDetailsModal && selectedProject && (
-          <Dialog open={showProjectDetailsModal} onOpenChange={setShowProjectDetailsModal}>
-            <DialogContent className="w-[calc(100vw-16px)] max-w-2xl mx-2 max-h-[90vh] overflow-y-auto enhanced-modal">
-              <DialogHeader className="pb-3 sm:pb-4">
-                <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                  <span className="truncate">{selectedProject.name}</span>
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 sm:space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2 sm:space-y-3">
-                    <div>
-                      <label className="text-xs sm:text-sm font-medium text-muted-foreground">Статус</label>
-                      <div className="mt-1">
-                        <Badge
-                          variant={
-                            selectedProject.status === "Завершен"
-                              ? "default"
-                              : selectedProject.status === "В работе"
-                                ? "secondary"
-                                : "outline"
-                          }
-                          className="text-xs px-1.5 py-0.5"
-                        >
-                          {selectedProject.status}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-xs sm:text-sm font-medium text-muted-foreground">Прогресс</label>
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs sm:text-sm font-medium">{selectedProject.progress}%</span>
-                        </div>
-                        <div className="w-full bg-secondary rounded-full h-2">
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${selectedProject.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2 sm:space-y-3">
-                    <div>
-                      <label className="text-xs sm:text-sm font-medium text-muted-foreground">Срок выполнения</label>
-                      <p className="mt-1 text-xs sm:text-sm">{selectedProject.deadline}</p>
-                    </div>
-                    <div>
-                      <label className="text-xs sm:text-sm font-medium text-muted-foreground">Команда</label>
-                      <div className="flex items-center gap-1 sm:gap-2 mt-1">
-                        {selectedProject.team.map((member, index) => (
-                          <div
-                            key={index}
-                            className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
-                          >
-                            <span className="text-xs font-bold text-white">{member}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-border/50 pt-3 sm:pt-4">
-                  <h4 className="text-xs sm:text-sm font-medium mb-2 sm:mb-3">Последние активности</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg bg-card/50">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-1 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs sm:text-sm block">Обновлен статус задачи "Интеграция API"</span>
-                        <span className="text-xs text-muted-foreground">2 часа назад</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg bg-card/50">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full mt-1 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs sm:text-sm block">Создан отчет по прогрессу</span>
-                        <span className="text-xs text-muted-foreground">3 дня назад</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3 sm:pt-4 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowProjectDetailsModal(false)}
-                  className="text-sm w-full sm:w-auto"
-                >
-                  Закрыть
-                </Button>
-                <Button className="text-sm w-full sm:w-auto">Редактировать проект</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {showAddEmployeeModal && (
-          <Dialog open={showAddEmployeeModal} onOpenChange={setShowAddEmployeeModal}>
-            <DialogContent className="max-w-md mx-4">
-              <DialogHeader>
-                <DialogTitle>Добавить сотрудника</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Имя</label>
-                  <Input
-                    value={newEmployee.name}
-                    onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-                    placeholder="Введите имя"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Email</label>
-                  <Input
-                    value={newEmployee.email}
-                    onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
-                    placeholder="Введите email"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Роль</label>
-                  <select
-                    value={newEmployee.role}
-                    onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
-                    className="w-full mt-1 p-2 border border-border rounded-md bg-background"
-                  >
-                    {availableRoles.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowAddEmployeeModal(false)
-                    setNewEmployee({ name: "", email: "", role: "Сотрудник" })
-                  }}
-                >
-                  Отмена
-                </Button>
-                <Button onClick={handleAddEmployee}>Добавить</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {showAssignRoleModal && selectedEmployee && (
-          <Dialog open={showAssignRoleModal} onOpenChange={setShowAssignRoleModal}>
-            <DialogContent className="max-w-md mx-4">
-              <DialogHeader>
-                <DialogTitle>Назначить роль</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Назначить роль для {selectedEmployee.name}</p>
-                <div>
-                  <label className="text-sm font-medium">Выберите роль</label>
-                  <select
-                    defaultValue={selectedEmployee.role}
-                    onChange={(e) => handleAssignRole(selectedEmployee.id, e.target.value)}
-                    className="w-full mt-1 p-2 border border-border rounded-md bg-background"
-                  >
-                    {availableRoles.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowAssignRoleModal(false)
-                    setSelectedEmployee(null)
-                  }}
-                >
-                  Отмена
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {showCreateRoleModal && (
-          <Dialog open={showCreateRoleModal} onOpenChange={setShowCreateRoleModal}>
-            <DialogContent className="max-w-md mx-4 enhanced-modal">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-primary" />
-                  Создать новую роль
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Название роли</label>
-                  <Input
-                    value={newRole.name}
-                    onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
-                    placeholder="Введите название роли"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Описание роли</label>
-                  <textarea
-                    value={newRole.description || ""}
-                    onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
-                    placeholder="Краткое описание роли и обязанностей"
-                    className="w-full mt-1 p-2 border border-border rounded-md bg-background min-h-[80px] resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Права доступа</label>
-                  <div className="mt-2 space-y-2">
-                    {[
-                      { id: "read", label: "Просмотр данных" },
-                      { id: "write", label: "Редактирование" },
-                      { id: "delete", label: "Удаление" },
-                      { id: "admin", label: "Администрирование" },
-                      { id: "reports", label: "Отчеты" },
-                      { id: "settings", label: "Настройки" },
-                    ].map((permission) => (
-                      <div key={permission.id} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={permission.id}
-                          checked={newRole.permissions?.includes(permission.id) || false}
-                          onChange={(e) => {
-                            const permissions = newRole.permissions || []
-                            if (e.target.checked) {
-                              setNewRole({ ...newRole, permissions: [...permissions, permission.id] })
-                            } else {
-                              setNewRole({ ...newRole, permissions: permissions.filter((p) => p !== permission.id) })
-                            }
-                          }}
-                          className="rounded border-border"
-                        />
-                        <label htmlFor={permission.id} className="text-sm text-foreground">
-                          {permission.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowCreateRoleModal(false)
-                    setNewRole({ name: "", permissions: [] })
-                  }}
-                >
-                  Отмена
-                </Button>
-                <Button onClick={handleCreateRole} disabled={!newRole.name}>
-                  Создать роль
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-        <SupportChat />
       </div>
-
-      <style jsx global>{`
-        
-        .shadow-3xl {
-          box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-        }
-        .container-fix {
-          padding-left: max(12px, calc((100% - 1280px)/2));
-          padding-right: max(12px, calc((100% - 1280px)/2));
-        }
-        .mobile-padding {
-          padding-left: 12px;
-          padding-right: 12px;
-        }
-        .overflow-fix {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .button-responsive {
-          width: 100%;
-          min-height: 36px;
-        }
-        .grid-responsive {
-          grid-template-columns: 1fr;
-        }
-        .card-responsive {
-          width: 100%;
-          min-height: auto;
-        }
-        
-        /* Исправление наложений и улучшение мобильной адаптации */
-        @media (max-width: 639px) {
-          .container-fix {
-            padding-left: 8px;
-            padding-right: 8px;
-            overflow-x: hidden;
-          }
-          .mobile-padding {
-            padding-left: 8px;
-            padding-right: 8px;
-          }
-          .button-responsive {
-            width: 100%;
-            min-height: 32px;
-            font-size: 12px;
-            padding: 8px 12px;
-          }
-          .card-responsive {
-            margin-bottom: 8px;
-            width: 100%;
-            max-width: 100%;
-          }
-          .grid-responsive {
-            gap: 8px;
-            grid-template-columns: 1fr;
-          }
-          /* Предотвращение выступов элементов на мобильных */
-          .enhanced-card {
-            margin-bottom: 16px;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-          }
-          
-          /* Исправление переполнения контента */
-          * {
-            max-width: 100%;
-            box-sizing: border-box;
-          }
-          
-          /* Исправление модальных окон на мобильных */
-          .enhanced-modal {
-            width: calc(100vw - 16px) !important;
-            max-width: calc(100vw - 16px) !important;
-            margin: 8px !important;
-          }
-          
-          /* Исправление таблиц и широких элементов */
-          table {
-            width: 100%;
-            table-layout: fixed;
-          }
-          
-          td, th {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            max-width: 0;
-          }
-          
-          /* Исправление flex элементов */
-          .flex {
-            flex-wrap: wrap;
-          }
-          
-          /* Исправление текста */
-          .truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
-        
-        @media (min-width: 640px) and (max-width: 1023px) {
-          .mobile-padding {
-            padding-left: 16px;
-            padding-right: 16px;
-          }
-          .button-responsive {
-            width: auto;
-            min-height: 36px;
-          }
-          /* Планшетная адаптация с предотвращением выступов */
-          .enhanced-card {
-            width: 100%;
-            max-width: 100%;
-          }
-          
-          .enhanced-modal {
-            max-width: calc(100vw - 32px);
-          }
-        }
-        
-        /* Глобальные правила для предотвращения горизонтального скролла */
-        @media (max-width: 1023px) {
-          body {
-            overflow-x: hidden;
-          }
-          
-          .overflow-hidden-mobile {
-            overflow-x: hidden;
-          }
-          
-          /* Исправление широких элементов */
-          img, video, iframe, object, embed {
-            max-width: 100%;
-            height: auto;
-          }
-          
-          /* Исправление pre и code блоков */
-          pre, code {
-            overflow-x: auto;
-            max-width: 100%;
-          }
-          
-          /* Исправление input элементов */
-          input, textarea, select {
-            max-width: 100%;
-            box-sizing: border-box;
-          }
-        }
-        `}</style>
     </TooltipProvider>
   )
 }

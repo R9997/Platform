@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Zap, Pause, Settings, Clock, CheckCircle, AlertTriangle } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 
 export function ProcessAutomation() {
   const [processes, setProcesses] = useState([
@@ -52,6 +54,8 @@ export function ProcessAutomation() {
   })
 
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [showProcessSettings, setShowProcessSettings] = useState(false)
+  const [selectedProcessId, setSelectedProcessId] = useState<number | null>(null)
 
   const toggleProcess = (id: number) => {
     setProcesses(
@@ -104,6 +108,11 @@ export function ProcessAutomation() {
       default:
         return <Clock className="w-4 h-4 text-muted-foreground" />
     }
+  }
+
+  const handleProcessSettings = (processId: number) => {
+    setSelectedProcessId(processId)
+    setShowProcessSettings(true)
   }
 
   return (
@@ -255,7 +264,7 @@ export function ProcessAutomation() {
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       <Switch checked={process.status === "active"} onCheckedChange={() => toggleProcess(process.id)} />
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleProcessSettings(process.id)}>
                         <Settings className="w-4 h-4" />
                       </Button>
                     </div>
@@ -266,6 +275,99 @@ export function ProcessAutomation() {
           </div>
         </CardContent>
       </Card>
+
+      {showProcessSettings && selectedProcessId && (
+        <Dialog open={showProcessSettings} onOpenChange={setShowProcessSettings}>
+          <DialogContent className="max-w-lg mx-4">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-2">
+                <Settings className="w-5 h-5 text-primary" />
+                <span>Настройки процесса</span>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              {(() => {
+                const process = processes.find((p) => p.id === selectedProcessId)
+                if (!process) return null
+
+                return (
+                  <>
+                    <div>
+                      <Label>Название процесса</Label>
+                      <Input defaultValue={process.name} className="mt-1" />
+                    </div>
+                    <div>
+                      <Label>Описание</Label>
+                      <Textarea defaultValue={process.description} className="mt-1" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Частота выполнения</Label>
+                        <Select defaultValue={process.frequency}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="realtime">В реальном времени</SelectItem>
+                            <SelectItem value="5min">Каждые 5 минут</SelectItem>
+                            <SelectItem value="hourly">Каждый час</SelectItem>
+                            <SelectItem value="daily">Ежедневно</SelectItem>
+                            <SelectItem value="weekly">Еженедельно</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Приоритет</Label>
+                        <Select defaultValue="medium">
+                          <SelectTrigger className="mt-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">Низкий</SelectItem>
+                            <SelectItem value="medium">Средний</SelectItem>
+                            <SelectItem value="high">Высокий</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <Label>Дополнительные настройки</Label>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm">Уведомления об ошибках</Label>
+                          <p className="text-xs text-muted-foreground">Отправлять уведомления при сбоях</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm">Автоматический перезапуск</Label>
+                          <p className="text-xs text-muted-foreground">Перезапускать при ошибках</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm">Логирование</Label>
+                          <p className="text-xs text-muted-foreground">Сохранять подробные логи</p>
+                        </div>
+                        <Switch />
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
+
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowProcessSettings(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={() => setShowProcessSettings(false)}>Сохранить</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
