@@ -206,6 +206,16 @@ export default function Dashboard() {
 
   const [isDemoMode, setIsDemoMode] = useState(true)
 
+  const [newTask, setNewTask] = useState({
+    title: "",
+    assignee: "",
+    priority: "Средний",
+    dueDate: "",
+    description: "",
+  })
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false)
+  const [tasks, setTasks] = useState([])
+
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
       const project = {
@@ -308,6 +318,90 @@ export default function Dashboard() {
     const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [])
+
+  const handleAddTask = () => {
+    if (newTask.title && newTask.assignee) {
+      const task = {
+        id: tasks.length + 1,
+        title: newTask.title,
+        assignee: newTask.assignee,
+        priority: newTask.priority,
+        status: "В работе",
+        dueDate: newTask.dueDate,
+        description: newTask.description || "",
+        progress: 0,
+      }
+      setTasks([...tasks, task])
+      setNewTask({ title: "", assignee: "", priority: "Средний", dueDate: "", description: "" })
+      setShowAddTaskModal(false)
+    }
+  }
+
+  const handleUpdateTaskStatus = (taskId: number, newStatus: string) => {
+    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)))
+  }
+
+  const handleDeleteTask = (taskId: number) => {
+    setTasks(tasks.filter((task) => task.id !== taskId))
+  }
+
+  const handleUpdateProjectProgress = (projectId: number, progress: number) => {
+    setProjects(projects.map((project) => (project.id === projectId ? { ...project, progress } : project)))
+  }
+
+  const handleDeleteProject = (projectId: number) => {
+    setProjects(projects.filter((project) => project.id !== projectId))
+  }
+
+  const handleAddTransaction = (transaction: any) => {
+    const newTransaction = {
+      id: Date.now(),
+      ...transaction,
+      date: new Date().toISOString().split("T")[0],
+    }
+    // Здесь будет интеграция с backend
+    console.log("[v0] Adding transaction:", newTransaction)
+  }
+
+  const handleGenerateReport = (reportType: string) => {
+    // Генерация отчета в зависимости от типа
+    const reportData = {
+      type: reportType,
+      generatedAt: new Date().toISOString(),
+      data: reportType === "financial" ? { revenue: 150000, expenses: 80000 } : {},
+    }
+
+    // Создание и скачивание CSV файла
+    const csvContent = `data:text/csv;charset=utf-8,${Object.keys(reportData).join(",")}\n${Object.values(reportData).join(",")}`
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `${reportType}_report_${new Date().toISOString().split("T")[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleNotificationAction = (notificationId: number, action: string) => {
+    const notification = notificationsList.find((n) => n.id === notificationId)
+    if (notification) {
+      switch (action) {
+        case "approve":
+          console.log("[v0] Approving notification:", notification)
+          // Здесь будет логика одобрения
+          break
+        case "reject":
+          console.log("[v0] Rejecting notification:", notification)
+          // Здесь будет логика отклонения
+          break
+        case "view":
+          console.log("[v0] Viewing notification details:", notification)
+          // Открытие детального просмотра
+          break
+      }
+      markNotificationAsRead(notificationId)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -581,22 +675,42 @@ export default function Dashboard() {
           </div>
         )}
 
-        <main className="max-w-7xl mx-auto mobile-padding py-4 sm:py-6 lg:py-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            <div className="hidden lg:block lg:col-span-1 xl:col-span-1">
-              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 min-w-[280px] w-full overflow-hidden transition-shadow duration-500">
+        <main className="max-w-7xl mx-auto mobile-padding py-2 sm:py-4 lg:py-8 relative z-10">
+          <div
+            className={`grid grid-cols-1 gap-3 sm:gap-4 lg:gap-8 ${
+              activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
+                ? "lg:grid-cols-5"
+                : "lg:grid-cols-4"
+            }`}
+          >
+            <div
+              className={`hidden lg:block ${
+                activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
+                  ? "lg:col-span-1 xl:col-span-1"
+                  : "lg:col-span-1 xl:col-span-1"
+              }`}
+            >
+              <Card
+                className={`enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 w-full overflow-hidden transition-shadow duration-500 ${
+                  activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
+                    ? "min-w-[320px]"
+                    : "min-w-[280px]"
+                }`}
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-500"></div>
 
-                <CardHeader className="pb-4 relative z-10">
-                  <CardTitle className="text-foreground font-bold text-lg flex items-center">
-                    <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl mr-3 flex-shrink-0 transition-colors duration-300">
-                      <Briefcase className="w-5 h-5 text-primary" />
+                <CardHeader className="pb-3 sm:pb-4 relative z-10">
+                  <CardTitle className="text-foreground font-bold text-base sm:text-lg flex items-center">
+                    <div className="p-1.5 sm:p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg sm:rounded-xl mr-2 sm:mr-3 flex-shrink-0 transition-colors duration-300">
+                      <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     </div>
-                    <span className="truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                    <span className="truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent text-sm sm:text-base">
                       Управление бизнесом
                     </span>
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">Ваша ИИ-платформа роста</CardDescription>
+                  <CardDescription className="text-muted-foreground text-xs sm:text-sm">
+                    Ваша ИИ-платформа роста
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0 relative z-10">
                   <NavigationMenu />
@@ -604,10 +718,16 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <div className="col-span-1 lg:col-span-3 xl:col-span-3">
+            <div
+              className={`col-span-1 ${
+                activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
+                  ? "lg:col-span-4 xl:col-span-4"
+                  : "lg:col-span-3 xl:col-span-3"
+              }`}
+            >
               <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
                 {activeTab === "overview" && (
-                  <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-8">
                     <div className="animate-in fade-in-0 slide-in-from-left-4 duration-500">
                       <AnimatedMetrics />
                     </div>
@@ -657,10 +777,10 @@ export default function Dashboard() {
                 {activeTab === "finance" && <FinanceManager />}
 
                 {activeTab === "team" && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground overflow-fix">
+                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
                           Управление командой
                         </h2>
                         <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
@@ -668,50 +788,50 @@ export default function Dashboard() {
                         </p>
                       </div>
                       <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base button-responsive"
+                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
                         onClick={() => setShowAddEmployeeModal(true)}
                       >
-                        <UserPlus className="w-4 h-4 mr-2" />
+                        <UserPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         <span>Добавить сотрудника</span>
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 grid-responsive">
-                      <div className="xl:col-span-2">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
+                      <div className="xl:col-span-2 2xl:col-span-2">
                         <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <span className="text-base sm:text-lg lg:text-xl overflow-fix">
+                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                            <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
+                              <span className="text-sm sm:text-base lg:text-lg xl:text-xl overflow-fix">
                                 Команда ({employees.length})
                               </span>
-                              <Badge variant="secondary" className="self-start sm:self-center text-xs">
+                              <Badge variant="secondary" className="self-start sm:self-center text-xs px-1.5 py-0.5">
                                 {employees.filter((e) => e.status === "Активен").length} активных
                               </Badge>
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="space-y-3 sm:space-y-4">
+                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                               {employees.map((employee) => (
                                 <div
                                   key={employee.id}
-                                  className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 p-3 sm:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
+                                  className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
                                 >
-                                  <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
+                                  <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
                                       <span className="text-xs sm:text-sm font-bold text-white">{employee.avatar}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <h4 className="font-medium text-foreground truncate text-sm sm:text-base">
+                                      <h4 className="font-medium text-foreground truncate text-xs sm:text-sm lg:text-base">
                                         {employee.name}
                                       </h4>
                                       <p className="text-xs text-muted-foreground truncate">{employee.email}</p>
-                                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
-                                        <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <div className="flex flex-wrap items-center gap-1 mt-1">
+                                        <Badge variant="outline" className="text-xs px-1 py-0.5">
                                           {employee.role}
                                         </Badge>
                                         <Badge
                                           variant={employee.status === "Активен" ? "default" : "secondary"}
-                                          className="text-xs px-1.5 py-0.5"
+                                          className="text-xs px-1 py-0.5"
                                         >
                                           {employee.status}
                                         </Badge>
@@ -720,7 +840,7 @@ export default function Dashboard() {
                                   </div>
                                   <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                                     <div className="text-left sm:text-right">
-                                      <p className="text-sm font-medium">{employee.productivity}%</p>
+                                      <p className="text-xs sm:text-sm font-medium">{employee.productivity}%</p>
                                       <p className="text-xs text-muted-foreground">Продуктивность</p>
                                     </div>
                                     <div className="flex gap-1 sm:gap-2">
@@ -731,7 +851,7 @@ export default function Dashboard() {
                                           setSelectedEmployee(employee)
                                           setShowAssignRoleModal(true)
                                         }}
-                                        className="text-xs px-2 py-1 h-auto"
+                                        className="text-xs px-1.5 py-1 h-auto"
                                       >
                                         Роль
                                       </Button>
@@ -739,7 +859,7 @@ export default function Dashboard() {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => handleRemoveEmployee(employee.id)}
-                                        className="text-red-600 hover:text-red-700 text-xs px-2 py-1 h-auto"
+                                        className="text-red-600 hover:text-red-700 text-xs px-1.5 py-1 h-auto"
                                       >
                                         ×
                                       </Button>
@@ -752,24 +872,24 @@ export default function Dashboard() {
                         </Card>
                       </div>
 
-                      <div className="space-y-4 sm:space-y-6">
+                      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                         <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-sm sm:text-base lg:text-lg overflow-fix">
+                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                            <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
                               Статистика команды
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="space-y-3 sm:space-y-4">
+                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                               <div className="flex justify-between items-center">
                                 <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
                                   Всего сотрудников
                                 </span>
-                                <span className="font-bold text-sm sm:text-base">{employees.length}</span>
+                                <span className="font-bold text-xs sm:text-sm lg:text-base">{employees.length}</span>
                               </div>
                               <div className="flex justify-between items-center">
                                 <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">Активных</span>
-                                <span className="font-bold text-green-600 text-sm sm:text-base">
+                                <span className="font-bold text-green-600 text-xs sm:text-sm lg:text-base">
                                   {employees.filter((e) => e.status === "Активен").length}
                                 </span>
                               </div>
@@ -777,7 +897,7 @@ export default function Dashboard() {
                                 <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
                                   Средняя продуктивность
                                 </span>
-                                <span className="font-bold text-sm sm:text-base">
+                                <span className="font-bold text-xs sm:text-sm lg:text-base">
                                   {Math.round(
                                     employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
                                   )}
@@ -789,19 +909,19 @@ export default function Dashboard() {
                         </Card>
 
                         <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-sm sm:text-base lg:text-lg overflow-fix">
+                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                            <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
                               Роли в команде
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="space-y-2">
+                            <div className="space-y-1.5 sm:space-y-2">
                               {availableRoles.map((role) => {
                                 const count = employees.filter((emp) => emp.role === role).length
                                 return (
                                   <div key={role} className="flex justify-between items-center">
                                     <span className="text-xs sm:text-sm truncate flex-1 mr-2 overflow-fix">{role}</span>
-                                    <Badge variant="secondary" className="shrink-0 text-xs px-1.5 py-0.5">
+                                    <Badge variant="secondary" className="shrink-0 text-xs px-1 py-0.5">
                                       {count}
                                     </Badge>
                                   </div>
@@ -816,31 +936,33 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === "projects" && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">Активные проекты</h2>
+                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
+                          Активные проекты
+                        </h2>
                         <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
                           Отслеживайте прогресс ваших ИИ-проектов
                         </p>
                       </div>
                       <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
+                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
                         onClick={() => setShowAddProjectModal(true)}
                       >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Новый проект
                       </Button>
                     </div>
 
                     <GanttChart projects={projects} />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                       {projects.map((project) => (
                         <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
-                          <CardHeader className="pb-3 sm:pb-4">
-                            <CardTitle className="text-base sm:text-lg truncate">{project.name}</CardTitle>
-                            <div className="flex items-center justify-between gap-2">
+                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                            <CardTitle className="text-sm sm:text-base lg:text-lg truncate">{project.name}</CardTitle>
+                            <div className="flex items-center justify-between gap-1 sm:gap-2">
                               <Badge
                                 variant={
                                   project.status === "Завершен"
@@ -849,33 +971,33 @@ export default function Dashboard() {
                                       ? "secondary"
                                       : "outline"
                                 }
-                                className="text-xs px-1.5 py-0.5"
+                                className="text-xs px-1 py-0.5"
                               >
                                 {project.status}
                               </Badge>
-                              <span className="text-xs sm:text-sm text-muted-foreground">до {project.deadline}</span>
+                              <span className="text-xs text-muted-foreground">до {project.deadline}</span>
                             </div>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="space-y-3 sm:space-y-4">
+                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                               <div>
                                 <div className="flex justify-between text-xs sm:text-sm mb-1">
                                   <span>Прогресс</span>
                                   <span>{project.progress}%</span>
                                 </div>
-                                <div className="w-full bg-secondary rounded-full h-2">
+                                <div className="w-full bg-secondary rounded-full h-1.5 sm:h-2">
                                   <div
-                                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                                    className="bg-primary h-1.5 sm:h-2 rounded-full transition-all duration-300"
                                     style={{ width: `${project.progress}%` }}
                                   ></div>
                                 </div>
                               </div>
                               <div className="flex items-center justify-between">
-                                <div className="flex -space-x-1 sm:-space-x-2">
+                                <div className="flex -space-x-1">
                                   {project.team.map((member, index) => (
                                     <div
                                       key={index}
-                                      className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
+                                      className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
                                     >
                                       <span className="text-xs font-bold text-white">{member}</span>
                                     </div>
@@ -885,7 +1007,7 @@ export default function Dashboard() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleViewProjectDetails(project)}
-                                  className="text-xs px-2 py-1 h-auto"
+                                  className="text-xs px-1.5 py-1 h-auto"
                                 >
                                   Подробнее
                                 </Button>
@@ -899,10 +1021,10 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === "roles" && (
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
                           Роли и права доступа
                         </h2>
                         <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
@@ -910,75 +1032,71 @@ export default function Dashboard() {
                         </p>
                       </div>
                       <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
+                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
                         onClick={() => setShowCreateRoleModal(true)}
                       >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Создать роль
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                       {availableRoles.map((role) => {
                         const userCount = employees.filter((emp) => emp.role === role).length
                         return (
                           <Card key={role} className="enhanced-card backdrop-blur-sm border border-border/50">
-                            <CardHeader className="pb-3 sm:pb-4">
+                            <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
                               <CardTitle className="flex items-center justify-between">
-                                <span className="text-base sm:text-lg truncate mr-2">{role}</span>
-                                <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                                <span className="text-sm sm:text-base lg:text-lg truncate mr-2">{role}</span>
+                                <Badge variant="secondary" className="text-xs px-1 py-0.5">
                                   {userCount} польз.
                                 </Badge>
                               </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-0">
-                              <div className="space-y-3">
+                              <div className="space-y-2 sm:space-y-3">
                                 <div className="text-xs sm:text-sm text-muted-foreground">
                                   Права доступа для роли "{role}"
                                 </div>
-                                <div className="flex flex-wrap gap-1 sm:gap-2">
+                                <div className="flex flex-wrap gap-1">
                                   {role === "Администратор" && (
                                     <>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Полный доступ
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Управление пользователями
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Настройки системы
                                       </Badge>
                                     </>
                                   )}
                                   {role === "Менеджер" && (
                                     <>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Управление проектами
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Просмотр отчетов
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Управление командой
                                       </Badge>
                                     </>
                                   )}
                                   {role === "Сотрудник" && (
                                     <>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Базовый доступ
                                       </Badge>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
                                         Просмотр задач
                                       </Badge>
                                     </>
                                   )}
                                 </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full bg-transparent text-xs sm:text-sm h-8"
-                                >
+                                <Button variant="outline" size="sm" className="w-full bg-transparent text-xs h-7">
                                   Редактировать права
                                 </Button>
                               </div>
@@ -991,22 +1109,22 @@ export default function Dashboard() {
                 )}
 
                 {activeTab === "settings" && (
-                  <div className="space-y-4 sm:space-y-6">
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                     <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                      <CardHeader className="pb-3 sm:pb-4">
-                        <CardTitle className="text-base sm:text-lg lg:text-xl">Настройки аккаунта</CardTitle>
+                      <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                        <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Настройки аккаунта</CardTitle>
                         <CardDescription className="text-xs sm:text-sm">
                           Управление профилем и предпочтениями
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="pt-0 space-y-3 sm:space-y-4">
-                        <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                      <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
+                        <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-4">
                           <div>
                             <label className="text-xs sm:text-sm font-medium">Имя</label>
                             <Input
                               value={userSettings.name}
                               onChange={(e) => setUserSettings({ ...userSettings, name: e.target.value })}
-                              className="mt-1 text-sm"
+                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
                             />
                           </div>
                           <div>
@@ -1014,7 +1132,7 @@ export default function Dashboard() {
                             <Input
                               value={userSettings.email}
                               onChange={(e) => setUserSettings({ ...userSettings, email: e.target.value })}
-                              className="mt-1 text-sm"
+                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
                             />
                           </div>
                           <div>
@@ -1022,12 +1140,12 @@ export default function Dashboard() {
                             <Input
                               value={userSettings.company}
                               onChange={(e) => setUserSettings({ ...userSettings, company: e.target.value })}
-                              className="mt-1 text-sm"
+                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
                             />
                           </div>
                         </div>
                         <Button
-                          className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm"
+                          className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-auto"
                           onClick={handleSaveSettings}
                         >
                           Сохранить изменения
@@ -1036,35 +1154,35 @@ export default function Dashboard() {
                     </Card>
 
                     <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                      <CardHeader className="pb-3 sm:pb-4">
-                        <CardTitle className="text-base sm:text-lg lg:text-xl">Уведомления</CardTitle>
+                      <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                        <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Уведомления</CardTitle>
                         <CardDescription className="text-xs sm:text-sm">
                           Настройка уведомлений и оповещений
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="pt-0 space-y-3 sm:space-y-4">
+                      <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                           <div className="flex-1">
-                            <p className="font-medium text-sm sm:text-base">Email уведомления</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Получать уведомления на почту</p>
+                            <p className="font-medium text-xs sm:text-sm lg:text-base">Email уведомления</p>
+                            <p className="text-xs text-muted-foreground">Получать уведомления на почту</p>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs sm:text-sm w-full sm:w-auto bg-transparent"
+                            className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
                           >
                             Включено
                           </Button>
                         </div>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                           <div className="flex-1">
-                            <p className="font-medium text-sm sm:text-base">Push уведомления</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Уведомления в браузере</p>
+                            <p className="font-medium text-xs sm:text-sm lg:text-base">Push уведомления</p>
+                            <p className="text-xs text-muted-foreground">Уведомления в браузере</p>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs sm:text-sm w-full sm:w-auto bg-transparent"
+                            className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
                           >
                             Отключено
                           </Button>
@@ -1338,13 +1456,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg bg-card/50">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs sm:text-sm block">Добавлен новый участник команды</span>
-                        <span className="text-xs text-muted-foreground">1 день назад</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg bg-card/50">
                       <div className="w-2 h-2 bg-orange-500 rounded-full mt-1 flex-shrink-0"></div>
                       <div className="flex-1 min-w-0">
                         <span className="text-xs sm:text-sm block">Создан отчет по прогрессу</span>
@@ -1550,12 +1661,12 @@ export default function Dashboard() {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
         }
         .container-fix {
-          padding-left: max(16px, calc((100% - 1280px)/2));
-          padding-right: max(16px, calc((100% - 1280px)/2));
+          padding-left: max(12px, calc((100% - 1280px)/2));
+          padding-right: max(12px, calc((100% - 1280px)/2));
         }
         .mobile-padding {
-          padding-left: 16px;
-          padding-right: 16px;
+          padding-left: 12px;
+          padding-right: 12px;
         }
         .overflow-fix {
           overflow: hidden;
@@ -1563,29 +1674,100 @@ export default function Dashboard() {
           white-space: nowrap;
         }
         .button-responsive {
-          width: auto;
+          width: 100%;
+          min-height: 36px;
         }
         .grid-responsive {
           grid-template-columns: 1fr;
         }
         .card-responsive {
           width: 100%;
+          min-height: auto;
         }
+        
+        /* Улучшенная мобильная адаптация с компактными размерами */
+        @media (max-width: 639px) {
+          .container-fix {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+          .mobile-padding {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+          .button-responsive {
+            width: 100%;
+            min-height: 32px;
+            font-size: 12px;
+            padding: 8px 12px;
+          }
+          .card-responsive {
+            margin-bottom: 8px;
+          }
+          .grid-responsive {
+            gap: 8px;
+          }
+        }
+        
         @media (min-width: 640px) {
+          .mobile-padding {
+            padding-left: 16px;
+            padding-right: 16px;
+          }
+          .button-responsive {
+            width: auto;
+            min-height: 36px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
           .mobile-padding {
             padding-left: 24px;
             padding-right: 24px;
           }
-        }
-        @media (min-width: 1024px) {
           .button-responsive {
             width: auto;
+            min-height: 40px;
           }
           .grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           }
           .card-responsive {
             width: auto;
+          }
+        }
+        
+        @media (min-width: 1280px) {
+          .grid-responsive {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          }
+        }
+        
+        @media (min-width: 1536px) {
+          .grid-responsive {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          }
+        }
+        
+        /* Предотвращение наложений и улучшение читаемости на мобильных */
+        @media (max-width: 767px) {
+          .enhanced-card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+          }
+          
+          .enhanced-modal {
+            margin: 8px;
+            max-width: calc(100vw - 16px);
+            max-height: calc(100vh - 32px);
+          }
+          
+          .sticky {
+            position: relative !important;
+          }
+          
+          .overflow-hidden {
+            overflow: visible;
           }
         }
       `}</style>
