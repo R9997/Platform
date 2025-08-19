@@ -506,10 +506,10 @@ export default function Dashboard() {
                   <Button
                     key={item.key}
                     variant={activeTab === item.key ? "default" : "ghost"}
-                    className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto ${
+                    className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto cursor-pointer ${
                       activeTab === item.key
                         ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
-                        : "text-foreground hover:bg-muted/50"
+                        : "text-foreground hover:bg-muted/30 hover:text-foreground"
                     }`}
                     onClick={() => {
                       setActiveTab(item.key)

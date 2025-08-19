@@ -64,6 +64,14 @@ export default function StrategyDashboard() {
   const [showAddGoal, setShowAddGoal] = useState(false)
   const [showGoalDetails, setShowGoalDetails] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
+  const [showWeeklyReport, setShowWeeklyReport] = useState(false)
+  const [weeklyReport, setWeeklyReport] = useState({
+    goalId: "",
+    progress: "",
+    achievements: "",
+    challenges: "",
+    nextWeekPlans: "",
+  })
   const [newGoal, setNewGoal] = useState({
     title: "",
     description: "",
@@ -164,6 +172,23 @@ export default function StrategyDashboard() {
   const handleGoalDetails = (goal: Goal) => {
     setSelectedGoal(goal)
     setShowGoalDetails(true)
+  }
+
+  const handleWeeklyReport = (goalId: string) => {
+    setWeeklyReport({ ...weeklyReport, goalId })
+    setShowWeeklyReport(true)
+  }
+
+  const submitWeeklyReport = () => {
+    console.log("Еженедельный отчет отправлен:", weeklyReport)
+    setShowWeeklyReport(false)
+    setWeeklyReport({
+      goalId: "",
+      progress: "",
+      achievements: "",
+      challenges: "",
+      nextWeekPlans: "",
+    })
   }
 
   return (
@@ -366,9 +391,9 @@ export default function StrategyDashboard() {
                         <Eye className="w-4 h-4 mr-1" />
                         Подробнее
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => handleWeeklyReport(goal.id)}>
                         <MessageSquare className="w-4 h-4 mr-1" />
-                        Чек-ин
+                        Отчет
                       </Button>
                     </div>
                   </div>
@@ -572,6 +597,59 @@ export default function StrategyDashboard() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Weekly Report Modal */}
+      <Dialog open={showWeeklyReport} onOpenChange={setShowWeeklyReport}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Еженедельный отчет по цели</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Прогресс за неделю (%)</label>
+              <Input
+                type="number"
+                value={weeklyReport.progress}
+                onChange={(e) => setWeeklyReport({ ...weeklyReport, progress: e.target.value })}
+                placeholder="Введите прогресс в процентах"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Достижения</label>
+              <Textarea
+                value={weeklyReport.achievements}
+                onChange={(e) => setWeeklyReport({ ...weeklyReport, achievements: e.target.value })}
+                placeholder="Что удалось достичь за неделю?"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Проблемы и препятствия</label>
+              <Textarea
+                value={weeklyReport.challenges}
+                onChange={(e) => setWeeklyReport({ ...weeklyReport, challenges: e.target.value })}
+                placeholder="С какими трудностями столкнулись?"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Планы на следующую неделю</label>
+              <Textarea
+                value={weeklyReport.nextWeekPlans}
+                onChange={(e) => setWeeklyReport({ ...weeklyReport, nextWeekPlans: e.target.value })}
+                placeholder="Что планируете сделать на следующей неделе?"
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setShowWeeklyReport(false)}>
+                Отмена
+              </Button>
+              <Button onClick={submitWeeklyReport}>Отправить отчет</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

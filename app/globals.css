@@ -47,37 +47,37 @@
 .dark {
   /* Сохраняем существующую темную тему без изменений */
   --background: oklch(0.02 0 0);
-  --foreground: oklch(1.0 0 0);
+  --foreground: oklch(0.95 0 0); /* Немного менее яркий белый */
   --card: oklch(0.08 0 0);
-  --card-foreground: oklch(1.0 0 0);
+  --card-foreground: oklch(0.95 0 0);
   --popover: oklch(0.08 0 0);
-  --popover-foreground: oklch(1.0 0 0);
-  --primary: oklch(0.85 0.3 195);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: oklch(0.75 0.25 200); /* Более спокойный синий */
   --primary-foreground: oklch(0.02 0 0);
   --secondary: oklch(0.12 0 0);
-  --secondary-foreground: oklch(1.0 0 0);
+  --secondary-foreground: oklch(0.95 0 0);
   --muted: oklch(0.1 0 0);
-  --muted-foreground: oklch(0.9 0 0);
-  --accent: oklch(0.78 0.3 220);
+  --muted-foreground: oklch(0.8 0 0); /* Менее контрастный серый */
+  --accent: oklch(0.7 0.25 210); /* Более мягкий акцентный цвет */
   --accent-foreground: oklch(0.02 0 0);
-  --destructive: oklch(0.78 0.35 15);
+  --destructive: oklch(0.7 0.3 15); /* Менее агрессивный красный */
   --destructive-foreground: oklch(0.02 0 0);
-  --border: oklch(0.5 0 0);
+  --border: oklch(0.4 0 0); /* Более мягкие границы */
   --input: oklch(0.1 0 0);
-  --ring: oklch(0.85 0.3 195);
-  --chart-1: oklch(0.85 0.3 195);
-  --chart-2: oklch(0.78 0.3 220);
-  --chart-3: oklch(0.75 0.28 200);
-  --chart-4: oklch(0.78 0.28 180);
-  --chart-5: oklch(0.75 0.28 210);
+  --ring: oklch(0.75 0.25 200);
+  --chart-1: oklch(0.75 0.25 200);
+  --chart-2: oklch(0.7 0.25 210);
+  --chart-3: oklch(0.68 0.23 190);
+  --chart-4: oklch(0.7 0.23 170);
+  --chart-5: oklch(0.68 0.23 200);
   --sidebar: oklch(0.05 0 0);
-  --sidebar-foreground: oklch(1.0 0 0);
-  --sidebar-primary: oklch(0.85 0.3 195);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.75 0.25 200);
   --sidebar-primary-foreground: oklch(0.02 0 0);
   --sidebar-accent: oklch(0.12 0 0);
-  --sidebar-accent-foreground: oklch(1.0 0 0);
-  --sidebar-border: oklch(0.5 0 0);
-  --sidebar-ring: oklch(0.85 0.3 195);
+  --sidebar-accent-foreground: oklch(0.95 0 0);
+  --sidebar-border: oklch(0.4 0 0);
+  --sidebar-ring: oklch(0.75 0.25 200);
 }
 
 @theme inline {
@@ -163,31 +163,31 @@
   .dark h4,
   .dark h5,
   .dark h6 {
-    color: oklch(1.0 0 0) !important;
+    color: oklch(0.95 0 0) !important;
     font-weight: 700 !important;
   }
 
   .dark .card,
   .dark [data-card] {
-    border: 2px solid oklch(0.5 0 0) !important;
-    box-shadow: 0 4px 12px oklch(0.02 0 0 / 0.8) !important;
+    border: 2px solid oklch(0.4 0 0) !important;
+    box-shadow: 0 4px 12px oklch(0.02 0 0 / 0.6) !important;
   }
 
   .dark .border {
-    border-color: oklch(0.5 0 0) !important;
+    border-color: oklch(0.4 0 0) !important;
   }
 
   .dark .border-border {
-    border-color: oklch(0.5 0 0) !important;
+    border-color: oklch(0.4 0 0) !important;
   }
 
   .dark .text-muted-foreground {
-    color: oklch(0.85 0 0) !important;
+    color: oklch(0.8 0 0) !important;
   }
 
   .dark .bg-card {
     background-color: oklch(0.08 0 0) !important;
-    border: 1px solid oklch(0.5 0 0) !important;
+    border: 1px solid oklch(0.4 0 0) !important;
   }
 
   .dark .bg-muted {
@@ -198,40 +198,40 @@
   .dark [role="dialog"],
   .dark .dialog-content {
     background-color: oklch(0.08 0 0) !important;
-    border: 2px solid oklch(0.5 0 0) !important;
-    box-shadow: 0 8px 24px oklch(0.02 0 0 / 0.9) !important;
+    border: 2px solid oklch(0.4 0 0) !important;
+    box-shadow: 0 8px 24px oklch(0.02 0 0 / 0.7) !important;
   }
 
   /* Улучшенная видимость для кнопок */
   .dark .btn,
   .dark button {
-    border: 1px solid oklch(0.4 0 0) !important;
+    border: 1px solid oklch(0.35 0 0) !important;
   }
 
   .dark .btn-outline,
   .dark button[variant="outline"] {
-    border: 2px solid oklch(0.5 0 0) !important;
-    color: oklch(1.0 0 0) !important;
+    border: 2px solid oklch(0.4 0 0) !important;
+    color: oklch(0.95 0 0) !important;
   }
 
   /* Улучшенная видимость для табов */
   .dark [role="tablist"],
   .dark .tabs-list {
     background-color: oklch(0.06 0 0) !important;
-    border: 1px solid oklch(0.5 0 0) !important;
+    border: 1px solid oklch(0.4 0 0) !important;
   }
 
   .dark [role="tab"],
   .dark .tab-trigger {
-    color: oklch(0.9 0 0) !important;
-    border: 1px solid oklch(0.3 0 0) !important;
+    color: oklch(0.85 0 0) !important;
+    border: 1px solid oklch(0.25 0 0) !important;
   }
 
   .dark [role="tab"][data-state="active"],
   .dark .tab-trigger[data-state="active"] {
     background-color: oklch(0.1 0 0) !important;
-    color: oklch(1.0 0 0) !important;
-    border: 1px solid oklch(0.5 0 0) !important;
+    color: oklch(0.95 0 0) !important;
+    border: 1px solid oklch(0.4 0 0) !important;
   }
 
   /* Улучшенная адаптивность */

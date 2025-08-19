@@ -30,6 +30,7 @@ import {
   Filter,
   Upload,
   FileText,
+  Users,
 } from "lucide-react"
 
 interface Lead {
@@ -288,6 +289,9 @@ export function SalesManager() {
     },
   ])
 
+  const [dealManagerFilter, setDealManagerFilter] = useState("all")
+  const [dealSearchQuery, setDealSearchQuery] = useState("")
+
   const handleAddLead = () => {
     if (newLead.name && newLead.email && newLead.company) {
       const lead: Lead = {
@@ -441,6 +445,16 @@ export function SalesManager() {
     const matchesStatus = statusFilter === "all" || lead.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  const filteredDeals = deals.filter((deal) => {
+    const matchesSearch =
+      deal.title.toLowerCase().includes(dealSearchQuery.toLowerCase()) ||
+      deal.client.toLowerCase().includes(dealSearchQuery.toLowerCase())
+    const matchesManager = dealManagerFilter === "all" || deal.assignedTo === dealManagerFilter
+    return matchesSearch && matchesManager
+  })
+
+  const uniqueManagers = Array.from(new Set(deals.map((deal) => deal.assignedTo)))
 
   const handleEditStage = (stage: any) => {
     setEditingStage({ ...stage })
@@ -825,6 +839,116 @@ export function SalesManager() {
         </TabsContent>
 
         {/* Сделки */}
+        <TabsContent value="deals" className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h3 className="text-lg font-semibold">Активные сделки</h3>
+            <Button onClick={() => setShowAddDeal(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Добавить сделку
+            </Button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-2 flex-1 max-w-lg">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Поиск по названию или клиенту..."
+                  value={dealSearchQuery}
+                  onChange={(e) => setDealSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={dealManagerFilter} onValueChange={setDealManagerFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <Users className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Фильтр по менеджеру" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все менеджеры</SelectItem>
+                  {uniqueManagers.map((manager) => (
+                    <SelectItem key={manager} value={manager}>
+                      {manager}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {uniqueManagers.map((manager) => {
+              const managerDeals = deals.filter((deal) => deal.assignedTo === manager)
+              const totalValue = managerDeals.reduce((sum, deal) => sum + deal.value, 0)
+              const avgProbability = managerDeals.reduce((sum, deal) => sum + deal.probability, 0) / managerDeals.length
+
+              return (
+                <Card key={manager} className="hover:border-primary/30 transition-colors">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-sm truncate">{manager}</h4>
+                      <Badge variant="secondary" className="text-xs">
+                        {managerDeals.length}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        Сумма: <span className="font-medium text-foreground">{totalValue.toLocaleString()} ₽</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Ср. вероятность:{" "}
+                        <span className="font-medium text-foreground">{Math.round(avgProbability)}%</span>
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredDeals.map((deal) => (
+              <Card key={deal.id}>
+                <CardContent className="p-4">
+                  <h4 className="font-medium">{deal.title}</h4>
+                  <p className="text-sm text-muted-foreground">{deal.client}</p>
+                  <p className="text-sm mt-2">
+                    Сумма: <strong>{deal.value.toLocaleString()} ₽</strong>
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant="secondary">{deal.stage}</Badge>
+                    <span className="text-xs text-muted-foreground">{deal.probability}%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Менеджер: <span className="font-medium text-foreground">{deal.assignedTo}</span>
+                  </p>
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" variant="outline" onClick={() => alert(`Редактировать сделку: ${deal.title}`)}>
+                      <Edit className="w-4 h-4 mr-1" />
+                      Ред.
+                    </Button>
+                    <Button size="sm" onClick={() => alert(`Открыть сделку: ${deal.title}`)}>
+                      <Eye className="w-4 h-4 mr-1" />
+                      Открыть
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {filteredDeals.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                {dealManagerFilter !== "all" || dealSearchQuery
+                  ? "Нет сделок, соответствующих выбранным фильтрам"
+                  : "Нет активных сделок"}
+              </p>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Диалоги */}
         <TabsContent value="deals" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Активные сделки</h3>

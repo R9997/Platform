@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -36,6 +38,8 @@ interface Contract {
   endDate: string
   amount: number
   type: string
+  files: File[]
+  description: string
 }
 
 interface LegalTask {
@@ -66,6 +70,15 @@ interface LegalCase {
   amount: number
 }
 
+interface Notification {
+  id: string
+  title: string
+  message: string
+  type: "warning" | "info" | "urgent"
+  date: string
+  read: boolean
+}
+
 export default function LegalDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [searchTerm, setSearchTerm] = useState("")
@@ -73,6 +86,20 @@ export default function LegalDashboard() {
   const [showAddTask, setShowAddTask] = useState(false)
   const [showAddLicense, setShowAddLicense] = useState(false)
   const [showAddCase, setShowAddCase] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showReportDialog, setShowReportDialog] = useState(false)
+  const [reportType, setReportType] = useState("")
+  const [reportPeriod, setReportPeriod] = useState("")
+  const [contractFiles, setContractFiles] = useState<File[]>([])
+  const [newContract, setNewContract] = useState({
+    title: "",
+    counterparty: "",
+    type: "",
+    amount: "",
+    startDate: "",
+    endDate: "",
+    description: "",
+  })
 
   // Mock data
   const [contracts] = useState<Contract[]>([
@@ -85,6 +112,8 @@ export default function LegalDashboard() {
       endDate: "2024-12-31",
       amount: 2500000,
       type: "supply",
+      files: [],
+      description: "",
     },
     {
       id: "2",
@@ -95,6 +124,8 @@ export default function LegalDashboard() {
       endDate: "2025-08-01",
       amount: 0,
       type: "nda",
+      files: [],
+      description: "",
     },
   ])
 
@@ -149,6 +180,33 @@ export default function LegalDashboard() {
     },
   ])
 
+  const [notifications] = useState<Notification[]>([
+    {
+      id: "1",
+      title: "Истекает лицензия",
+      message: "Лицензия на медицинскую деятельность истекает через 30 дней",
+      type: "warning",
+      date: "2024-08-19",
+      read: false,
+    },
+    {
+      id: "2",
+      title: "Новое судебное заседание",
+      message: "Назначено заседание по делу о взыскании задолженности на 15.09.2024",
+      type: "info",
+      date: "2024-08-18",
+      read: false,
+    },
+    {
+      id: "3",
+      title: "Срочная задача",
+      message: "Необходимо подготовить ответ на претензию до 25.08.2024",
+      type: "urgent",
+      date: "2024-08-17",
+      read: true,
+    },
+  ])
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "draft":
@@ -191,6 +249,63 @@ export default function LegalDashboard() {
     }
   }
 
+  const getNotificationColor = (type: string) => {
+    switch (type) {
+      case "urgent":
+        return "bg-red-100 text-red-800"
+      case "warning":
+        return "bg-yellow-100 text-yellow-800"
+      case "info":
+        return "bg-blue-100 text-blue-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
+  const handleGenerateReport = () => {
+    console.log("Генерация отчета:", { type: reportType, period: reportPeriod })
+    // Здесь будет логика генерации отчета
+    setShowReportDialog(false)
+    setReportType("")
+    setReportPeriod("")
+  }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files) {
+      const newFiles = Array.from(files).filter((file) => {
+        const allowedTypes = [".pdf", ".doc", ".docx", ".txt"]
+        const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
+        return allowedTypes.includes(fileExtension) && file.size <= 10 * 1024 * 1024 // 10MB limit
+      })
+      setContractFiles((prev) => [...prev, ...newFiles])
+    }
+  }
+
+  const removeFile = (index: number) => {
+    setContractFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleCreateContract = () => {
+    console.log("Создание договора:", {
+      contract: newContract,
+      files: contractFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+    })
+
+    // Здесь будет логика сохранения договора и файлов
+    setShowAddContract(false)
+    setNewContract({
+      title: "",
+      counterparty: "",
+      type: "",
+      amount: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    })
+    setContractFiles([])
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -200,14 +315,135 @@ export default function LegalDashboard() {
           <p className="text-muted-foreground">Управление юридическими процессами компании</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Bell className="h-4 w-4 mr-2" />
-            Уведомления
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Отчет
-          </Button>
+          <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Bell className="h-4 w-4 mr-2" />
+                Уведомления
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <Badge className="ml-2 bg-red-500 text-white text-xs">
+                    {notifications.filter((n) => !n.read).length}
+                  </Badge>
+                )}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Уведомления правового контура</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`p-4 border rounded-lg ${!notification.read ? "bg-blue-50" : ""}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-medium">{notification.title}</h4>
+                          <Badge className={getNotificationColor(notification.type)}>
+                            {notification.type === "urgent"
+                              ? "Срочно"
+                              : notification.type === "warning"
+                                ? "Предупреждение"
+                                : "Информация"}
+                          </Badge>
+                          {!notification.read && <Badge className="bg-blue-500 text-white text-xs">Новое</Badge>}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground">{notification.date}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => setShowNotifications(false)}>
+                  Закрыть
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Отчет
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Генерация отчета</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Тип отчета</Label>
+                  <Select value={reportType} onValueChange={setReportType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите тип отчета" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="contracts">Отчет по договорам</SelectItem>
+                      <SelectItem value="tasks">Отчет по задачам</SelectItem>
+                      <SelectItem value="cases">Отчет по судебным делам</SelectItem>
+                      <SelectItem value="licenses">Отчет по лицензиям</SelectItem>
+                      <SelectItem value="risks">Отчет по рискам</SelectItem>
+                      <SelectItem value="full">Полный отчет</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Период</Label>
+                  <Select value={reportPeriod} onValueChange={setReportPeriod}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите период" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="week">За неделю</SelectItem>
+                      <SelectItem value="month">За месяц</SelectItem>
+                      <SelectItem value="quarter">За квартал</SelectItem>
+                      <SelectItem value="year">За год</SelectItem>
+                      <SelectItem value="custom">Произвольный период</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {reportPeriod === "custom" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Дата начала</Label>
+                      <Input type="date" />
+                    </div>
+                    <div>
+                      <Label>Дата окончания</Label>
+                      <Input type="date" />
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <Label>Формат отчета</Label>
+                  <Select defaultValue="pdf">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdf">PDF</SelectItem>
+                      <SelectItem value="excel">Excel</SelectItem>
+                      <SelectItem value="word">Word</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowReportDialog(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={handleGenerateReport} disabled={!reportType || !reportPeriod}>
+                  Сгенерировать отчет
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -354,51 +590,175 @@ export default function LegalDashboard() {
                   Добавить договор
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Новый договор</DialogTitle>
                 </DialogHeader>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Название договора</Label>
-                    <Input placeholder="Введите название" />
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Название договора *</Label>
+                      <Input
+                        placeholder="Введите название"
+                        value={newContract.title}
+                        onChange={(e) => setNewContract({ ...newContract, title: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Контрагент *</Label>
+                      <Input
+                        placeholder="Название организации"
+                        value={newContract.counterparty}
+                        onChange={(e) => setNewContract({ ...newContract, counterparty: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Тип договора *</Label>
+                      <Select
+                        value={newContract.type}
+                        onValueChange={(value) => setNewContract({ ...newContract, type: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите тип" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="supply">Поставка</SelectItem>
+                          <SelectItem value="service">Услуги</SelectItem>
+                          <SelectItem value="nda">NDA</SelectItem>
+                          <SelectItem value="employment">Трудовой</SelectItem>
+                          <SelectItem value="lease">Аренда</SelectItem>
+                          <SelectItem value="partnership">Партнерство</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Сумма договора</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={newContract.amount}
+                        onChange={(e) => setNewContract({ ...newContract, amount: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Дата начала *</Label>
+                      <Input
+                        type="date"
+                        value={newContract.startDate}
+                        onChange={(e) => setNewContract({ ...newContract, startDate: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Дата окончания *</Label>
+                      <Input
+                        type="date"
+                        value={newContract.endDate}
+                        onChange={(e) => setNewContract({ ...newContract, endDate: e.target.value })}
+                      />
+                    </div>
                   </div>
+
                   <div>
-                    <Label>Контрагент</Label>
-                    <Input placeholder="Название организации" />
+                    <Label>Описание договора</Label>
+                    <Textarea
+                      placeholder="Краткое описание предмета договора, основных условий и особенностей"
+                      value={newContract.description}
+                      onChange={(e) => setNewContract({ ...newContract, description: e.target.value })}
+                      rows={3}
+                    />
                   </div>
-                  <div>
-                    <Label>Тип договора</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите тип" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="supply">Поставка</SelectItem>
-                        <SelectItem value="service">Услуги</SelectItem>
-                        <SelectItem value="nda">NDA</SelectItem>
-                        <SelectItem value="employment">Трудовой</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Сумма договора</Label>
-                    <Input type="number" placeholder="0" />
-                  </div>
-                  <div>
-                    <Label>Дата начала</Label>
-                    <Input type="date" />
-                  </div>
-                  <div>
-                    <Label>Дата окончания</Label>
-                    <Input type="date" />
+
+                  {/* File Upload Section */}
+                  <div className="border-t pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h4 className="font-medium">Файлы договора</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Загрузите текст договора, приложения и дополнительные документы
+                        </p>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="file"
+                          multiple
+                          accept=".pdf,.doc,.docx,.txt"
+                          onChange={handleFileUpload}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          id="contract-files"
+                        />
+                        <Button variant="outline" size="sm" asChild>
+                          <label htmlFor="contract-files" className="cursor-pointer">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Выбрать файлы
+                          </label>
+                        </Button>
+                      </div>
+                    </div>
+
+                    {contractFiles.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Загруженные файлы ({contractFiles.length}):</p>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {contractFiles.map((file, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-2 border rounded-lg bg-muted/50"
+                            >
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-blue-600" />
+                                <div>
+                                  <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                                  </p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(index)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium text-blue-900">Требования к файлам:</p>
+                          <ul className="text-blue-700 mt-1 space-y-1">
+                            <li>• Поддерживаемые форматы: PDF, DOC, DOCX, TXT</li>
+                            <li>• Максимальный размер файла: 10 МБ</li>
+                            <li>• Рекомендуется загружать основной текст договора и все приложения</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-end gap-2 mt-4">
+
+                <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
                   <Button variant="outline" onClick={() => setShowAddContract(false)}>
                     Отмена
                   </Button>
-                  <Button onClick={() => setShowAddContract(false)}>Создать договор</Button>
+                  <Button
+                    onClick={handleCreateContract}
+                    disabled={
+                      !newContract.title ||
+                      !newContract.counterparty ||
+                      !newContract.type ||
+                      !newContract.startDate ||
+                      !newContract.endDate
+                    }
+                  >
+                    Создать договор
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>

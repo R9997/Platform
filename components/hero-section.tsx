@@ -23,7 +23,7 @@ export function HeroSection() {
               <Link href="/register" className="flex-1 sm:flex-initial">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 min-h-[48px] sm:min-h-[52px]"
+                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 min-h-[48px] sm:min-h-[52px] cursor-pointer"
                 >
                   <MessageSquare className="mr-2 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                   <span className="truncate">Войти в платформу</span>
@@ -34,7 +34,7 @@ export function HeroSection() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-transparent border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group"
+                  className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 group bg-transparent border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group cursor-pointer"
                 >
                   <span className="truncate">Получить консультацию</span>
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
@@ -45,7 +45,7 @@ export function HeroSection() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 bg-gradient-to-r from-accent/10 to-primary/10 border-primary/30 hover:border-primary/50 hover:from-accent/20 hover:to-primary/20 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group"
+              className="w-full sm:w-auto text-sm sm:text-base lg:text-lg px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 bg-gradient-to-r from-accent/10 to-primary/10 border-primary/30 hover:border-primary/50 hover:from-accent/20 hover:to-primary/20 transition-all duration-300 min-h-[48px] sm:min-h-[52px] max-w-md mx-auto group cursor-pointer"
               asChild
             >
               <a
