@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import {
-  Rocket,
   Users,
   FileText,
   CheckSquare,
@@ -21,6 +20,13 @@ import {
   Lightbulb,
   ArrowRight,
   CheckCircle,
+  Scale,
+  Megaphone,
+  Settings,
+  Database,
+  Brain,
+  Zap,
+  UserCheck,
 } from "lucide-react"
 
 interface FeatureInfo {
@@ -33,126 +39,277 @@ interface FeatureInfo {
   icon: any
   category: string
   status: "available" | "premium" | "coming-soon"
+  blockName: string
 }
 
 export function FeatureGuide() {
   const [showGuide, setShowGuide] = useState(false)
   const [selectedFeature, setSelectedFeature] = useState<FeatureInfo | null>(null)
+  const [selectedBlock, setSelectedBlock] = useState<string>("all")
 
   const features: FeatureInfo[] = [
+    // УПРАВЛЕНИЕ БИЗНЕСОМ
     {
       key: "overview",
       title: "Обзор бизнеса",
-      description: "Центральная панель с ключевыми метриками и аналитикой вашего бизнеса",
+      description: "Центральная панель с ключевыми метриками и аналитикой вашего бизнеса в реальном времени",
       benefits: [
         "Мгновенный обзор всех показателей",
-        "ИИ-рекомендации для роста",
-        "Отслеживание прогресса в реальном времени",
+        "Редактируемые KPI и цели",
+        "Цветовая индикация эффективности",
+        "Интеграция с другими модулями",
       ],
       difficulty: "Легко",
       timeToSetup: "Готово к использованию",
       icon: Briefcase,
       category: "Аналитика",
       status: "available",
+      blockName: "УПРАВЛЕНИЕ БИЗНЕСОМ",
     },
     {
-      key: "tools",
-      title: "ИИ-инструменты",
-      description: "Мощные инструменты искусственного интеллекта для автоматизации бизнес-процессов",
-      benefits: ["Автоматизация рутинных задач", "Генерация контента и аналитики", "Экономия до 156 часов в месяц"],
-      difficulty: "Средне",
-      timeToSetup: "5-10 минут",
-      icon: Rocket,
-      category: "Автоматизация",
-      status: "available",
-    },
-    {
-      key: "sales",
-      title: "Управление продажами",
-      description: "CRM система для управления клиентами, сделками и воронкой продаж",
-      benefits: ["Увеличение конверсии на 24.8%", "Автоматизация работы с лидами", "Прогнозирование продаж"],
-      difficulty: "Средне",
-      timeToSetup: "15-20 минут",
-      icon: TrendingUp,
-      category: "Продажи",
-      status: "available",
-    },
-    {
-      key: "finance",
-      title: "Финансовое управление",
-      description: "Контроль бюджета, доходов, расходов и финансовое планирование",
-      benefits: ["Контроль всех финансовых потоков", "Автоматические отчеты", "Прогнозирование прибыли"],
+      key: "strategy",
+      title: "Стратегия и цели",
+      description: "Комплексная система управления OKR/KPI с визуализацией прогресса и еженедельными отчетами",
+      benefits: [
+        "Система целей разных уровней",
+        "План-факт анализ",
+        "ИИ-рекомендации по целям",
+        "Еженедельные отчеты прогресса",
+      ],
       difficulty: "Средне",
       timeToSetup: "10-15 минут",
-      icon: DollarSign,
-      category: "Финансы",
+      icon: Target,
+      category: "Планирование",
       status: "available",
+      blockName: "УПРАВЛЕНИЕ БИЗНЕСОМ",
     },
     {
       key: "projects",
-      title: "Управление проектами",
-      description: "Планирование, отслеживание и управление проектами с командой",
-      benefits: ["Визуализация прогресса проектов", "Управление дедлайнами", "Командная работа"],
-      difficulty: "Легко",
-      timeToSetup: "5 минут",
-      icon: Target,
+      title: "Активные проекты",
+      description: "Управление портфелем проектов с Kanban-досками, Gantt-диаграммами и трекингом времени",
+      benefits: [
+        "Диаграмма Ганта для планирования",
+        "Kanban-доски для задач",
+        "Управление ресурсами команды",
+        "Отслеживание бюджета проектов",
+      ],
+      difficulty: "Средне",
+      timeToSetup: "15-20 минут",
+      icon: Briefcase,
       category: "Проекты",
       status: "available",
+      blockName: "УПРАВЛЕНИЕ БИЗНЕСОМ",
     },
     {
       key: "tasks",
       title: "Управление задачами",
-      description: "Создание, назначение и отслеживание задач для команды",
-      benefits: ["Повышение продуктивности команды", "Прозрачность рабочих процессов", "Автоматические уведомления"],
+      description: "Система создания, назначения и отслеживания задач с приоритизацией и дедлайнами",
+      benefits: [
+        "Создание задач с подзадачами",
+        "Приоритизация и дедлайны",
+        "Прикрепление файлов",
+        "Отслеживание времени выполнения",
+      ],
       difficulty: "Легко",
-      timeToSetup: "3 минуты",
+      timeToSetup: "5 минут",
       icon: CheckSquare,
       category: "Организация",
       status: "available",
+      blockName: "УПРАВЛЕНИЕ БИЗНЕСОМ",
     },
+
+    // ФИНАНСЫ И ДОКУМЕНТООБОРОТ
     {
-      key: "files",
-      title: "Файловое хранилище",
-      description: "Централизованное хранение и управление документами компании",
-      benefits: ["Безопасное хранение файлов", "Совместная работа с документами", "Система прав доступа"],
-      difficulty: "Легко",
-      timeToSetup: "2 минуты",
-      icon: FileText,
-      category: "Документы",
-      status: "available",
-    },
-    {
-      key: "team",
-      title: "Управление командой",
-      description: "Управление сотрудниками, их ролями и правами доступа",
-      benefits: ["Контроль доступа к функциям", "Отслеживание продуктивности", "Управление отделами"],
+      key: "finance",
+      title: "Финансы",
+      description: "Управление денежными потоками, бюджетом и финансовая аналитика с прогнозированием",
+      benefits: ["Учет доходов и расходов", "Планирование бюджета", "Cash-flow анализ", "Интеграция с банками"],
       difficulty: "Средне",
-      timeToSetup: "10 минут",
+      timeToSetup: "20-30 минут",
+      icon: DollarSign,
+      category: "Финансы",
+      status: "available",
+      blockName: "ФИНАНСЫ И ДОКУМЕНТООБОРОТ",
+    },
+    {
+      key: "sales",
+      title: "Продажи",
+      description: "CRM-система с воронкой продаж, сегментацией по менеджерам и детальной аналитикой",
+      benefits: [
+        "Воронка продаж с конверсией",
+        "Сегментация по менеджерам",
+        "Лид-скоринг и автоматизация",
+        "Прогнозирование выручки",
+      ],
+      difficulty: "Средне",
+      timeToSetup: "25-35 минут",
+      icon: TrendingUp,
+      category: "Продажи",
+      status: "available",
+      blockName: "ФИНАНСЫ И ДОКУМЕНТООБОРОТ",
+    },
+    {
+      key: "edo",
+      title: "ЭДО | Документооборот",
+      description: "Электронный документооборот с КЭП, маршрутами согласования и управлением контрагентами",
+      benefits: [
+        "Подписание документов КЭП",
+        "Маршруты согласования",
+        "Управление контрагентами",
+        "Архив с поиском документов",
+      ],
+      difficulty: "Сложно",
+      timeToSetup: "45-60 минут",
+      icon: FileText,
+      category: "Документооборот",
+      status: "available",
+      blockName: "ФИНАНСЫ И ДОКУМЕНТООБОРОТ",
+    },
+    {
+      key: "legal",
+      title: "Правовой контур",
+      description: "Юридическое сопровождение: договоры, лицензии, судебные дела и правовая аналитика",
+      benefits: [
+        "Реестр договоров с файлами",
+        "Отслеживание лицензий",
+        "Ведение судебных дел",
+        "Библиотека правовых шаблонов",
+      ],
+      difficulty: "Сложно",
+      timeToSetup: "30-45 минут",
+      icon: Scale,
+      category: "Юриспруденция",
+      status: "available",
+      blockName: "ФИНАНСЫ И ДОКУМЕНТООБОРОТ",
+    },
+
+    // КАДРЫ И КОМАНДА
+    {
+      key: "hr",
+      title: "HR и развитие команды",
+      description: "Управление персоналом с редактируемой оргструктурой, системой целей и кадровыми процессами",
+      benefits: [
+        "Интерактивная оргструктура",
+        "Система индивидуальных целей",
+        "Процессы найма и развития",
+        "Оценка эффективности",
+      ],
+      difficulty: "Средне",
+      timeToSetup: "20-30 минут",
       icon: Users,
       category: "HR",
       status: "available",
+      blockName: "КАДРЫ И КОМАНДА",
+    },
+    {
+      key: "team",
+      title: "Команда",
+      description: "Управление составом команды, ролями сотрудников и распределением по проектам",
+      benefits: ["Обзор всей команды", "Отслеживание загрузки", "Фильтры по навыкам", "Планирование отпусков"],
+      difficulty: "Легко",
+      timeToSetup: "5-10 минут",
+      icon: UserCheck,
+      category: "Команда",
+      status: "available",
+      blockName: "КАДРЫ И КОМАНДА",
     },
     {
       key: "roles",
       title: "Роли и права",
-      description: "Настройка ролей пользователей и детальных прав доступа",
-      benefits: ["Гибкая система безопасности", "Кастомные роли", "Детальный контроль доступа"],
+      description: "Система безопасности с детальными правами доступа и аудитом действий пользователей",
+      benefits: [
+        "Кастомные роли пользователей",
+        "Детальные разрешения",
+        "Аудит действий",
+        "Принцип минимальных привилегий",
+      ],
       difficulty: "Сложно",
-      timeToSetup: "20-30 минут",
+      timeToSetup: "30-40 минут",
       icon: Shield,
       category: "Безопасность",
       status: "available",
+      blockName: "КАДРЫ И КОМАНДА",
+    },
+
+    // ИИ-ИНСТРУМЕНТЫ
+    {
+      key: "ai-agent",
+      title: "ИИ-Агент для бизнеса",
+      description: "Умный консультант и стратег для бизнес-консультаций и стратегических рекомендаций",
+      benefits: [
+        "Стратегические рекомендации",
+        "Анализ данных компании",
+        "Дорожные карты развития",
+        "Отслеживание трендов рынка",
+      ],
+      difficulty: "Средне",
+      timeToSetup: "10-15 минут",
+      icon: Brain,
+      category: "ИИ-консультант",
+      status: "available",
+      blockName: "ИИ-ИНСТРУМЕНТЫ",
     },
     {
-      key: "chat",
-      title: "ИИ-консультант",
-      description: "Персональный ИИ-помощник для консультаций по развитию бизнеса",
-      benefits: ["Персональные рекомендации", "Анализ бизнес-метрик", "Поддержка 24/7"],
-      difficulty: "Легко",
-      timeToSetup: "Готово к использованию",
-      icon: MessageSquare,
-      category: "ИИ-помощник",
+      key: "ai-tools",
+      title: "ИИ-инструменты",
+      description: "Набор специализированных ИИ-инструментов для автоматизации и оптимизации процессов",
+      benefits: ["Генерация контента", "Автоматизация процессов", "Предиктивная аналитика", "Персонализация UX"],
+      difficulty: "Средне",
+      timeToSetup: "15-25 минут",
+      icon: Zap,
+      category: "Автоматизация",
       status: "available",
+      blockName: "ИИ-ИНСТРУМЕНТЫ",
+    },
+
+    // МАРКЕТИНГ И КЛИЕНТЫ
+    {
+      key: "marketing",
+      title: "Маркетинг и клиенты",
+      description: "Управление воронками, кампаниями, сегментацией аудитории и автоматизацией коммуникаций",
+      benefits: [
+        "Воронки клиентов с конверсией",
+        "Многоканальные кампании",
+        "A/B-тестирование",
+        "Лид-скоринг и nurturing",
+      ],
+      difficulty: "Сложно",
+      timeToSetup: "35-50 минут",
+      icon: Megaphone,
+      category: "Маркетинг",
+      status: "available",
+      blockName: "МАРКЕТИНГ И КЛИЕНТЫ",
+    },
+
+    // СИСТЕМА
+    {
+      key: "files",
+      title: "Файловое хранилище",
+      description: "Централизованное управление документами с версионностью и совместным доступом",
+      benefits: [
+        "Версионность документов",
+        "Совместная работа",
+        "Полнотекстовый поиск",
+        "Автоматическое резервирование",
+      ],
+      difficulty: "Легко",
+      timeToSetup: "5 минут",
+      icon: Database,
+      category: "Документы",
+      status: "available",
+      blockName: "СИСТЕМА",
+    },
+    {
+      key: "settings",
+      title: "Настройки",
+      description: "Персонализация и конфигурация системы: профиль, уведомления, безопасность, интеграции",
+      benefits: ["Настройка профиля", "Система уведомлений", "Параметры безопасности", "Управление интеграциями"],
+      difficulty: "Легко",
+      timeToSetup: "10-15 минут",
+      icon: Settings,
+      category: "Конфигурация",
+      status: "available",
+      blockName: "СИСТЕМА",
     },
   ]
 
@@ -195,7 +352,8 @@ export function FeatureGuide() {
     }
   }
 
-  const categories = [...new Set(features.map((f) => f.category))]
+  const blocks = [...new Set(features.map((f) => f.blockName))]
+  const filteredFeatures = selectedBlock === "all" ? features : features.filter((f) => f.blockName === selectedBlock)
 
   return (
     <Dialog open={showGuide} onOpenChange={setShowGuide}>
@@ -205,17 +363,40 @@ export function FeatureGuide() {
           Гид по функциям
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <Lightbulb className="w-5 h-5 mr-2 text-primary" />
-            Гид по функциям платформы
+            Полный гид по функциям платформы Рефрейм Бюро
           </DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Изучите все {features.length} модулей в {blocks.length} основных блоках платформы
+          </p>
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            {features.map((feature) => {
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedBlock === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedBlock("all")}
+            >
+              Все модули ({features.length})
+            </Button>
+            {blocks.map((block) => (
+              <Button
+                key={block}
+                variant={selectedBlock === block ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedBlock(block)}
+              >
+                {block} ({features.filter((f) => f.blockName === block).length})
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFeatures.map((feature) => {
               const FeatureIcon = feature.icon
               return (
                 <Card
@@ -229,7 +410,10 @@ export function FeatureGuide() {
                         <div className="p-2 bg-primary/10 rounded-lg">
                           <FeatureIcon className="w-4 h-4 text-primary" />
                         </div>
-                        <CardTitle className="text-sm">{feature.title}</CardTitle>
+                        <div className="min-w-0">
+                          <CardTitle className="text-sm truncate">{feature.title}</CardTitle>
+                          <p className="text-xs text-muted-foreground truncate">{feature.blockName}</p>
+                        </div>
                       </div>
                       <Badge className={getStatusColor(feature.status)} variant="outline">
                         {getStatusLabel(feature.status)}
@@ -247,7 +431,7 @@ export function FeatureGuide() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">Настройка</span>
-                        <span className="text-xs text-foreground">{feature.timeToSetup}</span>
+                        <span className="text-xs text-foreground truncate">{feature.timeToSetup}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">Категория</span>
@@ -280,7 +464,9 @@ export function FeatureGuide() {
                     </div>
                     <div>
                       <CardTitle className="text-lg">{selectedFeature.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{selectedFeature.category}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedFeature.blockName} • {selectedFeature.category}
+                      </p>
                     </div>
                   </div>
                   <div className="flex space-x-2">
@@ -297,11 +483,11 @@ export function FeatureGuide() {
                 <p className="text-foreground mb-4">{selectedFeature.description}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-foreground mb-2">Преимущества:</h4>
+                    <h4 className="font-medium text-foreground mb-2">Ключевые возможности:</h4>
                     <ul className="space-y-1">
                       {selectedFeature.benefits.map((benefit, index) => (
-                        <li key={index} className="flex items-center text-sm text-muted-foreground">
-                          <CheckCircle className="w-3 h-3 mr-2 text-green-500 flex-shrink-0" />
+                        <li key={index} className="flex items-start text-sm text-muted-foreground">
+                          <CheckCircle className="w-3 h-3 mr-2 text-green-500 flex-shrink-0 mt-0.5" />
                           {benefit}
                         </li>
                       ))}
@@ -320,13 +506,19 @@ export function FeatureGuide() {
             </Card>
           )}
 
-          <div className="text-center">
+          <div className="text-center border-t pt-4">
             <p className="text-sm text-muted-foreground mb-2">
-              Нужна помощь с настройкой? Обратитесь к ИИ-консультанту
+              Нужна помощь с настройкой? Обратитесь к ИИ-Агенту для бизнеса
             </p>
-            <Button variant="outline" size="sm" onClick={() => setShowGuide(false)}>
-              Закрыть гид
-            </Button>
+            <div className="flex justify-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowGuide(false)}>
+                Закрыть гид
+              </Button>
+              <Button size="sm" className="bg-primary hover:bg-primary/90">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Задать вопрос ИИ
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

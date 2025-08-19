@@ -12,6 +12,7 @@ import { NeedsAssessment } from "@/components/needs-assessment"
 import { TeamSection } from "@/components/team-section"
 import { Footer } from "@/components/footer"
 import { ChatWidget } from "@/components/chat-widget"
+import { PartnersSection } from "@/components/partners-section"
 
 export default function HomePage() {
   return (
@@ -26,6 +27,7 @@ export default function HomePage() {
         <AIToolsSection />
         <AboutSection />
         <TeamSection />
+        <PartnersSection />
         <TestimonialsSection />
         <NeedsAssessment />
         <PersonalizedSection />

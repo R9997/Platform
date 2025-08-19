@@ -84,6 +84,13 @@ export function Header() {
                     Команда
                   </Link>
                   <Link
+                    href="/partners"
+                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Партнеры
+                  </Link>
+                  <Link
                     href="/contact"
                     className="text-sm font-medium hover:text-primary transition-colors py-2 px-2"
                     onClick={() => setIsMenuOpen(false)}
@@ -126,6 +133,9 @@ export function Header() {
             >
               <Users className="w-4 h-4 mr-1" />
               Команда
+            </Link>
+            <Link href="/partners" className="text-sm font-medium hover:text-primary transition-colors py-2 px-2">
+              Партнеры
             </Link>
             <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors py-2 px-2">
               Контакты
@@ -212,6 +222,13 @@ export function Header() {
                 >
                   <Users className="w-5 h-5 mr-3 text-primary/70 flex-shrink-0" />
                   <span>Команда</span>
+                </Link>
+                <Link
+                  href="/partners"
+                  className="flex items-center py-4 px-4 text-base font-medium hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-200 min-h-[48px]"
+                  onClick={handleMobileMenuClick}
+                >
+                  <span>Партнеры</span>
                 </Link>
                 <Link
                   href="/contact"
