@@ -676,27 +676,10 @@ export default function Dashboard() {
         )}
 
         <main className="max-w-7xl mx-auto mobile-padding py-2 sm:py-4 lg:py-8 relative z-10">
-          <div
-            className={`grid grid-cols-1 gap-3 sm:gap-4 lg:gap-8 ${
-              activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
-                ? "lg:grid-cols-5"
-                : "lg:grid-cols-4"
-            }`}
-          >
-            <div
-              className={`hidden lg:block ${
-                activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
-                  ? "lg:col-span-1 xl:col-span-1"
-                  : "lg:col-span-1 xl:col-span-1"
-              }`}
-            >
-              <Card
-                className={`enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 sticky top-24 w-full overflow-hidden transition-shadow duration-500 ${
-                  activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
-                    ? "min-w-[320px]"
-                    : "min-w-[280px]"
-                }`}
-              >
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-8">
+            {/* Левая панель навигации */}
+            <div className="lg:w-80 xl:w-96 flex-shrink-0">
+              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 lg:sticky lg:top-24 w-full overflow-hidden transition-shadow duration-500">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-500"></div>
 
                 <CardHeader className="pb-3 sm:pb-4 relative z-10">
@@ -718,504 +701,496 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <div
-              className={`col-span-1 ${
-                activeTab === "finance" || activeTab === "edo" || activeTab === "legal"
-                  ? "lg:col-span-4 xl:col-span-4"
-                  : "lg:col-span-3 xl:col-span-3"
-              }`}
-            >
-              <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
-                {activeTab === "overview" && (
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-8">
-                    <div className="animate-in fade-in-0 slide-in-from-left-4 duration-500">
-                      <AnimatedMetrics />
-                    </div>
-                    <div
-                      className="animate-in fade-in-0 slide-in-from-right-4 duration-500"
-                      style={{ animationDelay: "200ms" }}
-                    >
-                      <AIToolsShowcase />
-                    </div>
+            <div className="flex-1 min-w-0">
+              {activeTab === "overview" && (
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
+                  <div className="animate-in fade-in-0 slide-in-from-left-4 duration-500">
+                    <AnimatedMetrics />
                   </div>
-                )}
-
-                {activeTab === "strategy" && (
-                  <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                    <AIBusinessAgent />
-                  </div>
-                )}
-
-                {activeTab === "goals" && (
-                  <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                    <StrategyDashboard />
-                  </div>
-                )}
-
-                {activeTab === "tools" && (
-                  <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                  <div
+                    className="animate-in fade-in-0 slide-in-from-right-4 duration-500"
+                    style={{ animationDelay: "200ms" }}
+                  >
                     <AIToolsShowcase />
-                    <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                      <CardHeader className="pb-3 sm:pb-4">
-                        <CardTitle className="text-base sm:text-lg lg:text-xl overflow-fix">
-                          Активные ИИ-инструменты
-                        </CardTitle>
-                        <CardDescription className="text-xs sm:text-sm overflow-fix">
-                          Управление и мониторинг ИИ-инструментов
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <ContentGenerator />
-                      </CardContent>
-                    </Card>
                   </div>
-                )}
+                </div>
+              )}
 
-                {activeTab === "tasks" && <TaskManager />}
-                {activeTab === "files" && <FileManager />}
-                {activeTab === "sales" && <SalesManager />}
-                {activeTab === "finance" && <FinanceManager />}
+              {activeTab === "strategy" && (
+                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                  <AIBusinessAgent />
+                </div>
+              )}
 
-                {activeTab === "team" && (
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
-                          Управление командой
-                        </h2>
-                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
-                          Сотрудники, роли и права доступа
-                        </p>
-                      </div>
-                      <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
-                        onClick={() => setShowAddEmployeeModal(true)}
-                      >
-                        <UserPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span>Добавить сотрудника</span>
-                      </Button>
+              {activeTab === "goals" && (
+                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                  <StrategyDashboard />
+                </div>
+              )}
+
+              {activeTab === "tools" && (
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                  <AIToolsShowcase />
+                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
+                    <CardHeader className="pb-3 sm:pb-4">
+                      <CardTitle className="text-base sm:text-lg lg:text-xl overflow-fix">
+                        Активные ИИ-инструменты
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm overflow-fix">
+                        Управление и мониторинг ИИ-инструментов
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <ContentGenerator />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "tasks" && <TaskManager />}
+              {activeTab === "files" && <FileManager />}
+              {activeTab === "sales" && <SalesManager />}
+              {activeTab === "finance" && <FinanceManager />}
+
+              {activeTab === "team" && (
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
+                        Управление командой
+                      </h2>
+                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
+                        Сотрудники, роли и права доступа
+                      </p>
                     </div>
-
-                    <div className="grid grid-cols-1 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
-                      <div className="xl:col-span-2 2xl:col-span-2">
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                            <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-                              <span className="text-sm sm:text-base lg:text-lg xl:text-xl overflow-fix">
-                                Команда ({employees.length})
-                              </span>
-                              <Badge variant="secondary" className="self-start sm:self-center text-xs px-1.5 py-0.5">
-                                {employees.filter((e) => e.status === "Активен").length} активных
-                              </Badge>
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                              {employees.map((employee) => (
-                                <div
-                                  key={employee.id}
-                                  className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
-                                >
-                                  <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
-                                    <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
-                                      <span className="text-xs sm:text-sm font-bold text-white">{employee.avatar}</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <h4 className="font-medium text-foreground truncate text-xs sm:text-sm lg:text-base">
-                                        {employee.name}
-                                      </h4>
-                                      <p className="text-xs text-muted-foreground truncate">{employee.email}</p>
-                                      <div className="flex flex-wrap items-center gap-1 mt-1">
-                                        <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                          {employee.role}
-                                        </Badge>
-                                        <Badge
-                                          variant={employee.status === "Активен" ? "default" : "secondary"}
-                                          className="text-xs px-1 py-0.5"
-                                        >
-                                          {employee.status}
-                                        </Badge>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
-                                    <div className="text-left sm:text-right">
-                                      <p className="text-xs sm:text-sm font-medium">{employee.productivity}%</p>
-                                      <p className="text-xs text-muted-foreground">Продуктивность</p>
-                                    </div>
-                                    <div className="flex gap-1 sm:gap-2">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                          setSelectedEmployee(employee)
-                                          setShowAssignRoleModal(true)
-                                        }}
-                                        className="text-xs px-1.5 py-1 h-auto"
-                                      >
-                                        Роль
-                                      </Button>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleRemoveEmployee(employee.id)}
-                                        className="text-red-600 hover:text-red-700 text-xs px-1.5 py-1 h-auto"
-                                      >
-                                        ×
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-
-                      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                            <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
-                              Статистика команды
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                              <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
-                                  Всего сотрудников
-                                </span>
-                                <span className="font-bold text-xs sm:text-sm lg:text-base">{employees.length}</span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">Активных</span>
-                                <span className="font-bold text-green-600 text-xs sm:text-sm lg:text-base">
-                                  {employees.filter((e) => e.status === "Активен").length}
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-center">
-                                <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
-                                  Средняя продуктивность
-                                </span>
-                                <span className="font-bold text-xs sm:text-sm lg:text-base">
-                                  {Math.round(
-                                    employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
-                                  )}
-                                  %
-                                </span>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                            <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
-                              Роли в команде
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-1.5 sm:space-y-2">
-                              {availableRoles.map((role) => {
-                                const count = employees.filter((emp) => emp.role === role).length
-                                return (
-                                  <div key={role} className="flex justify-between items-center">
-                                    <span className="text-xs sm:text-sm truncate flex-1 mr-2 overflow-fix">{role}</span>
-                                    <Badge variant="secondary" className="shrink-0 text-xs px-1 py-0.5">
-                                      {count}
-                                    </Badge>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </div>
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
+                      onClick={() => setShowAddEmployeeModal(true)}
+                    >
+                      <UserPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      <span>Добавить сотрудника</span>
+                    </Button>
                   </div>
-                )}
 
-                {activeTab === "projects" && (
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
-                          Активные проекты
-                        </h2>
-                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
-                          Отслеживайте прогресс ваших ИИ-проектов
-                        </p>
-                      </div>
-                      <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
-                        onClick={() => setShowAddProjectModal(true)}
-                      >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        Новый проект
-                      </Button>
-                    </div>
-
-                    <GanttChart projects={projects} />
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-                      {projects.map((project) => (
-                        <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
-                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                            <CardTitle className="text-sm sm:text-base lg:text-lg truncate">{project.name}</CardTitle>
-                            <div className="flex items-center justify-between gap-1 sm:gap-2">
-                              <Badge
-                                variant={
-                                  project.status === "Завершен"
-                                    ? "default"
-                                    : project.status === "В работе"
-                                      ? "secondary"
-                                      : "outline"
-                                }
-                                className="text-xs px-1 py-0.5"
+                  <div className="grid grid-cols-1 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
+                    <div className="xl:col-span-2 2xl:col-span-2">
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
+                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
+                            <span className="text-sm sm:text-base lg:text-lg xl:text-xl overflow-fix">
+                              Команда ({employees.length})
+                            </span>
+                            <Badge variant="secondary" className="self-start sm:self-center text-xs px-1.5 py-0.5">
+                              {employees.filter((e) => e.status === "Активен").length} активных
+                            </Badge>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                            {employees.map((employee) => (
+                              <div
+                                key={employee.id}
+                                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
                               >
-                                {project.status}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">до {project.deadline}</span>
+                                <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
+                                  <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
+                                    <span className="text-xs sm:text-sm font-bold text-white">{employee.avatar}</span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium text-foreground truncate text-xs sm:text-sm lg:text-base">
+                                      {employee.name}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground truncate">{employee.email}</p>
+                                    <div className="flex flex-wrap items-center gap-1 mt-1">
+                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                        {employee.role}
+                                      </Badge>
+                                      <Badge
+                                        variant={employee.status === "Активен" ? "default" : "secondary"}
+                                        className="text-xs px-1 py-0.5"
+                                      >
+                                        {employee.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                                  <div className="text-left sm:text-right">
+                                    <p className="text-xs sm:text-sm font-medium">{employee.productivity}%</p>
+                                    <p className="text-xs text-muted-foreground">Продуктивность</p>
+                                  </div>
+                                  <div className="flex gap-1 sm:gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setSelectedEmployee(employee)
+                                        setShowAssignRoleModal(true)
+                                      }}
+                                      className="text-xs px-1.5 py-1 h-auto"
+                                    >
+                                      Роль
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleRemoveEmployee(employee.id)}
+                                      className="text-red-600 hover:text-red-700 text-xs px-1.5 py-1 h-auto"
+                                    >
+                                      ×
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
+                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                          <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
+                            Статистика команды
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
+                                Всего сотрудников
+                              </span>
+                              <span className="font-bold text-xs sm:text-sm lg:text-base">{employees.length}</span>
                             </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">Активных</span>
+                              <span className="font-bold text-green-600 text-xs sm:text-sm lg:text-base">
+                                {employees.filter((e) => e.status === "Активен").length}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
+                                Средняя продуктивность
+                              </span>
+                              <span className="font-bold text-xs sm:text-sm lg:text-base">
+                                {Math.round(
+                                  employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
+                                )}
+                                %
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
+                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                          <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
+                            Роли в команде
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-1.5 sm:space-y-2">
+                            {availableRoles.map((role) => {
+                              const count = employees.filter((emp) => emp.role === role).length
+                              return (
+                                <div key={role} className="flex justify-between items-center">
+                                  <span className="text-xs sm:text-sm truncate flex-1 mr-2 overflow-fix">{role}</span>
+                                  <Badge variant="secondary" className="shrink-0 text-xs px-1 py-0.5">
+                                    {count}
+                                  </Badge>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "projects" && (
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
+                        Активные проекты
+                      </h2>
+                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
+                        Отслеживайте прогресс ваших ИИ-проектов
+                      </p>
+                    </div>
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
+                      onClick={() => setShowAddProjectModal(true)}
+                    >
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      Новый проект
+                    </Button>
+                  </div>
+
+                  <GanttChart projects={projects} />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                    {projects.map((project) => (
+                      <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
+                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                          <CardTitle className="text-sm sm:text-base lg:text-lg truncate">{project.name}</CardTitle>
+                          <div className="flex items-center justify-between gap-1 sm:gap-2">
+                            <Badge
+                              variant={
+                                project.status === "Завершен"
+                                  ? "default"
+                                  : project.status === "В работе"
+                                    ? "secondary"
+                                    : "outline"
+                              }
+                              className="text-xs px-1 py-0.5"
+                            >
+                              {project.status}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">до {project.deadline}</span>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                            <div>
+                              <div className="flex justify-between text-xs sm:text-sm mb-1">
+                                <span>Прогресс</span>
+                                <span>{project.progress}%</span>
+                              </div>
+                              <div className="w-full bg-secondary rounded-full h-1.5 sm:h-2">
+                                <div
+                                  className="bg-primary h-1.5 sm:h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${project.progress}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex -space-x-1">
+                                {project.team.map((member, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
+                                  >
+                                    <span className="text-xs font-bold text-white">{member}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewProjectDetails(project)}
+                                className="text-xs px-1.5 py-1 h-auto"
+                              >
+                                Подробнее
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "roles" && (
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
+                        Роли и права доступа
+                      </h2>
+                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
+                        Управление правами пользователей и безопасностью
+                      </p>
+                    </div>
+                    <Button
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
+                      onClick={() => setShowCreateRoleModal(true)}
+                    >
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      Создать роль
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                    {availableRoles.map((role) => {
+                      const userCount = employees.filter((emp) => emp.role === role).length
+                      return (
+                        <Card key={role} className="enhanced-card backdrop-blur-sm border border-border/50">
+                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                            <CardTitle className="flex items-center justify-between">
+                              <span className="text-sm sm:text-base lg:text-lg truncate mr-2">{role}</span>
+                              <Badge variant="secondary" className="text-xs px-1 py-0.5">
+                                {userCount} польз.
+                              </Badge>
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="pt-0">
-                            <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                              <div>
-                                <div className="flex justify-between text-xs sm:text-sm mb-1">
-                                  <span>Прогресс</span>
-                                  <span>{project.progress}%</span>
-                                </div>
-                                <div className="w-full bg-secondary rounded-full h-1.5 sm:h-2">
-                                  <div
-                                    className="bg-primary h-1.5 sm:h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${project.progress}%` }}
-                                  ></div>
-                                </div>
+                            <div className="space-y-2 sm:space-y-3">
+                              <div className="text-xs sm:text-sm text-muted-foreground">
+                                Права доступа для роли "{role}"
                               </div>
-                              <div className="flex items-center justify-between">
-                                <div className="flex -space-x-1">
-                                  {project.team.map((member, index) => (
-                                    <div
-                                      key={index}
-                                      className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
-                                    >
-                                      <span className="text-xs font-bold text-white">{member}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleViewProjectDetails(project)}
-                                  className="text-xs px-1.5 py-1 h-auto"
-                                >
-                                  Подробнее
-                                </Button>
+                              <div className="flex flex-wrap gap-1">
+                                {role === "Администратор" && (
+                                  <>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Полный доступ
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Управление пользователями
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Настройки системы
+                                    </Badge>
+                                  </>
+                                )}
+                                {role === "Менеджер" && (
+                                  <>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Управление проектами
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Просмотр отчетов
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Управление командой
+                                    </Badge>
+                                  </>
+                                )}
+                                {role === "Сотрудник" && (
+                                  <>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Базовый доступ
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
+                                      Просмотр задач
+                                    </Badge>
+                                  </>
+                                )}
                               </div>
+                              <Button variant="outline" size="sm" className="w-full bg-transparent text-xs h-7">
+                                Редактировать права
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>
-                      ))}
-                    </div>
+                      )
+                    })}
                   </div>
-                )}
+                </div>
+              )}
 
-                {activeTab === "roles" && (
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                    <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
-                          Роли и права доступа
-                        </h2>
-                        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
-                          Управление правами пользователей и безопасностью
-                        </p>
+              {activeTab === "settings" && (
+                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
+                    <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                      <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Настройки аккаунта</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Управление профилем и предпочтениями
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
+                      <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-4">
+                        <div>
+                          <label className="text-xs sm:text-sm font-medium">Имя</label>
+                          <Input
+                            value={userSettings.name}
+                            onChange={(e) => setUserSettings({ ...userSettings, name: e.target.value })}
+                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs sm:text-sm font-medium">Email</label>
+                          <Input
+                            value={userSettings.email}
+                            onChange={(e) => setUserSettings({ ...userSettings, email: e.target.value })}
+                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs sm:text-sm font-medium">Компания</label>
+                          <Input
+                            value={userSettings.company}
+                            onChange={(e) => setUserSettings({ ...userSettings, company: e.target.value })}
+                            className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
+                          />
+                        </div>
                       </div>
                       <Button
-                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
-                        onClick={() => setShowCreateRoleModal(true)}
+                        className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-auto"
+                        onClick={handleSaveSettings}
                       >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        Создать роль
+                        Сохранить изменения
                       </Button>
-                    </div>
+                    </CardContent>
+                  </Card>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                      {availableRoles.map((role) => {
-                        const userCount = employees.filter((emp) => emp.role === role).length
-                        return (
-                          <Card key={role} className="enhanced-card backdrop-blur-sm border border-border/50">
-                            <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                              <CardTitle className="flex items-center justify-between">
-                                <span className="text-sm sm:text-base lg:text-lg truncate mr-2">{role}</span>
-                                <Badge variant="secondary" className="text-xs px-1 py-0.5">
-                                  {userCount} польз.
-                                </Badge>
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                              <div className="space-y-2 sm:space-y-3">
-                                <div className="text-xs sm:text-sm text-muted-foreground">
-                                  Права доступа для роли "{role}"
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                  {role === "Администратор" && (
-                                    <>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Полный доступ
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Управление пользователями
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Настройки системы
-                                      </Badge>
-                                    </>
-                                  )}
-                                  {role === "Менеджер" && (
-                                    <>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Управление проектами
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Просмотр отчетов
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Управление командой
-                                      </Badge>
-                                    </>
-                                  )}
-                                  {role === "Сотрудник" && (
-                                    <>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Базовый доступ
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        Просмотр задач
-                                      </Badge>
-                                    </>
-                                  )}
-                                </div>
-                                <Button variant="outline" size="sm" className="w-full bg-transparent text-xs h-7">
-                                  Редактировать права
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "settings" && (
-                  <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                    <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                      <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                        <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Настройки аккаунта</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">
-                          Управление профилем и предпочтениями
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
-                        <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:gap-4">
-                          <div>
-                            <label className="text-xs sm:text-sm font-medium">Имя</label>
-                            <Input
-                              value={userSettings.name}
-                              onChange={(e) => setUserSettings({ ...userSettings, name: e.target.value })}
-                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs sm:text-sm font-medium">Email</label>
-                            <Input
-                              value={userSettings.email}
-                              onChange={(e) => setUserSettings({ ...userSettings, email: e.target.value })}
-                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs sm:text-sm font-medium">Компания</label>
-                            <Input
-                              value={userSettings.company}
-                              onChange={(e) => setUserSettings({ ...userSettings, company: e.target.value })}
-                              className="mt-1 text-xs sm:text-sm h-8 sm:h-9"
-                            />
-                          </div>
+                  <Card className="enhanced-card backdrop-blur-sm border border-border/50">
+                    <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
+                      <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Уведомления</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Настройка уведомлений и оповещений
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                        <div className="flex-1">
+                          <p className="font-medium text-xs sm:text-sm lg:text-base">Email уведомления</p>
+                          <p className="text-xs text-muted-foreground">Получать уведомления на почту</p>
                         </div>
                         <Button
-                          className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm px-3 py-2 h-auto"
-                          onClick={handleSaveSettings}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
                         >
-                          Сохранить изменения
+                          Включено
                         </Button>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="enhanced-card backdrop-blur-sm border border-border/50">
-                      <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                        <CardTitle className="text-sm sm:text-base lg:text-lg xl:text-xl">Уведомления</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">
-                          Настройка уведомлений и оповещений
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0 space-y-2 sm:space-y-3 lg:space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                          <div className="flex-1">
-                            <p className="font-medium text-xs sm:text-sm lg:text-base">Email уведомления</p>
-                            <p className="text-xs text-muted-foreground">Получать уведомления на почту</p>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
-                          >
-                            Включено
-                          </Button>
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                        <div className="flex-1">
+                          <p className="font-medium text-xs sm:text-sm lg:text-base">Push уведомления</p>
+                          <p className="text-xs text-muted-foreground">Уведомления в браузере</p>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-                          <div className="flex-1">
-                            <p className="font-medium text-xs sm:text-sm lg:text-base">Push уведомления</p>
-                            <p className="text-xs text-muted-foreground">Уведомления в браузере</p>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
-                          >
-                            Отключено
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs w-full sm:w-auto bg-transparent h-7 sm:h-8"
+                        >
+                          Отключено
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
-                {activeTab === "hr" && (
-                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                    <HRDashboard />
-                  </div>
-                )}
+              {activeTab === "hr" && (
+                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                  <HRDashboard />
+                </div>
+              )}
 
-                {activeTab === "edo" && (
-                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                    <EDODashboard />
-                  </div>
-                )}
+              {activeTab === "edo" && (
+                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                  <EDODashboard />
+                </div>
+              )}
 
-                {activeTab === "legal" && (
-                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                    <LegalDashboard />
-                  </div>
-                )}
+              {activeTab === "legal" && (
+                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                  <LegalDashboard />
+                </div>
+              )}
 
-                {activeTab === "marketing" && (
-                  <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
-                    <MarketingDashboard />
-                  </div>
-                )}
-              </div>
+              {activeTab === "marketing" && (
+                <div className="animate-in fade-in-0 slide-in-from-right-4 duration-500">
+                  <MarketingDashboard />
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -1685,7 +1660,7 @@ export default function Dashboard() {
           min-height: auto;
         }
         
-        /* Улучшенная мобильная адаптация с компактными размерами */
+        /* Исправление наложений и улучшение мобильной адаптации */
         @media (max-width: 639px) {
           .container-fix {
             padding-left: 8px;
@@ -1707,9 +1682,13 @@ export default function Dashboard() {
           .grid-responsive {
             gap: 8px;
           }
+          /* Предотвращение наложений на мобильных */
+          .enhanced-card {
+            margin-bottom: 16px;
+          }
         }
         
-        @media (min-width: 640px) {
+        @media (min-width: 640px) and (max-width: 1023px) {
           .mobile-padding {
             padding-left: 16px;
             padding-right: 16px;
@@ -1717,6 +1696,10 @@ export default function Dashboard() {
           .button-responsive {
             width: auto;
             min-height: 36px;
+          }
+          /* Планшетная адаптация */
+          .enhanced-card {
+            margin-bottom: 20px;
           }
         }
         
@@ -1737,40 +1720,39 @@ export default function Dashboard() {
           }
         }
         
-        @media (min-width: 1280px) {
-          .grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          }
-        }
-        
-        @media (min-width: 1536px) {
-          .grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          }
-        }
-        
-        /* Предотвращение наложений и улучшение читаемости на мобильных */
-        @media (max-width: 767px) {
-          .enhanced-card {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-          }
-          
+        /* Предотвращение наложений и улучшение читаемости */
+        @media (max-width: 1023px) {
           .enhanced-modal {
             margin: 8px;
             max-width: calc(100vw - 16px);
             max-height: calc(100vh - 32px);
+            overflow-y: auto;
           }
           
           .sticky {
             position: relative !important;
           }
           
+          /* Исправление переполнения контента */
           .overflow-hidden {
             overflow: visible;
           }
+          
+          /* Улучшение отступов для карточек */
+          .enhanced-card {
+            padding: 12px;
+          }
+          
+          /* Адаптивные размеры текста */
+          .text-2xl {
+            font-size: 1.25rem;
+          }
+          
+          .text-xl {
+            font-size: 1.125rem;
+          }
         }
-      `}</style>
+        `}</style>
     </TooltipProvider>
   )
 }
