@@ -43,6 +43,7 @@ interface Document {
   status: "draft" | "pending" | "signed" | "rejected" | "archived"
   signers: string[]
   description: string
+  fileName?: string
 }
 
 interface Counterparty {
@@ -113,6 +114,46 @@ export default function EDODashboard() {
     comment: "",
     action: "approve" as "approve" | "reject",
   })
+  const [notification, setNotification] = useState<{
+    type: "success" | "info" | "warning" | "error"
+    message: string
+  } | null>(null)
+
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState([
+    {
+      id: "1",
+      title: "Новый документ на согласовании",
+      message: "Договор поставки №123 ожидает вашего согласования",
+      type: "warning" as const,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      read: false,
+    },
+    {
+      id: "2",
+      title: "Документ подписан",
+      message: "Акт выполненных работ №456 успешно подписан КЭП",
+      type: "success" as const,
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      read: false,
+    },
+    {
+      id: "3",
+      title: "Истекает срок согласования",
+      message: "У вас есть 2 дня для согласования договора №789",
+      type: "error" as const,
+      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      read: true,
+    },
+  ])
+
+  const markAsRead = (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+  }
+
+  const markAllAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+  }
 
   const [approvalDocuments, setApprovalDocuments] = useState<ApprovalDocument[]>([
     {
@@ -236,6 +277,7 @@ export default function EDODashboard() {
       status: "pending",
       signers: ["Иванов И.И.", "Петров П.П."],
       description: "Счет за оказанные услуги",
+      fileName: "invoice_001.pdf",
     },
     {
       id: "2",
@@ -248,6 +290,7 @@ export default function EDODashboard() {
       status: "signed",
       signers: ["Директор"],
       description: "Договор на поставку оборудования",
+      fileName: "contract_ds_2024_001.docx",
     },
     {
       id: "3",
@@ -260,6 +303,7 @@ export default function EDODashboard() {
       status: "draft",
       signers: [],
       description: "Акт по строительным работам",
+      fileName: "act_001.pdf",
     },
   ])
 
@@ -454,6 +498,49 @@ export default function EDODashboard() {
     // Здесь будет интеграция с внешними сервисами проверки
   }
 
+  const handleViewDocument = (doc: any) => {
+    // Создаем URL для просмотра файла в браузере
+    const fileUrl = `/api/documents/${doc.id}/view`
+
+    // Определяем тип файла для правильного отображения
+    const fileExtension = doc.fileName?.split(".").pop()?.toLowerCase()
+
+    if (fileExtension === "pdf") {
+      // Для PDF открываем в новой вкладке
+      window.open(fileUrl, "_blank")
+    } else if (["doc", "docx"].includes(fileExtension || "")) {
+      // Для Word документов используем Google Docs Viewer или Office Online
+      const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + fileUrl)}&embedded=true`
+      window.open(viewerUrl, "_blank")
+    } else {
+      // Для других типов файлов пытаемся открыть напрямую
+      window.open(fileUrl, "_blank")
+    }
+
+    setNotification({
+      type: "info",
+      message: "Документ открыт для просмотра",
+    })
+  }
+
+  const handleDownloadDocument = (doc: any) => {
+    // Создаем ссылку для скачивания
+    const downloadUrl = `/api/documents/${doc.id}/download`
+
+    // Создаем временную ссылку для скачивания
+    const link = document.createElement("a")
+    link.href = downloadUrl
+    link.download = doc.fileName || `${doc.title}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    setNotification({
+      type: "success",
+      message: `Документ "${doc.title}" скачан`,
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -463,14 +550,84 @@ export default function EDODashboard() {
           <p className="text-muted-foreground">Управление электронными документами и подписями</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => setActiveTab("settings")}>
             <Settings className="w-4 h-4 mr-2" />
-            Интеграции
+            Настройки
           </Button>
-          <Button variant="outline" size="sm">
-            <Bell className="w-4 h-4 mr-2" />
-            Уведомления
-          </Button>
+          <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="relative bg-transparent">
+                <Bell className="w-4 h-4 mr-2" />
+                Уведомления
+                {notifications.filter((n) => !n.read).length > 0 && (
+                  <Badge className="ml-2 bg-red-500 text-white text-xs">
+                    {notifications.filter((n) => !n.read).length}
+                  </Badge>
+                )}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    Уведомления ЭДО
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                    Отметить все как прочитанные
+                  </Button>
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Нет уведомлений</p>
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                        notif.read ? "bg-muted/30 border-border/50" : "bg-background border-border shadow-sm"
+                      }`}
+                      onClick={() => markAsRead(notif.id)}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                notif.type === "success"
+                                  ? "bg-green-500"
+                                  : notif.type === "warning"
+                                    ? "bg-yellow-500"
+                                    : notif.type === "error"
+                                      ? "bg-red-500"
+                                      : "bg-blue-500"
+                              }`}
+                            />
+                            <h4
+                              className={`font-medium text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}
+                            >
+                              {notif.title}
+                            </h4>
+                          </div>
+                          <p className={`text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}>
+                            {notif.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {notif.timestamp.toLocaleString("ru-RU")}
+                          </p>
+                        </div>
+                        {!notif.read && <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -661,24 +818,22 @@ export default function EDODashboard() {
                         {doc.status === "archived" && "В архиве"}
                       </Badge>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewDocument(doc)}
+                          title="Просмотреть документ"
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownloadDocument(doc)}
+                          title="Скачать документ"
+                        >
                           <Download className="w-4 h-4" />
                         </Button>
-                        {doc.status === "pending" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedDocument(doc)
-                              setShowSignDialog(true)
-                            }}
-                          >
-                            <Signature className="w-4 h-4" />
-                          </Button>
-                        )}
                         <Button variant="ghost" size="sm">
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -1013,223 +1168,6 @@ export default function EDODashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="archive" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Архив документов</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Все документы с поиском по реквизитам и тегам</p>
-              <div className="mt-4">
-                <div className="flex gap-4 mb-4">
-                  <Input placeholder="Поиск по реквизитам..." className="flex-1" />
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Фильтры
-                  </Button>
-                </div>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Archive className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Архивные документы будут отображаться здесь</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="counterparties" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Контрагенты</span>
-                <Dialog open={showAddCounterparty} onOpenChange={setShowAddCounterparty}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Добавить контрагента
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Новый контрагент</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Наименование организации *</Label>
-                          <Input
-                            value={newCounterparty.name}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, name: e.target.value })}
-                            placeholder="ООО 'Название компании'"
-                          />
-                        </div>
-                        <div>
-                          <Label>ИНН *</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              value={newCounterparty.inn}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, inn: e.target.value })}
-                              placeholder="1234567890"
-                              maxLength={12}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleCheckCounterparty(newCounterparty.inn)}
-                              disabled={!newCounterparty.inn}
-                            >
-                              Проверить
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>КПП</Label>
-                          <Input
-                            value={newCounterparty.kpp}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, kpp: e.target.value })}
-                            placeholder="123456789"
-                            maxLength={9}
-                          />
-                        </div>
-                        <div>
-                          <Label>Контактное лицо</Label>
-                          <Input
-                            value={newCounterparty.contactPerson}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, contactPerson: e.target.value })}
-                            placeholder="Иванов Иван Иванович"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label>Юридический адрес</Label>
-                        <Textarea
-                          value={newCounterparty.address}
-                          onChange={(e) => setNewCounterparty({ ...newCounterparty, address: e.target.value })}
-                          placeholder="123456, г. Москва, ул. Примерная, д. 1, оф. 100"
-                          rows={2}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Телефон</Label>
-                          <Input
-                            value={newCounterparty.phone}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, phone: e.target.value })}
-                            placeholder="+7 (999) 123-45-67"
-                          />
-                        </div>
-                        <div>
-                          <Label>Email</Label>
-                          <Input
-                            type="email"
-                            value={newCounterparty.email}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, email: e.target.value })}
-                            placeholder="info@company.ru"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium mb-3">Банковские реквизиты</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label>Расчетный счет</Label>
-                            <Input
-                              value={newCounterparty.bankAccount}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, bankAccount: e.target.value })}
-                              placeholder="40702810000000000000"
-                              maxLength={20}
-                            />
-                          </div>
-                          <div>
-                            <Label>БИК банка</Label>
-                            <Input
-                              value={newCounterparty.bik}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, bik: e.target.value })}
-                              placeholder="044525225"
-                              maxLength={9}
-                            />
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <Label>Наименование банка</Label>
-                          <Input
-                            value={newCounterparty.bankName}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, bankName: e.target.value })}
-                            placeholder="ПАО Сбербанк"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setShowAddCounterparty(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleAddCounterparty} disabled={!newCounterparty.name || !newCounterparty.inn}>
-                        Добавить контрагента
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Поиск по названию или ИНН..." className="pl-10" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {counterparties.map((counterparty) => (
-                  <div key={counterparty.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <Building className="w-8 h-8 text-blue-500" />
-                      <div>
-                        <h4 className="font-medium">{counterparty.name}</h4>
-                        <p className="text-sm text-muted-foreground">ИНН: {counterparty.inn}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Последняя активность: {counterparty.lastActivity}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge
-                        className={
-                          counterparty.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : counterparty.status === "debt"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-gray-100 text-gray-800"
-                        }
-                      >
-                        {counterparty.status === "active" && "Активный"}
-                        {counterparty.status === "debt" && "Задолженность"}
-                        {counterparty.status === "blocked" && "Заблокирован"}
-                      </Badge>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleCheckCounterparty(counterparty.inn)}>
-                          Проверить статус
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
                 ))}
               </div>
             </CardContent>

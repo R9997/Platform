@@ -33,6 +33,9 @@ import {
   GraduationCap,
   Trophy,
   Activity,
+  Plus,
+  Edit,
+  Trash2,
 } from "lucide-react"
 
 interface Employee {
@@ -211,6 +214,16 @@ export function HRDashboard() {
     },
   ])
 
+  const [showEditStructureModal, setShowEditStructureModal] = useState(false)
+  const [showAddPositionModal, setShowAddPositionModal] = useState(false)
+  const [editingPosition, setEditingPosition] = useState<any>(null)
+  const [newPosition, setNewPosition] = useState({
+    name: "",
+    department: "",
+    level: "employee",
+    manager: "",
+  })
+
   const handleAddEmployee = () => {
     if (newEmployee.name && newEmployee.email) {
       const employee: Employee = {
@@ -243,6 +256,49 @@ export function HRDashboard() {
         startDate: "",
       })
       setShowAddEmployeeModal(false)
+    }
+  }
+
+  const handleEditPosition = (position: any) => {
+    setEditingPosition(position)
+    setNewPosition({
+      name: position.name,
+      department: position.department,
+      level: position.level,
+      manager: position.manager,
+    })
+    setShowEditStructureModal(true)
+  }
+
+  const handleDeletePosition = (positionId: string) => {
+    if (confirm("Вы уверены, что хотите удалить эту позицию?")) {
+      setEmployees(employees.filter((emp) => emp.id !== positionId))
+    }
+  }
+
+  const handleAddPosition = () => {
+    if (newPosition.name && newPosition.department) {
+      const position: Employee = {
+        id: (employees.length + 1).toString(),
+        name: newPosition.name,
+        position: newPosition.level === "head" ? `Руководитель ${newPosition.department}` : "Сотрудник",
+        department: newPosition.department,
+        email: `${newPosition.name.toLowerCase().replace(/\s+/g, ".")}@company.com`,
+        phone: "",
+        manager: newPosition.manager,
+        startDate: new Date().toISOString().split("T")[0],
+        salary: 0,
+        status: "active",
+        avatar: newPosition.name.charAt(0).toUpperCase(),
+        skills: [],
+        performance: 85,
+        satisfaction: 80,
+        projects: [],
+        goals: [],
+      }
+      setEmployees([...employees, position])
+      setNewPosition({ name: "", department: "", level: "employee", manager: "" })
+      setShowAddPositionModal(false)
     }
   }
 
@@ -355,9 +411,9 @@ export function HRDashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-              <CardContent className="p-6">
+              <CardContent className="p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Всего сотрудников</p>
@@ -375,7 +431,7 @@ export function HRDashboard() {
             </Card>
 
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-              <CardContent className="p-6">
+              <CardContent className="p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Средняя производительность</p>
@@ -393,7 +449,7 @@ export function HRDashboard() {
             </Card>
 
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-              <CardContent className="p-6">
+              <CardContent className="p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Удовлетворённость</p>
@@ -411,7 +467,7 @@ export function HRDashboard() {
             </Card>
 
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-              <CardContent className="p-6">
+              <CardContent className="p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Текучесть кадров</p>
@@ -429,7 +485,7 @@ export function HRDashboard() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -437,23 +493,21 @@ export function HRDashboard() {
                   Распределение по отделам
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {Object.entries(departmentStats).map(([dept, count]) => (
-                    <div key={dept} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{dept}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 bg-secondary rounded-full h-2">
-                          <div
-                            className="bg-primary h-2 rounded-full"
-                            style={{ width: `${(count / employees.length) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground">{count}</span>
+              <CardContent className="space-y-4">
+                {Object.entries(departmentStats).map(([dept, count]) => (
+                  <div key={dept} className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-medium flex-shrink-0">{dept}</span>
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="w-full max-w-24 bg-secondary rounded-full h-2">
+                        <div
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${(count / employees.length) * 100}%` }}
+                        />
                       </div>
+                      <span className="text-sm text-muted-foreground flex-shrink-0">{count}</span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
 
@@ -464,43 +518,39 @@ export function HRDashboard() {
                   ИИ-рекомендации
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                          Рекомендация к повышению
-                        </p>
-                        <p className="text-xs text-green-600 dark:text-green-300">
-                          Михаил Сидоров показывает отличные результаты (92%)
-                        </p>
-                      </div>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-green-800 dark:text-green-200">Рекомендация к повышению</p>
+                      <p className="text-xs text-green-600 dark:text-green-300">
+                        Михаил Сидоров показывает отличные результаты (92%)
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Риск выгорания</p>
-                        <p className="text-xs text-yellow-600 dark:text-yellow-300">
-                          У Елены Козловой снижается удовлетворённость
-                        </p>
-                      </div>
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Риск выгорания</p>
+                      <p className="text-xs text-yellow-600 dark:text-yellow-300">
+                        У Елены Козловой снижается удовлетворённость
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-start gap-2">
-                      <Zap className="w-4 h-4 text-blue-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Потребность в найме</p>
-                        <p className="text-xs text-blue-600 dark:text-blue-300">
-                          Отдел разработки перегружен, нужен +1 разработчик
-                        </p>
-                      </div>
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start gap-2">
+                    <Zap className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Потребность в найме</p>
+                      <p className="text-xs text-blue-600 dark:text-blue-300">
+                        Отдел разработки перегружен, нужен +1 разработчик
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -510,18 +560,18 @@ export function HRDashboard() {
         </TabsContent>
 
         <TabsContent value="employees" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
             {filteredEmployees.map((employee) => (
               <Card key={employee.id} className="enhanced-card backdrop-blur-xl border border-border/50">
-                <CardContent className="p-6">
+                <CardContent className="p-4 lg:p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-lg font-bold text-white">{employee.avatar}</span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">{employee.name}</h3>
-                        <p className="text-sm text-muted-foreground">{employee.position}</p>
+                        <h3 className="font-semibold text-lg truncate">{employee.name}</h3>
+                        <p className="text-sm text-muted-foreground truncate">{employee.position}</p>
                         <Badge variant="outline" className="mt-1 text-xs">
                           {employee.department}
                         </Badge>
@@ -594,24 +644,34 @@ export function HRDashboard() {
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-primary" />
                 Организационная структура
+                <div className="ml-auto flex gap-2">
+                  <Button size="sm" onClick={() => setShowAddPositionModal(true)}>
+                    <Plus className="w-4 h-4 mr-1" />
+                    Добавить позицию
+                  </Button>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 lg:p-6">
               <div className="space-y-6">
-                {/* CEO Level */}
+                {/* CEO */}
                 <div className="text-center">
-                  <div className="inline-block p-4 bg-gradient-to-br from-primary to-accent rounded-lg text-white">
-                    <div className="font-bold">CEO</div>
-                    <div className="text-sm opacity-90">Генеральный директор</div>
+                  <div className="inline-block p-4 bg-gradient-to-r from-primary to-accent text-white rounded-lg relative group">
+                    <div className="font-bold">Генеральный директор</div>
+                    <div className="text-sm opacity-90">Александр Петров</div>
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/20">
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Department Heads */}
                 <div className="flex justify-center">
                   <div className="w-px h-8 bg-border"></div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                   {Object.keys(departmentStats).map((dept) => {
                     const deptEmployees = employees.filter((emp) => emp.department === dept)
                     const head = deptEmployees.find(
@@ -620,21 +680,44 @@ export function HRDashboard() {
 
                     return (
                       <div key={dept} className="text-center space-y-4">
-                        <div className="p-3 bg-card border border-border rounded-lg">
-                          <div className="font-semibold">{head?.name || "Вакансия"}</div>
-                          <div className="text-sm text-muted-foreground">{dept}</div>
+                        <div className="p-3 bg-card border border-border rounded-lg relative group">
+                          <div className="font-semibold text-sm lg:text-base">{head?.name || "Вакансия"}</div>
+                          <div className="text-xs lg:text-sm text-muted-foreground">{dept}</div>
                           <Badge variant="outline" className="mt-1 text-xs">
                             {deptEmployees.length} сотр.
                           </Badge>
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                            {head && (
+                              <>
+                                <Button size="sm" variant="ghost" onClick={() => handleEditPosition(head)}>
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => handleDeletePosition(head.id)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 max-h-48 overflow-y-auto">
                           {deptEmployees
                             .filter((emp) => emp.id !== head?.id)
                             .map((emp) => (
-                              <div key={emp.id} className="p-2 bg-card/50 border border-border/50 rounded text-sm">
-                                <div className="font-medium">{emp.name}</div>
-                                <div className="text-xs text-muted-foreground">{emp.position}</div>
+                              <div
+                                key={emp.id}
+                                className="p-2 bg-card/50 border border-border/50 rounded text-xs lg:text-sm relative group"
+                              >
+                                <div className="font-medium truncate">{emp.name}</div>
+                                <div className="text-xs text-muted-foreground truncate">{emp.position}</div>
+                                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  <Button size="sm" variant="ghost" onClick={() => handleEditPosition(emp)}>
+                                    <Edit className="w-2 h-2" />
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => handleDeletePosition(emp.id)}>
+                                    <Trash2 className="w-2 h-2" />
+                                  </Button>
+                                </div>
                               </div>
                             ))}
                         </div>
@@ -648,7 +731,7 @@ export function HRDashboard() {
         </TabsContent>
 
         <TabsContent value="learning" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <Card className="enhanced-card backdrop-blur-xl border border-border/50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -656,7 +739,7 @@ export function HRDashboard() {
                   Корпоративные курсы
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="space-y-4">
                   {courses.map((course) => (
                     <div key={course.id} className="p-4 border border-border rounded-lg">
@@ -1048,7 +1131,7 @@ export function HRDashboard() {
             </DialogHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
+              <div className="xl:col-span-2 space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -1056,32 +1139,33 @@ export function HRDashboard() {
                       Текущие цели
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {selectedEmployee.goals.map((goal) => (
-                        <div key={goal.id} className="p-4 border border-border rounded-lg">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-medium">{goal.title}</h4>
-                              <p className="text-sm text-muted-foreground">{goal.description}</p>
-                            </div>
-                            <Badge variant={goal.status === "completed" ? "default" : "outline"}>
-                              {goal.status === "completed" ? "Завершено" : "В работе"}
-                            </Badge>
+                  <CardContent className="space-y-4">
+                    {selectedEmployee.goals.map((goal) => (
+                      <div key={goal.id} className="p-4 border border-border rounded-lg">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-medium">{goal.title}</h4>
+                            <p className="text-sm text-muted-foreground">{goal.description}</p>
                           </div>
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-sm">
-                              <span>Прогресс</span>
-                              <span>{goal.progress}%</span>
-                            </div>
-                            <Progress value={goal.progress} className="h-2" />
-                            <div className="text-xs text-muted-foreground">
-                              Дедлайн: {new Date(goal.deadline).toLocaleDateString("ru-RU")}
-                            </div>
+                          <Badge
+                            variant={goal.status === "completed" ? "default" : "outline"}
+                            className="flex-shrink-0"
+                          >
+                            {goal.status === "completed" ? "Завершено" : "В работе"}
+                          </Badge>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span>Прогресс</span>
+                            <span>{goal.progress}%</span>
+                          </div>
+                          <Progress value={goal.progress} className="h-2" />
+                          <div className="text-xs text-muted-foreground">
+                            Дедлайн: {new Date(goal.deadline).toLocaleDateString("ru-RU")}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
 
@@ -1096,8 +1180,8 @@ export function HRDashboard() {
                     <div className="space-y-2">
                       {selectedEmployee.projects.map((project, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-card/50 rounded">
-                          <div className="w-2 h-2 bg-primary rounded-full"></div>
-                          <span className="text-sm">{project}</span>
+                          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                          <span className="text-sm truncate">{project}</span>
                         </div>
                       ))}
                     </div>
@@ -1178,6 +1262,161 @@ export function HRDashboard() {
           </DialogContent>
         </Dialog>
       )}
+
+      <Dialog open={showAddPositionModal} onOpenChange={setShowAddPositionModal}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary" />
+              Добавить новую позицию
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Имя сотрудника *</label>
+              <Input
+                value={newPosition.name}
+                onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
+                placeholder="Введите имя"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Отдел *</label>
+              <select
+                value={newPosition.department}
+                onChange={(e) => setNewPosition({ ...newPosition, department: e.target.value })}
+                className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+              >
+                <option value="">Выберите отдел</option>
+                <option value="Разработка">Разработка</option>
+                <option value="Маркетинг">Маркетинг</option>
+                <option value="Дизайн">Дизайн</option>
+                <option value="Продажи">Продажи</option>
+                <option value="HR">HR</option>
+                <option value="Финансы">Финансы</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Уровень</label>
+              <select
+                value={newPosition.level}
+                onChange={(e) => setNewPosition({ ...newPosition, level: e.target.value })}
+                className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+              >
+                <option value="employee">Сотрудник</option>
+                <option value="head">Руководитель отдела</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Руководитель</label>
+              <select
+                value={newPosition.manager}
+                onChange={(e) => setNewPosition({ ...newPosition, manager: e.target.value })}
+                className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+              >
+                <option value="">Выберите руководителя</option>
+                <option value="CEO">CEO</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.name}>
+                    {emp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowAddPositionModal(false)}>
+              Отмена
+            </Button>
+            <Button onClick={handleAddPosition} disabled={!newPosition.name || !newPosition.department}>
+              Добавить
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditStructureModal} onOpenChange={setShowEditStructureModal}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-primary" />
+              Редактировать позицию
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Имя сотрудника *</label>
+              <Input
+                value={newPosition.name}
+                onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
+                placeholder="Введите имя"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Отдел *</label>
+              <select
+                value={newPosition.department}
+                onChange={(e) => setNewPosition({ ...newPosition, department: e.target.value })}
+                className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+              >
+                <option value="">Выберите отдел</option>
+                <option value="Разработка">Разработка</option>
+                <option value="Маркетинг">Маркетинг</option>
+                <option value="Дизайн">Дизайн</option>
+                <option value="Продажи">Продажи</option>
+                <option value="HR">HR</option>
+                <option value="Финансы">Финансы</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Руководитель</label>
+              <select
+                value={newPosition.manager}
+                onChange={(e) => setNewPosition({ ...newPosition, manager: e.target.value })}
+                className="w-full mt-1 p-2 border border-border rounded-md bg-background"
+              >
+                <option value="">Выберите руководителя</option>
+                <option value="CEO">CEO</option>
+                {employees
+                  .filter((emp) => emp.id !== editingPosition?.id)
+                  .map((emp) => (
+                    <option key={emp.id} value={emp.name}>
+                      {emp.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowEditStructureModal(false)}>
+              Отмена
+            </Button>
+            <Button
+              onClick={() => {
+                if (editingPosition && newPosition.name && newPosition.department) {
+                  const updatedEmployees = employees.map((emp) =>
+                    emp.id === editingPosition.id
+                      ? {
+                          ...emp,
+                          name: newPosition.name,
+                          department: newPosition.department,
+                          manager: newPosition.manager,
+                        }
+                      : emp,
+                  )
+                  setEmployees(updatedEmployees)
+                  setShowEditStructureModal(false)
+                  setEditingPosition(null)
+                }
+              }}
+            >
+              Сохранить
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

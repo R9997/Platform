@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,6 +25,8 @@ import {
   Gavel,
   FileCheck,
   Bell,
+  Upload,
+  X,
 } from "lucide-react"
 
 interface Contract {
@@ -80,17 +80,70 @@ interface Notification {
 }
 
 export default function LegalDashboard() {
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState([
+    {
+      id: "1",
+      title: "Истекает лицензия",
+      message: "Лицензия на осуществление деятельности истекает через 15 дней",
+      type: "warning" as const,
+      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
+      read: false,
+    },
+    {
+      id: "2",
+      title: "Новое судебное дело",
+      message: "Поступило уведомление о новом судебном деле №А40-123456/24",
+      type: "error" as const,
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      read: false,
+    },
+    {
+      id: "3",
+      title: "Договор требует внимания",
+      message: "Договор поставки №789 требует продления до 31.12.2024",
+      type: "info" as const,
+      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+      read: true,
+    },
+  ])
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+  }
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+  }
+
   const [activeTab, setActiveTab] = useState("overview")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [showReportDialog, setShowReportDialog] = useState(false)
+  const [reportType, setReportType] = useState("")
+  const [reportPeriod, setReportPeriod] = useState("")
+  const [reportFormat, setReportFormat] = useState("pdf")
   const [showAddContract, setShowAddContract] = useState(false)
   const [showAddTask, setShowAddTask] = useState(false)
   const [showAddLicense, setShowAddLicense] = useState(false)
   const [showAddCase, setShowAddCase] = useState(false)
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [showReportDialog, setShowReportDialog] = useState(false)
-  const [reportType, setReportType] = useState("")
-  const [reportPeriod, setReportPeriod] = useState("")
-  const [contractFiles, setContractFiles] = useState<File[]>([])
+  const [showAddTemplate, setShowAddTemplate] = useState(false)
+  const [showAddRisk, setShowAddRisk] = useState(false)
+  const [newTemplate, setNewTemplate] = useState({
+    name: "",
+    type: "",
+    description: "",
+    category: "",
+  })
+  const [newRisk, setNewRisk] = useState({
+    title: "",
+    description: "",
+    category: "",
+    probability: "",
+    impact: "",
+    mitigation: "",
+  })
+  const [templateFiles, setTemplateFiles] = useState<File[]>([])
+  const [riskFiles, setRiskFiles] = useState<File[]>([])
+
   const [newContract, setNewContract] = useState({
     title: "",
     counterparty: "",
@@ -100,6 +153,9 @@ export default function LegalDashboard() {
     endDate: "",
     description: "",
   })
+  const [contractFiles, setContractFiles] = useState<File[]>([])
+
+  const [searchTerm, setSearchTerm] = useState("")
 
   // Mock data
   const [contracts] = useState<Contract[]>([
@@ -180,33 +236,6 @@ export default function LegalDashboard() {
     },
   ])
 
-  const [notifications] = useState<Notification[]>([
-    {
-      id: "1",
-      title: "Истекает лицензия",
-      message: "Лицензия на медицинскую деятельность истекает через 30 дней",
-      type: "warning",
-      date: "2024-08-19",
-      read: false,
-    },
-    {
-      id: "2",
-      title: "Новое судебное заседание",
-      message: "Назначено заседание по делу о взыскании задолженности на 15.09.2024",
-      type: "info",
-      date: "2024-08-18",
-      read: false,
-    },
-    {
-      id: "3",
-      title: "Срочная задача",
-      message: "Необходимо подготовить ответ на претензию до 25.08.2024",
-      type: "urgent",
-      date: "2024-08-17",
-      read: true,
-    },
-  ])
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "draft":
@@ -262,28 +291,19 @@ export default function LegalDashboard() {
     }
   }
 
-  const handleGenerateReport = () => {
-    console.log("Генерация отчета:", { type: reportType, period: reportPeriod })
-    // Здесь будет логика генерации отчета
-    setShowReportDialog(false)
-    setReportType("")
-    setReportPeriod("")
-  }
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
+  const handleFileUpload = (files: FileList | null, setFiles: (files: File[]) => void) => {
     if (files) {
       const newFiles = Array.from(files).filter((file) => {
-        const allowedTypes = [".pdf", ".doc", ".docx", ".txt"]
+        const validTypes = [".pdf", ".doc", ".docx", ".txt"]
         const fileExtension = "." + file.name.split(".").pop()?.toLowerCase()
-        return allowedTypes.includes(fileExtension) && file.size <= 10 * 1024 * 1024 // 10MB limit
+        return validTypes.includes(fileExtension) && file.size <= 10 * 1024 * 1024 // 10MB limit
       })
-      setContractFiles((prev) => [...prev, ...newFiles])
+      setFiles((prev) => [...prev, ...newFiles])
     }
   }
 
-  const removeFile = (index: number) => {
-    setContractFiles((prev) => prev.filter((_, i) => i !== index))
+  const removeFile = (index: number, files: File[], setFiles: (files: File[]) => void) => {
+    setFiles(files.filter((_, i) => i !== index))
   }
 
   const handleCreateContract = () => {
@@ -306,6 +326,68 @@ export default function LegalDashboard() {
     setContractFiles([])
   }
 
+  const handleCreateTemplate = () => {
+    console.log("Создание шаблона:", {
+      template: newTemplate,
+      files: templateFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+    })
+
+    setShowAddTemplate(false)
+    setNewTemplate({
+      name: "",
+      type: "",
+      description: "",
+      category: "",
+    })
+    setTemplateFiles([])
+  }
+
+  const handleCreateRisk = () => {
+    console.log("Создание риска:", {
+      risk: newRisk,
+      files: riskFiles.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+    })
+
+    setShowAddRisk(false)
+    setNewRisk({
+      title: "",
+      description: "",
+      category: "",
+      probability: "",
+      impact: "",
+      mitigation: "",
+    })
+    setRiskFiles([])
+  }
+
+  const generateReport = () => {
+    const reportData = {
+      type: reportType,
+      period: reportPeriod,
+      format: reportFormat,
+      generated: new Date().toISOString(),
+    }
+
+    console.log("Генерация отчета:", reportData)
+
+    // Создаем CSV данные для примера
+    const csvData = `Тип отчета,Период,Дата генерации
+${reportType},${reportPeriod},${new Date().toLocaleDateString()}`
+
+    // Создаем и скачиваем файл
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    link.setAttribute("href", url)
+    link.setAttribute("download", `legal_report_${Date.now()}.csv`)
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    setShowReportDialog(false)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -314,6 +396,7 @@ export default function LegalDashboard() {
           <h1 className="text-3xl font-bold text-foreground">⚖️ Правовой контур</h1>
           <p className="text-muted-foreground">Управление юридическими процессами компании</p>
         </div>
+
         <div className="flex gap-2">
           <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
             <DialogTrigger asChild>
@@ -329,38 +412,63 @@ export default function LegalDashboard() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Уведомления правового контура</DialogTitle>
+                <DialogTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Bell className="h-5 w-5" />
+                    Правовые уведомления
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={markAllNotificationsAsRead}>
+                    Отметить все как прочитанные
+                  </Button>
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 max-h-96 overflow-y-auto">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`p-4 border rounded-lg ${!notification.read ? "bg-blue-50" : ""}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-medium">{notification.title}</h4>
-                          <Badge className={getNotificationColor(notification.type)}>
-                            {notification.type === "urgent"
-                              ? "Срочно"
-                              : notification.type === "warning"
-                                ? "Предупреждение"
-                                : "Информация"}
-                          </Badge>
-                          {!notification.read && <Badge className="bg-blue-500 text-white text-xs">Новое</Badge>}
+                {notifications.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Нет уведомлений</p>
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                        notif.read ? "bg-muted/30 border-border/50" : "bg-background border-border shadow-sm"
+                      }`}
+                      onClick={() => markNotificationAsRead(notif.id)}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                notif.type === "success"
+                                  ? "bg-green-500"
+                                  : notif.type === "warning"
+                                    ? "bg-yellow-500"
+                                    : notif.type === "error"
+                                      ? "bg-red-500"
+                                      : "bg-blue-500"
+                              }`}
+                            />
+                            <h4
+                              className={`font-medium text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}
+                            >
+                              {notif.title}
+                            </h4>
+                          </div>
+                          <p className={`text-sm ${!notif.read ? "text-foreground" : "text-muted-foreground"}`}>
+                            {notif.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {notif.timestamp.toLocaleString("ru-RU")}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
-                        <p className="text-xs text-muted-foreground">{notification.date}</p>
+                        {!notif.read && <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end">
-                <Button variant="outline" onClick={() => setShowNotifications(false)}>
-                  Закрыть
-                </Button>
+                  ))
+                )}
               </div>
             </DialogContent>
           </Dialog>
@@ -422,7 +530,7 @@ export default function LegalDashboard() {
                 )}
                 <div>
                   <Label>Формат отчета</Label>
-                  <Select defaultValue="pdf">
+                  <Select value={reportFormat} onValueChange={setReportFormat}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -438,7 +546,7 @@ export default function LegalDashboard() {
                 <Button variant="outline" onClick={() => setShowReportDialog(false)}>
                   Отмена
                 </Button>
-                <Button onClick={handleGenerateReport} disabled={!reportType || !reportPeriod}>
+                <Button onClick={generateReport} disabled={!reportType || !reportPeriod}>
                   Сгенерировать отчет
                 </Button>
               </div>
@@ -682,7 +790,7 @@ export default function LegalDashboard() {
                           type="file"
                           multiple
                           accept=".pdf,.doc,.docx,.txt"
-                          onChange={handleFileUpload}
+                          onChange={(e) => handleFileUpload(e.target.files, setContractFiles)}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                           id="contract-files"
                         />
@@ -716,7 +824,7 @@ export default function LegalDashboard() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeFile(index)}
+                                onClick={() => removeFile(index, contractFiles, setContractFiles)}
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                               >
                                 ×
@@ -1108,10 +1216,130 @@ export default function LegalDashboard() {
         <TabsContent value="templates" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Шаблоны документов</h2>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Добавить шаблон
-            </Button>
+            <Dialog open={showAddTemplate} onOpenChange={setShowAddTemplate}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Добавить шаблон
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Новый шаблон документа</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Название шаблона *</Label>
+                      <Input
+                        value={newTemplate.name}
+                        onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
+                        placeholder="Договор поставки"
+                      />
+                    </div>
+                    <div>
+                      <Label>Тип документа *</Label>
+                      <Select
+                        value={newTemplate.type}
+                        onValueChange={(value) => setNewTemplate({ ...newTemplate, type: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите тип" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="contract">Договор</SelectItem>
+                          <SelectItem value="agreement">Соглашение</SelectItem>
+                          <SelectItem value="nda">NDA</SelectItem>
+                          <SelectItem value="order">Приказ</SelectItem>
+                          <SelectItem value="policy">Положение</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Категория</Label>
+                    <Select
+                      value={newTemplate.category}
+                      onValueChange={(value) => setNewTemplate({ ...newTemplate, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите категорию" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="commercial">Коммерческие</SelectItem>
+                        <SelectItem value="hr">Кадровые</SelectItem>
+                        <SelectItem value="corporate">Корпоративные</SelectItem>
+                        <SelectItem value="regulatory">Регулятивные</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Описание</Label>
+                    <Textarea
+                      value={newTemplate.description}
+                      onChange={(e) => setNewTemplate({ ...newTemplate, description: e.target.value })}
+                      placeholder="Краткое описание шаблона и его применения"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Файлы шаблона</Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.txt"
+                        onChange={(e) => handleFileUpload(e.target.files, setTemplateFiles)}
+                        className="hidden"
+                        id="template-file-upload"
+                      />
+                      <label
+                        htmlFor="template-file-upload"
+                        className="cursor-pointer flex flex-col items-center justify-center"
+                      >
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-600">Нажмите для выбора файлов или перетащите сюда</p>
+                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, TXT (макс. 10 МБ)</p>
+                      </label>
+                    </div>
+
+                    {templateFiles.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <Label>Загруженные файлы:</Label>
+                        {templateFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex items-center gap-2">
+                              <FileText className="w-4 h-4" />
+                              <span className="text-sm">{file.name}</span>
+                              <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} МБ)</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index, templateFiles, setTemplateFiles)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button variant="outline" onClick={() => setShowAddTemplate(false)}>
+                    Отмена
+                  </Button>
+                  <Button onClick={handleCreateTemplate} disabled={!newTemplate.name || !newTemplate.type}>
+                    Создать шаблон
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1149,10 +1377,159 @@ export default function LegalDashboard() {
         <TabsContent value="risks" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Риски и комплаенс</h2>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Добавить риск
-            </Button>
+            <Dialog open={showAddRisk} onOpenChange={setShowAddRisk}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Добавить риск
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>Новый юридический риск</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Название риска *</Label>
+                    <Input
+                      value={newRisk.title}
+                      onChange={(e) => setNewRisk({ ...newRisk, title: e.target.value })}
+                      placeholder="Нарушение требований GDPR"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Описание риска *</Label>
+                    <Textarea
+                      value={newRisk.description}
+                      onChange={(e) => setNewRisk({ ...newRisk, description: e.target.value })}
+                      placeholder="Подробное описание риска и его потенциальных последствий"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label>Категория</Label>
+                      <Select
+                        value={newRisk.category}
+                        onValueChange={(value) => setNewRisk({ ...newRisk, category: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите категорию" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="regulatory">Регулятивный</SelectItem>
+                          <SelectItem value="contractual">Договорной</SelectItem>
+                          <SelectItem value="compliance">Комплаенс</SelectItem>
+                          <SelectItem value="litigation">Судебный</SelectItem>
+                          <SelectItem value="intellectual">Интеллектуальная собственность</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Вероятность</Label>
+                      <Select
+                        value={newRisk.probability}
+                        onValueChange={(value) => setNewRisk({ ...newRisk, probability: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Низкая</SelectItem>
+                          <SelectItem value="medium">Средняя</SelectItem>
+                          <SelectItem value="high">Высокая</SelectItem>
+                          <SelectItem value="critical">Критическая</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label>Воздействие</Label>
+                      <Select
+                        value={newRisk.impact}
+                        onValueChange={(value) => setNewRisk({ ...newRisk, impact: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Выберите" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Низкое</SelectItem>
+                          <SelectItem value="medium">Среднее</SelectItem>
+                          <SelectItem value="high">Высокое</SelectItem>
+                          <SelectItem value="critical">Критическое</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Меры по снижению риска</Label>
+                    <Textarea
+                      value={newRisk.mitigation}
+                      onChange={(e) => setNewRisk({ ...newRisk, mitigation: e.target.value })}
+                      placeholder="Описание мер и действий для снижения или устранения риска"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Документы и материалы</Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                      <input
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.txt"
+                        onChange={(e) => handleFileUpload(e.target.files, setRiskFiles)}
+                        className="hidden"
+                        id="risk-file-upload"
+                      />
+                      <label
+                        htmlFor="risk-file-upload"
+                        className="cursor-pointer flex flex-col items-center justify-center"
+                      >
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-600">Нажмите для выбора файлов или перетащите сюда</p>
+                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, TXT (макс. 10 МБ)</p>
+                      </label>
+                    </div>
+
+                    {riskFiles.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <Label>Загруженные файлы:</Label>
+                        {riskFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex items-center gap-2">
+                              <FileText className="w-4 h-4" />
+                              <span className="text-sm">{file.name}</span>
+                              <span className="text-xs text-gray-500">({(file.size / 1024 / 1024).toFixed(2)} МБ)</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index, riskFiles, setRiskFiles)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button variant="outline" onClick={() => setShowAddRisk(false)}>
+                    Отмена
+                  </Button>
+                  <Button onClick={handleCreateRisk} disabled={!newRisk.title || !newRisk.description}>
+                    Добавить риск
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="grid gap-4">

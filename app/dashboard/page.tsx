@@ -678,7 +678,7 @@ export default function Dashboard() {
         <main className="max-w-7xl mx-auto mobile-padding py-2 sm:py-4 lg:py-8 relative z-10">
           <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-8">
             {/* Левая панель навигации */}
-            <div className="lg:w-80 xl:w-96 flex-shrink-0">
+            <div className="w-full lg:w-80 xl:w-96 lg:flex-shrink-0">
               <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 lg:sticky lg:top-24 w-full overflow-hidden transition-shadow duration-500">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-500"></div>
 
@@ -701,7 +701,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 w-full overflow-hidden">
               {activeTab === "overview" && (
                 <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
                   <div className="animate-in fade-in-0 slide-in-from-left-4 duration-500">
@@ -1196,7 +1196,7 @@ export default function Dashboard() {
         </main>
 
         <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
-          <DialogContent className="max-w-[95vw] sm:max-w-md mx-2 sm:mx-4 max-h-[85vh] sm:max-h-[80vh] overflow-y-auto enhanced-modal">
+          <DialogContent className="w-[calc(100vw-16px)] max-w-md mx-2 max-h-[85vh] overflow-y-auto enhanced-modal">
             <DialogHeader className="pb-2 sm:pb-4">
               <div className="flex items-center justify-between gap-2">
                 <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -1357,7 +1357,7 @@ export default function Dashboard() {
 
         {showProjectDetailsModal && selectedProject && (
           <Dialog open={showProjectDetailsModal} onOpenChange={setShowProjectDetailsModal}>
-            <DialogContent className="max-w-[95vw] sm:max-w-2xl mx-2 sm:mx-4 max-h-[90vh] overflow-y-auto enhanced-modal">
+            <DialogContent className="w-[calc(100vw-16px)] max-w-2xl mx-2 max-h-[90vh] overflow-y-auto enhanced-modal">
               <DialogHeader className="pb-3 sm:pb-4">
                 <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
@@ -1665,6 +1665,7 @@ export default function Dashboard() {
           .container-fix {
             padding-left: 8px;
             padding-right: 8px;
+            overflow-x: hidden;
           }
           .mobile-padding {
             padding-left: 8px;
@@ -1678,13 +1679,56 @@ export default function Dashboard() {
           }
           .card-responsive {
             margin-bottom: 8px;
+            width: 100%;
+            max-width: 100%;
           }
           .grid-responsive {
             gap: 8px;
+            grid-template-columns: 1fr;
           }
-          /* Предотвращение наложений на мобильных */
+          /* Предотвращение выступов элементов на мобильных */
           .enhanced-card {
             margin-bottom: 16px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+          
+          /* Исправление переполнения контента */
+          * {
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+          
+          /* Исправление модальных окон на мобильных */
+          .enhanced-modal {
+            width: calc(100vw - 16px) !important;
+            max-width: calc(100vw - 16px) !important;
+            margin: 8px !important;
+          }
+          
+          /* Исправление таблиц и широких элементов */
+          table {
+            width: 100%;
+            table-layout: fixed;
+          }
+          
+          td, th {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 0;
+          }
+          
+          /* Исправление flex элементов */
+          .flex {
+            flex-wrap: wrap;
+          }
+          
+          /* Исправление текста */
+          .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
         
@@ -1697,59 +1741,43 @@ export default function Dashboard() {
             width: auto;
             min-height: 36px;
           }
-          /* Планшетная адаптация */
+          /* Планшетная адаптация с предотвращением выступов */
           .enhanced-card {
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 100%;
           }
-        }
-        
-        @media (min-width: 1024px) {
-          .mobile-padding {
-            padding-left: 24px;
-            padding-right: 24px;
-          }
-          .button-responsive {
-            width: auto;
-            min-height: 40px;
-          }
-          .grid-responsive {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          }
-          .card-responsive {
-            width: auto;
-          }
-        }
-        
-        /* Предотвращение наложений и улучшение читаемости */
-        @media (max-width: 1023px) {
+          
           .enhanced-modal {
-            margin: 8px;
-            max-width: calc(100vw - 16px);
-            max-height: calc(100vh - 32px);
-            overflow-y: auto;
+            max-width: calc(100vw - 32px);
+          }
+        }
+        
+        /* Глобальные правила для предотвращения горизонтального скролла */
+        @media (max-width: 1023px) {
+          body {
+            overflow-x: hidden;
           }
           
-          .sticky {
-            position: relative !important;
+          .overflow-hidden-mobile {
+            overflow-x: hidden;
           }
           
-          /* Исправление переполнения контента */
-          .overflow-hidden {
-            overflow: visible;
+          /* Исправление широких элементов */
+          img, video, iframe, object, embed {
+            max-width: 100%;
+            height: auto;
           }
           
-          /* Улучшение отступов для карточек */
-          .enhanced-card {
-            padding: 12px;
+          /* Исправление pre и code блоков */
+          pre, code {
+            overflow-x: auto;
+            max-width: 100%;
           }
           
-          /* Адаптивные размеры текста */
-          .text-2xl {
-            font-size: 1.25rem;
-          }
-          
-          .text-xl {
-            font-size: 1.125rem;
+          /* Исправление input элементов */
+          input, textarea, select {
+            max-width: 100%;
+            box-sizing: border-box;
           }
         }
         `}</style>

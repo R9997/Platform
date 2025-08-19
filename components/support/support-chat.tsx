@@ -163,7 +163,7 @@ export function SupportChat() {
           <CardContent className={`p-0 flex flex-col ${isFullscreen ? "h-[calc(100vh-80px)]" : "h-[520px]"}`}>
             <ScrollArea
               className="flex-1 p-4 overflow-y-auto"
-              style={{ maxHeight: isFullscreen ? "calc(100vh - 160px)" : "440px" }}
+              style={{ maxHeight: isFullscreen ? "calc(100vh - 200px)" : "440px" }}
             >
               <div className="space-y-4 pb-4">
                 {messages.map((message) => (
@@ -216,22 +216,30 @@ export function SupportChat() {
               </div>
             </ScrollArea>
 
-            <div className="border-t border-border bg-background/95 backdrop-blur-sm p-3 flex-shrink-0">
-              <div className="flex gap-2 items-center">
+            <div
+              className={`border-t border-border bg-background/95 backdrop-blur-sm flex-shrink-0 ${
+                isFullscreen ? "p-6" : "p-3"
+              }`}
+            >
+              <div className="flex gap-3 items-center max-w-4xl mx-auto">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Напишите ваш вопрос..."
-                  className="flex-1 text-sm h-10 rounded-lg border-2 focus:border-primary/50"
+                  className={`flex-1 border-2 focus:border-primary/50 ${
+                    isFullscreen ? "text-base h-12 rounded-xl" : "text-sm h-10 rounded-lg"
+                  }`}
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isTyping}
-                  className="h-10 px-4 rounded-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 flex-shrink-0"
+                  className={`bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 flex-shrink-0 ${
+                    isFullscreen ? "h-12 px-6 rounded-xl" : "h-10 px-4 rounded-lg"
+                  }`}
                   title="Отправить сообщение"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className={isFullscreen ? "h-5 w-5" : "h-4 w-4"} />
                 </Button>
               </div>
             </div>
