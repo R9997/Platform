@@ -519,3 +519,5 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
     </div>
   )
 }
+
+export default GanttChart

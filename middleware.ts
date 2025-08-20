@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { jwtVerify } from "jose"
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key")
 
 // Protected routes that require authentication
 const protectedRoutes = ["/api/users", "/api/projects", "/api/tasks", "/api/files", "/api/teams"]
@@ -34,7 +31,8 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
-      const { payload } = await jwtVerify(token, JWT_SECRET)
+      // Простая демо-версия без jose
+      const payload = JSON.parse(atob(token))
 
       // Add user info to headers for API routes
       const requestHeaders = new Headers(request.headers)

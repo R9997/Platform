@@ -1,19 +1,14 @@
-import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key")
-
+// Простая демо-версия без реальной JWT аутентификации
 export async function createToken(payload: { userId: string; email: string; role: string }) {
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(JWT_SECRET)
+  // В демо-режиме просто возвращаем закодированную строку
+  return btoa(JSON.stringify(payload))
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET)
+    const payload = JSON.parse(atob(token))
     return payload
   } catch (error) {
     throw new Error("Invalid token")

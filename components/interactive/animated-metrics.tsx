@@ -364,3 +364,5 @@ export function AnimatedMetrics() {
     </div>
   )
 }
+
+export default AnimatedMetrics

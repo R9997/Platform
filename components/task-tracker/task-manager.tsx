@@ -29,7 +29,6 @@ import {
   FileText,
 } from "lucide-react"
 import { format } from "date-fns"
-import { ru } from "date-fns/locale"
 
 interface Task {
   id: string
@@ -338,7 +337,7 @@ const TaskManager = () => {
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start bg-transparent">
                       <CalendarIcon className="w-4 h-4 mr-2" />
-                      {format(newTask.dueDate, "dd MMMM yyyy", { locale: ru })}
+                      {format(newTask.dueDate, "dd MMMM yyyy")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -482,7 +481,7 @@ const TaskManager = () => {
                       <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                         <div className="flex items-center">
                           <CalendarIcon className="w-3 h-3 mr-1" />
-                          {format(task.dueDate, "dd.MM", { locale: ru })}
+                          {format(task.dueDate, "dd.MM")}
                         </div>
                         {task.comments > 0 && (
                           <div className="flex items-center">

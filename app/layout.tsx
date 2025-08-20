@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { ThemeProvider } from "next-themes"
+import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {

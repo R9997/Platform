@@ -249,3 +249,5 @@ export function SupportChat() {
     </div>
   )
 }
+
+export default SupportChat
