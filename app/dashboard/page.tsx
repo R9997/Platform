@@ -1551,6 +1551,102 @@ export default function Dashboard() {
                 </Dialog>
               )}
 
+              {showNotificationsModal && (
+                <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
+                  <DialogContent className="max-w-md mx-4">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Bell className="w-5 h-5 text-primary" />
+                          <span>Уведомления</span>
+                        </div>
+                        {notifications > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={markAllAsRead}
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            Отметить все как прочитанные
+                          </Button>
+                        )}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {notificationsList.length > 0 ? (
+                        notificationsList.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className={`p-3 rounded-lg border transition-colors ${
+                              notification.read
+                                ? "bg-muted/30 border-border/50"
+                                : "bg-card border-border hover:bg-muted/50"
+                            }`}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0 mt-0.5">{getNotificationIcon(notification.type)}</div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <h4
+                                      className={`text-sm font-medium ${notification.read ? "text-muted-foreground" : "text-foreground"}`}
+                                    >
+                                      {notification.title}
+                                    </h4>
+                                    <p
+                                      className={`text-xs mt-1 ${notification.read ? "text-muted-foreground/70" : "text-muted-foreground"}`}
+                                    >
+                                      {notification.message}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground/60 mt-2">{notification.time}</p>
+                                  </div>
+                                  {!notification.read && (
+                                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1"></div>
+                                  )}
+                                </div>
+                                <div className="flex space-x-2 mt-3">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs h-7 bg-transparent"
+                                    onClick={() => handleNotificationAction(notification.id, "view")}
+                                  >
+                                    Просмотреть
+                                  </Button>
+                                  {!notification.read && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-xs h-7"
+                                      onClick={() => markNotificationAsRead(notification.id)}
+                                    >
+                                      Отметить как прочитанное
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8">
+                          <Bell className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                          <p className="text-sm text-muted-foreground">Нет новых уведомлений</p>
+                          <p className="text-xs text-muted-foreground/70 mt-1">
+                            Все уведомления будут отображаться здесь
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-end pt-3 border-t">
+                      <Button variant="outline" onClick={() => setShowNotificationsModal(false)}>
+                        Закрыть
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+
               {activeTab === "edo" && <EDODashboard />}
               {activeTab === "legal" && <LegalDashboard />}
               {activeTab === "marketing" && <MarketingDashboard />}

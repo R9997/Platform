@@ -363,7 +363,7 @@ export function FeatureGuide() {
           Гид по функциям
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <Lightbulb className="w-5 h-5 mr-2 text-primary" />
@@ -374,84 +374,90 @@ export function FeatureGuide() {
           </p>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={selectedBlock === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedBlock("all")}
-            >
-              Все модули ({features.length})
-            </Button>
-            {blocks.map((block) => (
+        <div className="space-y-6 overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
+          <div className="overflow-x-auto pb-2">
+            <div className="flex gap-2 min-w-max">
               <Button
-                key={block}
-                variant={selectedBlock === block ? "default" : "outline"}
+                variant={selectedBlock === "all" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedBlock(block)}
+                onClick={() => setSelectedBlock("all")}
+                className="whitespace-nowrap"
               >
-                {block} ({features.filter((f) => f.blockName === block).length})
+                Все модули ({features.length})
               </Button>
-            ))}
+              {blocks.map((block) => (
+                <Button
+                  key={block}
+                  variant={selectedBlock === block ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedBlock(block)}
+                  className="whitespace-nowrap"
+                >
+                  {block} ({features.filter((f) => f.blockName === block).length})
+                </Button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredFeatures.map((feature) => {
-              const FeatureIcon = feature.icon
-              return (
-                <Card
-                  key={feature.key}
-                  className="bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                  onClick={() => setSelectedFeature(feature)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <FeatureIcon className="w-4 h-4 text-primary" />
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-4 min-w-max">
+              {filteredFeatures.map((feature) => {
+                const FeatureIcon = feature.icon
+                return (
+                  <Card
+                    key={feature.key}
+                    className="bg-card/50 backdrop-blur-sm border border-border/50 hover:shadow-lg transition-all duration-300 cursor-pointer group w-80 flex-shrink-0"
+                    onClick={() => setSelectedFeature(feature)}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <FeatureIcon className="w-4 h-4 text-primary" />
+                          </div>
+                          <div className="min-w-0">
+                            <CardTitle className="text-sm truncate">{feature.title}</CardTitle>
+                            <p className="text-xs text-muted-foreground truncate">{feature.blockName}</p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <CardTitle className="text-sm truncate">{feature.title}</CardTitle>
-                          <p className="text-xs text-muted-foreground truncate">{feature.blockName}</p>
-                        </div>
-                      </div>
-                      <Badge className={getStatusColor(feature.status)} variant="outline">
-                        {getStatusLabel(feature.status)}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{feature.description}</p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Сложность</span>
-                        <Badge className={getDifficultyColor(feature.difficulty)} variant="outline">
-                          {feature.difficulty}
+                        <Badge className={getStatusColor(feature.status)} variant="outline">
+                          {getStatusLabel(feature.status)}
                         </Badge>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Настройка</span>
-                        <span className="text-xs text-foreground truncate">{feature.timeToSetup}</span>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-3 h-12">{feature.description}</p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Сложность</span>
+                          <Badge className={getDifficultyColor(feature.difficulty)} variant="outline">
+                            {feature.difficulty}
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Настройка</span>
+                          <span className="text-xs text-foreground truncate max-w-32">{feature.timeToSetup}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Категория</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {feature.category}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Категория</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {feature.category}
-                        </Badge>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="w-full mt-3 group-hover:bg-primary/10 transition-colors"
-                    >
-                      Подробнее
-                      <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              )
-            })}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="w-full mt-3 group-hover:bg-primary/10 transition-colors"
+                      >
+                        Подробнее
+                        <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
           </div>
 
           {selectedFeature && (

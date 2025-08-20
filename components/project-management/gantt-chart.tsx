@@ -102,15 +102,15 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "urgent":
-        return "bg-red-500"
+        return "bg-red-500 dark:bg-red-600"
       case "high":
-        return "bg-orange-500"
+        return "bg-orange-500 dark:bg-orange-600"
       case "medium":
-        return "bg-yellow-500"
+        return "bg-yellow-500 dark:bg-yellow-600"
       case "low":
-        return "bg-green-500"
+        return "bg-green-500 dark:bg-green-600"
       default:
-        return "bg-gray-500"
+        return "bg-gray-500 dark:bg-gray-600"
     }
   }
 
@@ -162,17 +162,17 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
-            <div className="flex border-b border-border/50">
-              <div className="w-64 p-3 bg-card/30 border-r border-border/50">
-                <span className="text-sm font-medium">Проекты и задачи</span>
+        <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+          <div className="min-w-[1200px]">
+            <div className="flex border-b border-border/50 sticky top-0 bg-background z-20">
+              <div className="w-80 p-4 bg-card/50 border-r border-border/50">
+                <span className="text-sm font-medium text-foreground">Проекты и задачи</span>
               </div>
               <div className="flex-1 relative">
-                <div className="flex h-12">
+                <div className="flex h-14">
                   {timeScale.map((date, index) => (
-                    <div key={index} className="flex-1 border-r border-border/30 p-2 text-center bg-card/20">
-                      <div className="text-xs font-medium">
+                    <div key={index} className="flex-1 border-r border-border/30 p-3 text-center bg-card/30">
+                      <div className="text-xs font-medium text-foreground">
                         {viewMode === "week"
                           ? date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })
                           : `${date.getDate()}-${date.getDate() + 6} ${date.toLocaleDateString("ru-RU", { month: "short" })}`}
@@ -183,21 +183,23 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
               </div>
             </div>
 
-            <div className="space-y-0">
+            <div className="space-y-1">
               {ganttData.map((project) => (
                 <div key={project.id}>
                   {project.tasks.map((task, taskIndex) => (
-                    <div key={task.id} className="flex border-b border-border/30 hover:bg-card/20">
-                      <div className="w-64 p-3 border-r border-border/50">
-                        <div className="flex items-center gap-2">
+                    <div key={task.id} className="flex border-b border-border/20 hover:bg-card/30 min-h-[60px]">
+                      <div className="w-80 p-4 border-r border-border/50 flex items-center">
+                        <div className="flex items-center gap-3 w-full">
                           <div
-                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            className="w-4 h-4 rounded-full flex-shrink-0 border-2 border-white dark:border-gray-800"
                             style={{ backgroundColor: project.color }}
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium truncate">{task.name}</div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge className={`${getPriorityColor(task.priority)} text-white text-xs px-1.5 py-0.5`}>
+                            <div className="text-sm font-medium text-foreground mb-1 leading-tight">{task.name}</div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge
+                                className={`${getPriorityColor(task.priority)} text-white text-xs px-2 py-1 font-medium`}
+                              >
                                 {task.priority === "urgent"
                                   ? "Срочно"
                                   : task.priority === "high"
@@ -206,28 +208,32 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
                                       ? "Средний"
                                       : "Низкий"}
                               </Badge>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                                 <Users className="w-3 h-3" />
-                                <span className="truncate">{task.assignee}</span>
+                                <span className="truncate max-w-[100px]">{task.assignee}</span>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex-1 relative p-3">
-                        <div className="relative h-6">
+                      <div className="flex-1 relative p-4 flex items-center">
+                        <div className="relative h-8 w-full">
                           <div
-                            className="absolute top-1 h-4 rounded-md flex items-center px-2 text-xs font-medium text-white shadow-sm"
+                            className="absolute top-1 h-6 rounded-lg flex items-center px-3 text-xs font-semibold text-white shadow-lg border border-white/20"
                             style={{
                               backgroundColor: project.color,
                               ...getTaskPosition(task),
                             }}
                           >
-                            <div className="flex items-center gap-1 truncate">
-                              <span>{task.progress}%</span>
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="font-bold">{task.progress}%</span>
+                              <div className="text-xs opacity-90">
+                                {task.startDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })} -
+                                {task.endDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
+                              </div>
                             </div>
                             <div
-                              className="absolute top-0 left-0 h-full bg-white/30 rounded-md"
+                              className="absolute top-0 left-0 h-full bg-white/40 dark:bg-black/20 rounded-lg border-r border-white/30"
                               style={{ width: `${task.progress}%` }}
                             />
                           </div>
@@ -240,20 +246,23 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
             </div>
 
             <div
-              className="absolute top-12 bottom-0 w-0.5 bg-red-500 z-10 pointer-events-none"
+              className="absolute top-14 bottom-0 w-1 bg-red-500 dark:bg-red-400 z-10 pointer-events-none shadow-lg"
               style={{
                 left: `${
-                  64 * 4 +
+                  320 +
                   (
                     (new Date().getTime() - timeScale[0].getTime()) /
                       (timeScale[timeScale.length - 1].getTime() - timeScale[0].getTime())
                   ) *
-                    (100 - 64)
+                    (100 - 26.67)
                 }%`,
               }}
             >
-              <div className="absolute -top-2 -left-2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="absolute -top-3 -left-2 w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full flex items-center justify-center shadow-lg">
                 <div className="w-2 h-2 bg-white rounded-full" />
+              </div>
+              <div className="absolute -top-8 -left-8 text-xs font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 px-2 py-1 rounded shadow-lg border">
+                Сегодня
               </div>
             </div>
           </div>

@@ -411,26 +411,26 @@ export default function StrategyDashboard() {
             <CardContent>
               <div className="space-y-6">
                 <div className="border-l-4 border-blue-500 pl-4">
-                  <h3 className="font-semibold text-lg">Компания</h3>
+                  <h3 className="font-semibold text-lg text-foreground">Компания</h3>
                   <p className="text-sm text-muted-foreground">Стратегические цели организации</p>
                   <div className="mt-2 space-y-2">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <p className="font-medium">Увеличить выручку на 25%</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border dark:border-blue-800 p-3 rounded-lg">
+                      <p className="font-medium text-foreground">Увеличить выручку на 25%</p>
                       <Progress value={68} className="mt-2 h-2" />
                     </div>
                   </div>
                 </div>
 
                 <div className="border-l-4 border-green-500 pl-4">
-                  <h3 className="font-semibold text-lg">Отделы</h3>
+                  <h3 className="font-semibold text-lg text-foreground">Отделы</h3>
                   <p className="text-sm text-muted-foreground">Цели подразделений</p>
                   <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <p className="font-medium">Продажи: +30% клиентов</p>
+                    <div className="bg-green-50 dark:bg-green-900/20 border dark:border-green-800 p-3 rounded-lg">
+                      <p className="font-medium text-foreground">Продажи: +30% клиентов</p>
                       <Progress value={72} className="mt-2 h-2" />
                     </div>
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <p className="font-medium">Разработка: 2 новых продукта</p>
+                    <div className="bg-green-50 dark:bg-green-900/20 border dark:border-green-800 p-3 rounded-lg">
+                      <p className="font-medium text-foreground">Разработка: 2 новых продукта</p>
                       <Progress value={45} className="mt-2 h-2" />
                     </div>
                   </div>
@@ -452,14 +452,18 @@ export default function StrategyDashboard() {
                     <span>Q1 2024</span>
                     <div className="flex space-x-2">
                       <Badge variant="outline">План: 85%</Badge>
-                      <Badge className="bg-green-100 text-green-800">Факт: 92%</Badge>
+                      <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
+                        Факт: 92%
+                      </Badge>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Q2 2024</span>
                     <div className="flex space-x-2">
                       <Badge variant="outline">План: 75%</Badge>
-                      <Badge className="bg-yellow-100 text-yellow-800">Факт: 68%</Badge>
+                      <Badge className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
+                        Факт: 68%
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -472,21 +476,29 @@ export default function StrategyDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                    <Lightbulb className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div className="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 border dark:border-blue-800 rounded-lg">
+                    <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium">Цель "Увеличить продажи" слишком общая</p>
+                      <p className="text-sm font-medium text-foreground">Цель "Увеличить продажи" слишком общая</p>
                       <p className="text-xs text-muted-foreground">Рекомендуем добавить конкретные метрики по SMART</p>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
-                    <Zap className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border dark:border-yellow-800 rounded-lg">
+                    <Zap className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium">Риск невыполнения цели по разработке</p>
+                      <p className="text-sm font-medium text-foreground">Риск невыполнения цели по разработке</p>
                       <p className="text-xs text-muted-foreground">
                         Текущий темп не позволит достичь результата в срок
                       </p>
                     </div>
+                  </div>
+                  <div className="flex space-x-2 pt-2">
+                    <Button size="sm" variant="outline" className="text-xs bg-transparent">
+                      Применить рекомендацию
+                    </Button>
+                    <Button size="sm" variant="ghost" className="text-xs">
+                      Отклонить
+                    </Button>
                   </div>
                 </div>
               </CardContent>
