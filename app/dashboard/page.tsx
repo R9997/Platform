@@ -613,7 +613,9 @@ const DashboardPage = () => {
                       className="w-full justify-between p-2 h-auto hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-950 dark:hover:to-teal-950 transition-all duration-200"
                       onClick={() => toggleSection(section.id)}
                     >
-                      <span className="text-xs font-semibold text-muted-foreground">{section.title}</span>
+                      <span className="text-xs font-semibold text-muted-foreground hover:text-foreground">
+                        {section.title}
+                      </span>
                       {section.expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </Button>
 
@@ -623,7 +625,7 @@ const DashboardPage = () => {
                           <Button
                             key={item.id}
                             variant={activeTab === item.id ? "default" : "ghost"}
-                            className="w-full justify-start text-sm h-9 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-950 dark:hover:to-teal-950 transition-all duration-200"
+                            className="w-full justify-start text-sm h-9 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900 dark:hover:to-teal-900 hover:text-foreground transition-all duration-200"
                             onClick={() => setActiveTab(item.id)}
                           >
                             <item.icon className="w-4 h-4 mr-2" />
