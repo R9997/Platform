@@ -26,14 +26,19 @@ import {
   Brain,
   Scale,
   MessageCircle,
+  Plus,
+  Edit,
+  Trash2,
 } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 
 import { SupportChat } from "@/components/support/support-chat"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
@@ -41,7 +46,6 @@ import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { SalesManager } from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
 import { FileManager } from "@/components/file-storage/file-manager"
-import { StrategyDashboard } from "@/components/strategy/strategy-dashboard"
 import { EDODashboard } from "@/components/edo/edo-dashboard"
 import { LegalDashboard } from "@/components/legal/legal-dashboard"
 import { HRDashboard } from "@/components/hr-management/hr-dashboard"
@@ -473,7 +477,7 @@ export default function Dashboard() {
         title: newTask.title,
         assignee: newTask.assignee,
         priority: newTask.priority,
-        status: "В работе",
+        status: "К выполнению",
         dueDate: newTask.dueDate,
         description: newTask.description || "",
         progress: 0,
@@ -1026,7 +1030,7 @@ export default function Dashboard() {
             {/* Main Content */}
             <div className="flex-1">
               {activeTab === "overview" && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Обзор бизнеса</CardTitle>
@@ -1035,27 +1039,169 @@ export default function Dashboard() {
                       <AnimatedMetrics />
                     </CardContent>
                   </Card>
-                </div>
-              )}
 
-              {activeTab === "strategy" && (
-                <div className="space-y-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Стратегия и цели</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <StrategyDashboard />
-                    </CardContent>
-                  </Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Bell className="w-5 h-5" />
+                          Последние уведомления
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {notifications.slice(0, 3).map((notification) => (
+                            <div
+                              key={notification.id}
+                              className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
+                            >
+                              <div
+                                className={`w-2 h-2 rounded-full mt-2 ${
+                                  notification.type === "success"
+                                    ? "bg-green-500"
+                                    : notification.type === "warning"
+                                      ? "bg-yellow-500"
+                                      : "bg-blue-500"
+                                }`}
+                              />
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">{notification.title}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">{notification.message}</p>
+                                <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Быстрые действия</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button
+                            variant="outline"
+                            className="h-20 flex flex-col gap-2 bg-transparent"
+                            onClick={() => setShowAddProjectModal(true)}
+                          >
+                            <Plus className="w-5 h-5" />
+                            <span className="text-xs">Новый проект</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="h-20 flex flex-col gap-2 bg-transparent"
+                            onClick={() => setShowAddTaskModal(true)}
+                          >
+                            <CheckSquare className="w-5 h-5" />
+                            <span className="text-xs">Новая задача</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="h-20 flex flex-col gap-2 bg-transparent"
+                            onClick={() => setActiveTab("sales")}
+                          >
+                            <TrendingUp className="w-5 h-5" />
+                            <span className="text-xs">Продажи</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="h-20 flex flex-col gap-2 bg-transparent"
+                            onClick={() => setActiveTab("analytics")}
+                          >
+                            <BarChart3 className="w-5 h-5" />
+                            <span className="text-xs">Аналитика</span>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               )}
 
               {activeTab === "projects" && (
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold">Активные проекты</h2>
+                    <Button onClick={() => setShowAddProjectModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Новый проект
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map((project) => (
+                      <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <CardTitle className="text-lg">{project.name}</CardTitle>
+                            <Badge
+                              variant={
+                                project.status === "Завершен"
+                                  ? "default"
+                                  : project.status === "В работе"
+                                    ? "secondary"
+                                    : "outline"
+                              }
+                            >
+                              {project.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div>
+                              <div className="flex justify-between text-sm mb-2">
+                                <span>Прогресс</span>
+                                <span>{project.progress}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${project.progress}%` }}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between text-sm">
+                              <span>Команда:</span>
+                              <div className="flex gap-1">
+                                {project.team.map((member, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs"
+                                  >
+                                    {member}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between text-sm">
+                              <span>Дедлайн:</span>
+                              <span>{project.deadline}</span>
+                            </div>
+
+                            <div className="flex gap-2 pt-2">
+                              <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                                <Eye className="w-4 h-4 mr-1" />
+                                Просмотр
+                              </Button>
+                              <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                                <Edit className="w-4 h-4 mr-1" />
+                                Изменить
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
                   <Card>
                     <CardHeader>
-                      <CardTitle>Активные проекты</CardTitle>
+                      <CardTitle>Диаграмма Ганта</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <GanttChart projects={projects} />
@@ -1065,13 +1211,163 @@ export default function Dashboard() {
               )}
 
               {activeTab === "tasks" && (
-                <div className="space-y-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Управление задачами</CardTitle>
-                    </CardHeader>
-                    <CardContent>{/* Task Management Component Here */}</CardContent>
-                  </Card>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold">Управление задачами</h2>
+                    <Button onClick={() => setShowAddTaskModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Новая задача
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">К выполнению</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "К выполнению")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium">{task.title}</h4>
+                                  <Badge
+                                    variant={
+                                      task.priority === "Высокий"
+                                        ? "destructive"
+                                        : task.priority === "Средний"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                  >
+                                    {task.priority}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span>Исполнитель: {task.assignee}</span>
+                                  <span>{task.dueDate}</span>
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleUpdateTaskStatus(task.id, "В работе")}
+                                  >
+                                    Начать
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleDeleteTask(task.id)}>
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          {tasks.filter((task) => task.status === "К выполнению").length === 0 && (
+                            <p className="text-gray-500 text-center py-4">Нет задач к выполнению</p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">В работе</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "В работе")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium">{task.title}</h4>
+                                  <Badge
+                                    variant={
+                                      task.priority === "Высокий"
+                                        ? "destructive"
+                                        : task.priority === "Средний"
+                                          ? "default"
+                                          : "secondary"
+                                    }
+                                  >
+                                    {task.priority}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span>Исполнитель: {task.assignee}</span>
+                                  <span>{task.dueDate}</span>
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    onClick={() => handleUpdateTaskStatus(task.id, "Завершена")}
+                                  >
+                                    Завершить
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleUpdateTaskStatus(task.id, "К выполнению")}
+                                  >
+                                    Вернуть
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleDeleteTask(task.id)}>
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          {tasks.filter((task) => task.status === "В работе").length === 0 && (
+                            <p className="text-gray-500 text-center py-4">Нет задач в работе</p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Завершены</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "Завершена")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg bg-green-50 dark:bg-green-900/20">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium">{task.title}</h4>
+                                  <Badge variant="default">{task.priority}</Badge>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                                <div className="flex justify-between items-center text-xs">
+                                  <span>Исполнитель: {task.assignee}</span>
+                                  <span>{task.dueDate}</span>
+                                </div>
+                                <div className="flex gap-2 mt-3">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleUpdateTaskStatus(task.id, "В работе")}
+                                  >
+                                    Переоткрыть
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleDeleteTask(task.id)}>
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          {tasks.filter((task) => task.status === "Завершена").length === 0 && (
+                            <p className="text-gray-500 text-center py-4">Нет завершенных задач</p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               )}
 
@@ -1251,6 +1547,74 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Add Task Modal */}
+        <Dialog open={showAddTaskModal} onOpenChange={setShowAddTaskModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новую задачу</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="taskTitle">Название задачи</Label>
+                <Input
+                  id="taskTitle"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="Введите название задачи"
+                />
+              </div>
+              <div>
+                <Label htmlFor="taskAssignee">Исполнитель</Label>
+                <Input
+                  id="taskAssignee"
+                  value={newTask.assignee}
+                  onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
+                  placeholder="Введите имя исполнителя"
+                />
+              </div>
+              <div>
+                <Label htmlFor="taskPriority">Приоритет</Label>
+                <Select value={newTask.priority} onValueChange={(value) => setNewTask({ ...newTask, priority: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Низкий">Низкий</SelectItem>
+                    <SelectItem value="Средний">Средний</SelectItem>
+                    <SelectItem value="Высокий">Высокий</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="taskDueDate">Срок выполнения</Label>
+                <Input
+                  id="taskDueDate"
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="taskDescription">Описание</Label>
+                <textarea
+                  id="taskDescription"
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                  placeholder="Введите описание задачи"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAddTaskModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddTask}>Создать задачу</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Support Chat */}
         {showSupportChat && <SupportChat onClose={() => setShowSupportChat(false)} />}
