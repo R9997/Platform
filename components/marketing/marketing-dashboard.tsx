@@ -31,8 +31,50 @@ function MarketingDashboard() {
   const [showCampaignModal, setShowCampaignModal] = useState(false)
   const [showSegmentModal, setShowSegmentModal] = useState(false)
   const [showAutofunnelModal, setShowAutofunnelModal] = useState(false)
+  const [showFilterModal, setShowFilterModal] = useState(false)
+  const [campaignFilter, setCampaignFilter] = useState({ status: "all", type: "all" })
+  const [newSegment, setNewSegment] = useState({ name: "", criteria: "", description: "" })
+  const [isCreatingSegment, setIsCreatingSegment] = useState(false)
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [segments, setSegments] = useState([
+    { id: 1, name: "VIP клиенты", count: 234, criteria: "Покупки > 100k", growth: "+12%" },
+    { id: 2, name: "Новички", count: 1456, criteria: "Регистрация < 30 дней", growth: "+8%" },
+    { id: 3, name: "Неактивные", count: 567, criteria: "Без покупок > 90 дней", growth: "-5%" },
+  ])
 
-  // Данные воронки
+  const [newFunnel, setNewFunnel] = useState({
+    name: "",
+    trigger: "",
+    steps: [{ message: "", channel: "", delay: "0" }],
+  })
+  const [isCreatingFunnel, setIsCreatingFunnel] = useState(false)
+  const [funnels, setFunnels] = useState([
+    {
+      id: 1,
+      name: "Приветствие новичков",
+      trigger: "registration",
+      status: "Активна",
+      conversion: 23,
+      steps: [
+        { message: "Приветственное письмо", channel: "email", delay: "0" },
+        { message: "Гайд по продукту", channel: "email", delay: "1" },
+        { message: "Спецпредложение", channel: "whatsapp", delay: "3" },
+      ],
+    },
+    {
+      id: 2,
+      name: "Возврат неактивных",
+      trigger: "inactive",
+      status: "Пауза",
+      conversion: 8,
+      steps: [
+        { message: "Мы скучаем по вам", channel: "email", delay: "0" },
+        { message: "Персональная скидка", channel: "sms", delay: "2" },
+        { message: "Последний шанс", channel: "whatsapp", delay: "5" },
+      ],
+    },
+  ])
+
   const funnelData = [
     { stage: "Лиды", count: 1250, percentage: 100, color: "bg-blue-500" },
     { stage: "Квалифицированные", count: 875, percentage: 70, color: "bg-green-500" },
@@ -40,7 +82,6 @@ function MarketingDashboard() {
     { stage: "Покупатели", count: 187, percentage: 15, color: "bg-purple-500" },
   ]
 
-  // Данные кампаний
   const campaigns = [
     {
       id: 1,
@@ -65,16 +106,136 @@ function MarketingDashboard() {
     { id: 3, name: "Реактивация", type: "SMS", status: "Черновик", sent: 0, opened: 0, clicked: 0, converted: 0 },
   ]
 
-  // Сегменты аудитории
-  const segments = [
-    { id: 1, name: "VIP клиенты", count: 234, criteria: "Покупки > 100k", growth: "+12%" },
-    { id: 2, name: "Новички", count: 1456, criteria: "Регистрация < 30 дней", growth: "+8%" },
-    { id: 3, name: "Неактивные", count: 567, criteria: "Без покупок > 90 дней", growth: "-5%" },
-  ]
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    const statusMatch = campaignFilter.status === "all" || campaign.status === campaignFilter.status
+    const typeMatch = campaignFilter.type === "all" || campaign.type === campaignFilter.type
+    return statusMatch && typeMatch
+  })
+
+  const handleCreateSegment = async () => {
+    if (!newSegment.name.trim()) {
+      setNotification({ type: "error", message: "Пожалуйста, введите название сегмента" })
+      return
+    }
+
+    if (!newSegment.criteria.trim()) {
+      setNotification({ type: "error", message: "Пожалуйста, выберите критерии сегментации" })
+      return
+    }
+
+    if (segments.some((segment) => segment.name.toLowerCase() === newSegment.name.toLowerCase())) {
+      setNotification({ type: "error", message: "Сегмент с таким названием уже существует" })
+      return
+    }
+
+    setIsCreatingSegment(true)
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      const newSegmentData = {
+        id: segments.length + 1,
+        name: newSegment.name.trim(),
+        count: Math.floor(Math.random() * 1000) + 100,
+        criteria: newSegment.criteria,
+        growth: `+${Math.floor(Math.random() * 20)}%`,
+      }
+
+      setSegments((prevSegments) => [...prevSegments, newSegmentData])
+      setNewSegment({ name: "", criteria: "", description: "" })
+      setShowSegmentModal(false)
+      setNotification({ type: "success", message: `Сегмент "${newSegmentData.name}" успешно создан!` })
+
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      setNotification({ type: "error", message: "Ошибка при создании сегмента. Попробуйте еще раз." })
+    } finally {
+      setIsCreatingSegment(false)
+    }
+  }
+
+  const handleAddFunnelStep = () => {
+    setNewFunnel({
+      ...newFunnel,
+      steps: [...newFunnel.steps, { message: "", channel: "", delay: "0" }],
+    })
+  }
+
+  const handleRemoveFunnelStep = (index: number) => {
+    if (newFunnel.steps.length > 1) {
+      setNewFunnel({
+        ...newFunnel,
+        steps: newFunnel.steps.filter((_, i) => i !== index),
+      })
+    }
+  }
+
+  const handleFunnelStepChange = (index: number, field: string, value: string) => {
+    const updatedSteps = newFunnel.steps.map((step, i) => (i === index ? { ...step, [field]: value } : step))
+    setNewFunnel({ ...newFunnel, steps: updatedSteps })
+  }
+
+  const handleCreateFunnel = async () => {
+    if (!newFunnel.name.trim()) {
+      setNotification({ type: "error", message: "Пожалуйста, введите название воронки" })
+      return
+    }
+
+    if (!newFunnel.trigger) {
+      setNotification({ type: "error", message: "Пожалуйста, выберите триггер запуска" })
+      return
+    }
+
+    const hasEmptySteps = newFunnel.steps.some((step) => !step.message.trim() || !step.channel)
+    if (hasEmptySteps) {
+      setNotification({ type: "error", message: "Пожалуйста, заполните все шаги воронки" })
+      return
+    }
+
+    if (funnels.some((funnel) => funnel.name.toLowerCase() === newFunnel.name.toLowerCase())) {
+      setNotification({ type: "error", message: "Воронка с таким названием уже существует" })
+      return
+    }
+
+    setIsCreatingFunnel(true)
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      const newFunnelData = {
+        id: funnels.length + 1,
+        name: newFunnel.name.trim(),
+        trigger: newFunnel.trigger,
+        status: "Активна",
+        conversion: Math.floor(Math.random() * 30) + 10,
+        steps: newFunnel.steps,
+      }
+
+      setFunnels((prevFunnels) => [...prevFunnels, newFunnelData])
+      setNewFunnel({ name: "", trigger: "", steps: [{ message: "", channel: "", delay: "0" }] })
+      setShowAutofunnelModal(false)
+      setNotification({ type: "success", message: `Воронка "${newFunnelData.name}" успешно создана!` })
+
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error) {
+      setNotification({ type: "error", message: "Ошибка при создании воронки. Попробуйте еще раз." })
+    } finally {
+      setIsCreatingFunnel(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
-      {/* Заголовок */}
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+            notification.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">📣 Маркетинг и клиенты</h1>
@@ -148,7 +309,6 @@ function MarketingDashboard() {
         </div>
       </div>
 
-      {/* Основная статистика */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
@@ -200,7 +360,6 @@ function MarketingDashboard() {
         </Card>
       </div>
 
-      {/* Воронка клиентов */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -226,7 +385,6 @@ function MarketingDashboard() {
         </CardContent>
       </Card>
 
-      {/* Табы с детальной информацией */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Обзор</TabsTrigger>
@@ -238,7 +396,6 @@ function MarketingDashboard() {
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Последние кампании */}
             <Card>
               <CardHeader>
                 <CardTitle>Последние кампании</CardTitle>
@@ -268,7 +425,6 @@ function MarketingDashboard() {
               </CardContent>
             </Card>
 
-            {/* Топ сегменты */}
             <Card>
               <CardHeader>
                 <CardTitle>Сегменты аудитории</CardTitle>
@@ -301,10 +457,67 @@ function MarketingDashboard() {
               <div className="flex items-center justify-between">
                 <CardTitle>Маркетинговые кампании</CardTitle>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Фильтр
-                  </Button>
+                  <Dialog open={showFilterModal} onOpenChange={setShowFilterModal}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Filter className="w-4 h-4 mr-2" />
+                        Фильтр
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Фильтр кампаний</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Статус кампании</Label>
+                          <Select
+                            value={campaignFilter.status}
+                            onValueChange={(value) => setCampaignFilter({ ...campaignFilter, status: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Все статусы</SelectItem>
+                              <SelectItem value="Активна">Активные</SelectItem>
+                              <SelectItem value="Завершена">Завершенные</SelectItem>
+                              <SelectItem value="Черновик">Черновики</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Тип кампании</Label>
+                          <Select
+                            value={campaignFilter.type}
+                            onValueChange={(value) => setCampaignFilter({ ...campaignFilter, type: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Все типы</SelectItem>
+                              <SelectItem value="Email">Email</SelectItem>
+                              <SelectItem value="SMS">SMS</SelectItem>
+                              <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                              <SelectItem value="Telegram">Telegram</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setCampaignFilter({ status: "all", type: "all" })
+                            }}
+                          >
+                            Сбросить
+                          </Button>
+                          <Button onClick={() => setShowFilterModal(false)}>Применить</Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <Button size="sm" onClick={() => setShowCampaignModal(true)}>
                     <Send className="w-4 h-4 mr-2" />
                     Новая кампания
@@ -328,7 +541,7 @@ function MarketingDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {campaigns.map((campaign) => (
+                    {filteredCampaigns.map((campaign) => (
                       <tr key={campaign.id} className="border-b hover:bg-muted/50">
                         <td className="p-2 font-medium">{campaign.name}</td>
                         <td className="p-2">
@@ -381,33 +594,60 @@ function MarketingDashboard() {
                     </DialogHeader>
                     <div className="space-y-4">
                       <div>
-                        <Label>Название сегмента</Label>
-                        <Input placeholder="Введите название" />
+                        <Label>Название сегмента *</Label>
+                        <Input
+                          placeholder="Введите название"
+                          value={newSegment.name}
+                          onChange={(e) => setNewSegment({ ...newSegment, name: e.target.value })}
+                          disabled={isCreatingSegment}
+                        />
                       </div>
                       <div>
-                        <Label>Критерии сегментации</Label>
-                        <Select>
+                        <Label>Критерии сегментации *</Label>
+                        <Select
+                          value={newSegment.criteria}
+                          onValueChange={(value) => setNewSegment({ ...newSegment, criteria: value })}
+                          disabled={isCreatingSegment}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Выберите критерий" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="purchase">По покупкам</SelectItem>
-                            <SelectItem value="activity">По активности</SelectItem>
-                            <SelectItem value="registration">По дате регистрации</SelectItem>
-                            <SelectItem value="location">По геолокации</SelectItem>
-                            <SelectItem value="source">По источнику</SelectItem>
+                            <SelectItem value="По покупкам">По покупкам</SelectItem>
+                            <SelectItem value="По активности">По активности</SelectItem>
+                            <SelectItem value="По дате регистрации">По дате регистрации</SelectItem>
+                            <SelectItem value="По геолокации">По геолокации</SelectItem>
+                            <SelectItem value="По источнику">По источнику</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
                         <Label>Описание</Label>
-                        <Textarea placeholder="Опишите критерии сегмента" />
+                        <Textarea
+                          placeholder="Опишите критерии сегмента"
+                          value={newSegment.description}
+                          onChange={(e) => setNewSegment({ ...newSegment, description: e.target.value })}
+                          disabled={isCreatingSegment}
+                        />
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setShowSegmentModal(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowSegmentModal(false)
+                            setNewSegment({ name: "", criteria: "", description: "" })
+                            setNotification(null)
+                          }}
+                          disabled={isCreatingSegment}
+                        >
                           Отмена
                         </Button>
-                        <Button onClick={() => setShowSegmentModal(false)}>Создать сегмент</Button>
+                        <Button
+                          onClick={handleCreateSegment}
+                          disabled={isCreatingSegment || !newSegment.name.trim() || !newSegment.criteria.trim()}
+                        >
+                          {isCreatingSegment ? "Создание..." : "Создать сегмент"}
+                        </Button>
                       </div>
                     </div>
                   </DialogContent>
@@ -460,12 +700,21 @@ function MarketingDashboard() {
                     </DialogHeader>
                     <div className="space-y-4">
                       <div>
-                        <Label>Название воронки</Label>
-                        <Input placeholder="Введите название" />
+                        <Label>Название воронки *</Label>
+                        <Input
+                          placeholder="Введите название"
+                          value={newFunnel.name}
+                          onChange={(e) => setNewFunnel({ ...newFunnel, name: e.target.value })}
+                          disabled={isCreatingFunnel}
+                        />
                       </div>
                       <div>
-                        <Label>Триггер запуска</Label>
-                        <Select>
+                        <Label>Триггер запуска *</Label>
+                        <Select
+                          value={newFunnel.trigger}
+                          onValueChange={(value) => setNewFunnel({ ...newFunnel, trigger: value })}
+                          disabled={isCreatingFunnel}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Выберите триггер" />
                           </SelectTrigger>
@@ -479,46 +728,83 @@ function MarketingDashboard() {
                         </Select>
                       </div>
                       <div>
-                        <Label>Последовательность сообщений</Label>
+                        <Label>Последовательность сообщений *</Label>
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 p-2 border rounded">
-                            <span className="text-sm">1.</span>
-                            <Input placeholder="Приветственное сообщение" />
-                            <Select>
-                              <SelectTrigger className="w-32">
-                                <SelectValue placeholder="Канал" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="email">Email</SelectItem>
-                                <SelectItem value="sms">SMS</SelectItem>
-                                <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="flex items-center gap-2 p-2 border rounded">
-                            <span className="text-sm">2.</span>
-                            <Input placeholder="Спецпредложение" />
-                            <Select>
-                              <SelectTrigger className="w-32">
-                                <SelectValue placeholder="Канал" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="email">Email</SelectItem>
-                                <SelectItem value="sms">SMS</SelectItem>
-                                <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <Button variant="outline" size="sm">
+                          {newFunnel.steps.map((step, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 border rounded">
+                              <span className="text-sm font-medium">{index + 1}.</span>
+                              <Input
+                                placeholder="Текст сообщения"
+                                value={step.message}
+                                onChange={(e) => handleFunnelStepChange(index, "message", e.target.value)}
+                                disabled={isCreatingFunnel}
+                              />
+                              <Select
+                                value={step.channel}
+                                onValueChange={(value) => handleFunnelStepChange(index, "channel", value)}
+                                disabled={isCreatingFunnel}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue placeholder="Канал" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="email">Email</SelectItem>
+                                  <SelectItem value="sms">SMS</SelectItem>
+                                  <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                                  <SelectItem value="telegram">Telegram</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Select
+                                value={step.delay}
+                                onValueChange={(value) => handleFunnelStepChange(index, "delay", value)}
+                                disabled={isCreatingFunnel}
+                              >
+                                <SelectTrigger className="w-24">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="0">Сразу</SelectItem>
+                                  <SelectItem value="1">+1 день</SelectItem>
+                                  <SelectItem value="2">+2 дня</SelectItem>
+                                  <SelectItem value="3">+3 дня</SelectItem>
+                                  <SelectItem value="7">+7 дней</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {newFunnel.steps.length > 1 && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleRemoveFunnelStep(index)}
+                                  disabled={isCreatingFunnel}
+                                >
+                                  ✕
+                                </Button>
+                              )}
+                            </div>
+                          ))}
+                          <Button variant="outline" size="sm" onClick={handleAddFunnelStep} disabled={isCreatingFunnel}>
                             + Добавить шаг
                           </Button>
                         </div>
                       </div>
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setShowAutofunnelModal(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowAutofunnelModal(false)
+                            setNewFunnel({ name: "", trigger: "", steps: [{ message: "", channel: "", delay: "0" }] })
+                            setNotification(null)
+                          }}
+                          disabled={isCreatingFunnel}
+                        >
                           Отмена
                         </Button>
-                        <Button onClick={() => setShowAutofunnelModal(false)}>Создать воронку</Button>
+                        <Button
+                          onClick={handleCreateFunnel}
+                          disabled={isCreatingFunnel || !newFunnel.name.trim() || !newFunnel.trigger}
+                        >
+                          {isCreatingFunnel ? "Создание..." : "Создать воронку"}
+                        </Button>
                       </div>
                     </div>
                   </DialogContent>
@@ -527,69 +813,46 @@ function MarketingDashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Zap className="w-5 h-5 text-blue-500" />
-                      <h3 className="font-medium">Приветствие новичков</h3>
-                      <Badge variant="default">Активна</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Автоматическая последовательность для новых пользователей
-                    </p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
-                        <span>Приветственное письмо (сразу)</span>
+                {funnels.map((funnel) => (
+                  <Card key={funnel.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Zap className="w-5 h-5 text-blue-500" />
+                        <h3 className="font-medium">{funnel.name}</h3>
+                        <Badge variant={funnel.status === "Активна" ? "default" : "secondary"}>{funnel.status}</Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>Гайд по продукту (+1 день)</span>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Триггер:{" "}
+                        {funnel.trigger === "registration"
+                          ? "Регистрация"
+                          : funnel.trigger === "inactive"
+                            ? "Неактивность"
+                            : funnel.trigger === "purchase"
+                              ? "Покупка"
+                              : funnel.trigger}
+                      </p>
+                      <div className="space-y-2 text-sm">
+                        {funnel.steps.map((step, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            {step.channel === "email" && <Mail className="w-4 h-4" />}
+                            {step.channel === "sms" && <Phone className="w-4 h-4" />}
+                            {step.channel === "whatsapp" && <MessageSquare className="w-4 h-4" />}
+                            {step.channel === "telegram" && <MessageSquare className="w-4 h-4" />}
+                            <span>
+                              {step.message} ({step.delay === "0" ? "сразу" : `+${step.delay} дн.`})
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        <span>Спецпредложение (+3 дня)</span>
+                      <div className="flex items-center justify-between mt-4">
+                        <span className="text-sm text-muted-foreground">Конверсия: {funnel.conversion}%</span>
+                        <Button size="sm" variant="outline">
+                          Настроить
+                        </Button>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-sm text-muted-foreground">Конверсия: 23%</span>
-                      <Button size="sm" variant="outline">
-                        Настроить
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Target className="w-5 h-5 text-orange-500" />
-                      <h3 className="font-medium">Возврат неактивных</h3>
-                      <Badge variant="secondary">Пауза</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">Реактивация клиентов без активности 30+ дней</p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
-                        <span>Мы скучаем по вам</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>Персональная скидка (+2 дня)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        <span>Последний шанс (+5 дней)</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-sm text-muted-foreground">Конверсия: 8%</span>
-                      <Button size="sm" variant="outline">
-                        Настроить
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -692,7 +955,6 @@ function MarketingDashboard() {
             </Card>
           </div>
 
-          {/* Лид-скоринг */}
           <Card>
             <CardHeader>
               <CardTitle>Лид-скоринг (горячие клиенты)</CardTitle>

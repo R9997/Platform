@@ -91,6 +91,7 @@ export function HRDashboard() {
   const [showEmployeeProfileModal, setShowEmployeeProfileModal] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   const [employees, setEmployees] = useState<Employee[]>([
     {
@@ -276,16 +277,105 @@ export function HRDashboard() {
     }
   }
 
+  const buildHierarchy = (employees: Employee[]) => {
+    const hierarchy: any = {}
+    const rootNodes: Employee[] = []
+
+    // Находим корневые узлы (без руководителя или с руководителем "CEO")
+    employees.forEach((emp) => {
+      if (!emp.manager || emp.manager === "CEO" || emp.manager === "") {
+        rootNodes.push(emp)
+      }
+    })
+
+    // Строим дерево подчиненных для каждого сотрудника
+    const buildSubordinates = (manager: Employee): any => {
+      const subordinates = employees.filter((emp) => emp.manager === manager.name)
+      return {
+        ...manager,
+        subordinates: subordinates.map((sub) => buildSubordinates(sub)),
+      }
+    }
+
+    return rootNodes.map((root) => buildSubordinates(root))
+  }
+
+  const OrganizationNode = ({ node, level = 0 }: { node: any; level?: number }) => {
+    const hasSubordinates = node.subordinates && node.subordinates.length > 0
+
+    return (
+      <div className="flex flex-col items-center">
+        <div
+          className={`p-3 rounded-lg border relative group transition-all hover:shadow-md ${
+            level === 0
+              ? "bg-gradient-to-r from-primary to-accent text-white"
+              : level === 1
+                ? "bg-blue-50 border-blue-200"
+                : "bg-card border-border"
+          }`}
+        >
+          <div className="font-semibold text-sm">{node.name}</div>
+          <div className={`text-xs ${level === 0 ? "text-white/90" : "text-muted-foreground"}`}>{node.position}</div>
+          <div className={`text-xs ${level === 0 ? "text-white/80" : "text-muted-foreground"}`}>{node.department}</div>
+
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => handleEditPosition(node)}
+              className={level === 0 ? "text-white hover:bg-white/20" : ""}
+            >
+              <Edit className="w-3 h-3" />
+            </Button>
+            {level > 0 && (
+              <Button size="sm" variant="ghost" onClick={() => handleDeletePosition(node.id)}>
+                <Trash2 className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {hasSubordinates && (
+          <>
+            {/* Вертикальная линия вниз */}
+            <div className="w-px h-6 bg-border"></div>
+
+            {/* Горизонтальная линия */}
+            {node.subordinates.length > 1 && (
+              <div className="relative">
+                <div className="h-px bg-border" style={{ width: `${(node.subordinates.length - 1) * 200}px` }}></div>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-6 bg-border"></div>
+              </div>
+            )}
+
+            {/* Подчиненные */}
+            <div className={`flex gap-8 mt-6 ${node.subordinates.length > 3 ? "flex-wrap justify-center" : ""}`}>
+              {node.subordinates.map((subordinate: any, index: number) => (
+                <div key={subordinate.id} className="relative">
+                  {/* Вертикальная линия к подчиненному */}
+                  {node.subordinates.length > 1 && (
+                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-px h-6 bg-border"></div>
+                  )}
+                  <OrganizationNode node={subordinate} level={level + 1} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
   const handleAddPosition = () => {
     if (newPosition.name && newPosition.department) {
       const position: Employee = {
         id: (employees.length + 1).toString(),
         name: newPosition.name,
-        position: newPosition.level === "head" ? `Руководитель ${newPosition.department}` : "Сотрудник",
+        position: newPosition.level === "head" ? `Руководитель ${newPosition.department}` : newPosition.name,
         department: newPosition.department,
         email: `${newPosition.name.toLowerCase().replace(/\s+/g, ".")}@company.com`,
         phone: "",
-        manager: newPosition.manager,
+        manager: newPosition.manager || "CEO", // Устанавливаем CEO как руководителя по умолчанию
         startDate: new Date().toISOString().split("T")[0],
         salary: 0,
         status: "active",
@@ -299,6 +389,11 @@ export function HRDashboard() {
       setEmployees([...employees, position])
       setNewPosition({ name: "", department: "", level: "employee", manager: "" })
       setShowAddPositionModal(false)
+
+      setNotification({
+        type: "success",
+        message: `Позиция "${newPosition.name}" успешно добавлена в организационную структуру`,
+      })
     }
   }
 
@@ -653,77 +748,30 @@ export function HRDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 lg:p-6">
-              <div className="space-y-6">
-                {/* CEO */}
-                <div className="text-center">
-                  <div className="inline-block p-4 bg-gradient-to-r from-primary to-accent text-white rounded-lg relative group">
-                    <div className="font-bold">Генеральный директор</div>
-                    <div className="text-sm opacity-90">Александр Петров</div>
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/20">
-                        <Edit className="w-3 h-3" />
+              <div className="overflow-x-auto">
+                <div className="min-w-full py-8">
+                  {buildHierarchy(employees).map((rootNode, index) => (
+                    <div key={rootNode.id} className={index > 0 ? "mt-12" : ""}>
+                      <OrganizationNode node={rootNode} level={0} />
+                    </div>
+                  ))}
+
+                  {/* Если нет сотрудников, показываем заглушку */}
+                  {employees.length === 0 && (
+                    <div className="text-center py-12">
+                      <Building2 className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                      <h3 className="text-lg font-semibold text-muted-foreground mb-2">
+                        Организационная структура пуста
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Добавьте первого сотрудника, чтобы начать построение структуры
+                      </p>
+                      <Button onClick={() => setShowAddPositionModal(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Добавить позицию
                       </Button>
                     </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  <div className="w-px h-8 bg-border"></div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                  {Object.keys(departmentStats).map((dept) => {
-                    const deptEmployees = employees.filter((emp) => emp.department === dept)
-                    const head = deptEmployees.find(
-                      (emp) => emp.position.includes("Руководитель") || emp.position.includes("Lead"),
-                    )
-
-                    return (
-                      <div key={dept} className="text-center space-y-4">
-                        <div className="p-3 bg-card border border-border rounded-lg relative group">
-                          <div className="font-semibold text-sm lg:text-base">{head?.name || "Вакансия"}</div>
-                          <div className="text-xs lg:text-sm text-muted-foreground">{dept}</div>
-                          <Badge variant="outline" className="mt-1 text-xs">
-                            {deptEmployees.length} сотр.
-                          </Badge>
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                            {head && (
-                              <>
-                                <Button size="sm" variant="ghost" onClick={() => handleEditPosition(head)}>
-                                  <Edit className="w-3 h-3" />
-                                </Button>
-                                <Button size="sm" variant="ghost" onClick={() => handleDeletePosition(head.id)}>
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="space-y-2 max-h-48 overflow-y-auto">
-                          {deptEmployees
-                            .filter((emp) => emp.id !== head?.id)
-                            .map((emp) => (
-                              <div
-                                key={emp.id}
-                                className="p-2 bg-card/50 border border-border/50 rounded text-xs lg:text-sm relative group"
-                              >
-                                <div className="font-medium truncate">{emp.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">{emp.position}</div>
-                                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                  <Button size="sm" variant="ghost" onClick={() => handleEditPosition(emp)}>
-                                    <Edit className="w-2 h-2" />
-                                  </Button>
-                                  <Button size="sm" variant="ghost" onClick={() => handleDeletePosition(emp.id)}>
-                                    <Trash2 className="w-2 h-2" />
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )
-                  })}
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -1282,6 +1330,15 @@ export function HRDashboard() {
               />
             </div>
             <div>
+              <label className="text-sm font-medium">Должность *</label>
+              <Input
+                value={newPosition.name}
+                onChange={(e) => setNewPosition({ ...newPosition, name: e.target.value })}
+                placeholder="Введите должность"
+                className="mt-1"
+              />
+            </div>
+            <div>
               <label className="text-sm font-medium">Отдел *</label>
               <select
                 value={newPosition.department}
@@ -1295,6 +1352,7 @@ export function HRDashboard() {
                 <option value="Продажи">Продажи</option>
                 <option value="HR">HR</option>
                 <option value="Финансы">Финансы</option>
+                <option value="Управление">Управление</option>
               </select>
             </div>
             <div>
@@ -1306,6 +1364,7 @@ export function HRDashboard() {
               >
                 <option value="employee">Сотрудник</option>
                 <option value="head">Руководитель отдела</option>
+                <option value="ceo">Генеральный директор</option>
               </select>
             </div>
             <div>
@@ -1315,11 +1374,11 @@ export function HRDashboard() {
                 onChange={(e) => setNewPosition({ ...newPosition, manager: e.target.value })}
                 className="w-full mt-1 p-2 border border-border rounded-md bg-background"
               >
-                <option value="">Выберите руководителя</option>
+                <option value="">Без руководителя (CEO)</option>
                 <option value="CEO">CEO</option>
                 {employees.map((emp) => (
                   <option key={emp.id} value={emp.name}>
-                    {emp.name}
+                    {emp.name} ({emp.position})
                   </option>
                 ))}
               </select>
@@ -1330,7 +1389,7 @@ export function HRDashboard() {
               Отмена
             </Button>
             <Button onClick={handleAddPosition} disabled={!newPosition.name || !newPosition.department}>
-              Добавить
+              Добавить позицию
             </Button>
           </div>
         </DialogContent>

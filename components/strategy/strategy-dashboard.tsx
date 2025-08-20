@@ -59,7 +59,7 @@ interface Comment {
   type: "update" | "feedback" | "approval"
 }
 
-export default function StrategyDashboard() {
+const StrategyDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview")
   const [showAddGoal, setShowAddGoal] = useState(false)
   const [showGoalDetails, setShowGoalDetails] = useState(false)
@@ -735,3 +735,6 @@ export default function StrategyDashboard() {
     </div>
   )
 }
+
+export default StrategyDashboard
+export { StrategyDashboard }

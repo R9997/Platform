@@ -1,50 +1,59 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
-  Users,
-  TrendingUp,
-  FileText,
-  Settings,
   Bell,
-  Search,
-  Target,
-  DollarSign,
-  Briefcase,
   MessageSquare,
-  Home,
-  Shield,
-  LogOut,
-  Menu,
-  Sparkles,
-  Rocket,
   CheckSquare,
-  Brain,
-  X,
+  Settings,
+  Palette,
+  Zap,
+  Users,
+  FileText,
+  Briefcase,
+  Target,
+  Search,
   Plus,
+  Edit,
+  Eye,
+  Shield,
+  TrendingUp,
+  DollarSign,
+  FolderOpen,
+  Megaphone,
+  Building2,
+  HelpCircle,
+  ChevronUp,
+  ChevronDown,
+  ArrowLeft,
+  BarChart3,
+  Brain,
+  Scale,
+  Trash2,
 } from "lucide-react"
-import Link from "next/link"
-import { ContentGenerator } from "@/components/ai-tools/content-generator"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
+import { Textarea } from "@/components/ui/textarea"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+
 import { SalesManager } from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
-import { HRDashboard } from "@/components/hr-management/hr-dashboard"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { TaskManager } from "@/components/task-tracker/task-manager"
 import { FileManager } from "@/components/file-storage/file-manager"
-import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
-import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
-import { InteractiveTour } from "@/components/guide/interactive-tour"
-import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
-import StrategyDashboard from "@/components/strategy/strategy-dashboard"
-import { ChevronDown } from "lucide-react"
+import { StrategyDashboard } from "@/components/strategy/strategy-dashboard"
 import { EDODashboard } from "@/components/edo/edo-dashboard"
 import { LegalDashboard } from "@/components/legal/legal-dashboard"
+import { HRDashboard } from "@/components/hr-management/hr-dashboard"
+import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
 import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
 import { GanttChart } from "@/components/project-management/gantt-chart"
 
@@ -69,6 +78,7 @@ export default function Dashboard() {
       progress: 75,
       team: ["А", "М"],
       deadline: "2024-02-15",
+      description: "Описание проекта",
     },
     {
       id: 2,
@@ -77,6 +87,7 @@ export default function Dashboard() {
       progress: 25,
       team: ["Е", "Д"],
       deadline: "2024-03-01",
+      description: "Описание проекта",
     },
     {
       id: 3,
@@ -85,6 +96,7 @@ export default function Dashboard() {
       progress: 100,
       team: ["А", "Д"],
       deadline: "2024-01-30",
+      description: "Описание проекта",
     },
   ])
   const [leads, setLeads] = useState([
@@ -212,53 +224,82 @@ export default function Dashboard() {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false)
   const [tasks, setTasks] = useState([])
 
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [settingsCategory, setSettingsCategory] = useState<string>("")
-
+  const [notification, setNotification] = useState<{ type: string; message: string } | null>(null)
   const [roles, setRoles] = useState([
     {
       id: 1,
       name: "Администратор",
-      description: "Имеет полный доступ к системе",
-      permissions: ["Просмотр", "Редактирование", "Удаление", "Администрирование", "Финансы", "HR"],
+      description: "Полный доступ ко всем функциям",
+      permissions: ["read", "write", "delete", "admin"],
       users: 2,
     },
     {
       id: 2,
       name: "Менеджер",
-      description: "Отвечает за управление проектами и задачами",
-      permissions: ["Просмотр", "Редактирование"],
-      users: 3,
+      description: "Управление проектами и командой",
+      permissions: ["read", "write"],
+      users: 5,
     },
     {
       id: 3,
-      name: "Разработчик",
-      description: "Отвечает за разработку программного обеспечения",
-      permissions: ["Просмотр", "Редактирование"],
-      users: 4,
-    },
-    {
-      id: 4,
-      name: "Дизайнер",
-      description: "Отвечает за дизайн и визуальное оформление",
-      permissions: ["Просмотр", "Редактирование"],
-      users: 1,
-    },
-    {
-      id: 5,
-      name: "Аналитик",
-      description: "Отвечает за анализ данных и отчетность",
-      permissions: ["Просмотр", "Редактирование"],
-      users: 2,
-    },
-    {
-      id: 6,
       name: "Сотрудник",
-      description: "Обычный сотрудник с ограниченными правами",
-      permissions: ["Просмотр"],
-      users: 10,
+      description: "Базовый доступ к функциям",
+      permissions: ["read"],
+      users: 12,
     },
   ])
+
+  const [integrationSettings, setIntegrationSettings] = useState({
+    availableIntegrations: [
+      {
+        id: "1",
+        name: "Slack",
+        description: "Корпоративный мессенджер для команды",
+        connected: true,
+        category: "Коммуникации",
+      },
+      {
+        id: "2",
+        name: "Google Calendar",
+        description: "Синхронизация календаря и событий",
+        connected: false,
+        category: "Календарь",
+      },
+      {
+        id: "3",
+        name: "Dropbox",
+        description: "Облачное хранилище файлов",
+        connected: true,
+        category: "Хранилище",
+      },
+      {
+        id: "4",
+        name: "Zapier",
+        description: "Автоматизация бизнес-процессов",
+        connected: false,
+        category: "Автоматизация",
+      },
+    ],
+    newIntegration: {
+      name: "",
+      description: "",
+      category: "Коммуникации",
+    },
+  })
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [settingsCategory, setSettingsCategory] = useState<string>("")
+  const [appearanceSettings, setAppearanceSettings] = useState({
+    theme: "system", // light, dark, system
+    fontSize: "medium", // small, medium, large
+    density: "comfortable", // compact, comfortable, spacious
+    animations: true,
+    reducedMotion: false,
+    highContrast: false,
+    showTooltips: true,
+    sidebarCollapsed: false,
+    colorScheme: "default", // default, blue, green, purple
+  })
 
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
@@ -269,10 +310,18 @@ export default function Dashboard() {
         progress: 0,
         team: newProject.team,
         deadline: newProject.deadline,
+        description: newProject.description,
       }
       setProjects([...projects, project])
-      setNewProject({ name: "", deadline: "", team: [] })
+      setNewProject({ name: "", deadline: "", team: [], description: "" })
       setShowAddProjectModal(false)
+
+      // Показать уведомление об успешном создании
+      setNotification({
+        type: "success",
+        message: `Проект "${newProject.name}" успешно создан`,
+      })
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -424,11 +473,6 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [])
-
   const handleAddTask = () => {
     if (newTask.title && newTask.assignee) {
       const task = {
@@ -513,145 +557,6 @@ export default function Dashboard() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">Загрузка данных платформы...</p>
-        </div>
-      </div>
-    )
-  }
-
-  const NavigationMenu = ({ onItemClick }: { onItemClick?: () => void }) => {
-    const [expandedGroups, setExpandedGroups] = useState<string[]>(["business", "finance", "hr", "ai"])
-
-    const toggleGroup = (groupKey: string) => {
-      setExpandedGroups((prev) =>
-        prev.includes(groupKey) ? prev.filter((key) => key !== groupKey) : [...prev, groupKey],
-      )
-    }
-
-    const navigationGroups = [
-      {
-        key: "business",
-        label: "Управление бизнесом",
-        icon: Briefcase,
-        items: [
-          { key: "overview", icon: Briefcase, label: "Обзор бизнеса", badge: null },
-          { key: "goals", icon: Target, label: "Стратегия и цели", badge: "NEW" },
-          { key: "projects", icon: Target, label: "Активные проекты", badge: 3 },
-          { key: "tasks", icon: CheckSquare, label: "Управление задачами", badge: 8 },
-        ],
-      },
-      {
-        key: "finance",
-        label: "Финансы и документооборот",
-        icon: DollarSign,
-        items: [
-          { key: "finance", icon: DollarSign, label: "Финансы", badge: null },
-          { key: "sales", icon: TrendingUp, label: "Продажи", badge: 156 },
-          { key: "edo", icon: FileText, label: "ЭДО | Документооборот", badge: "NEW" },
-          { key: "legal", icon: Shield, label: "Правовой контур", badge: "NEW" },
-        ],
-      },
-      {
-        key: "hr",
-        label: "Кадры и команда",
-        icon: Users,
-        items: [
-          { key: "hr", icon: Users, label: "HR и развитие команды", badge: "NEW" },
-          { key: "team", icon: Users, label: "Команда", badge: null },
-          { key: "roles", icon: Shield, label: "Роли и права", badge: null },
-        ],
-      },
-      {
-        key: "ai",
-        label: "ИИ-инструменты",
-        icon: Brain,
-        items: [
-          { key: "strategy", icon: Brain, label: "ИИ-Агент для бизнеса", badge: "NEW" },
-          { key: "tools", icon: Rocket, label: "ИИ-инструменты", badge: 5 },
-        ],
-      },
-      {
-        key: "marketing",
-        label: "Маркетинг и клиенты",
-        icon: MessageSquare,
-        items: [{ key: "marketing", icon: MessageSquare, label: "Маркетинг и клиенты", badge: "NEW" }],
-      },
-      {
-        key: "system",
-        label: "Система",
-        icon: Settings,
-        items: [
-          { key: "files", icon: FileText, label: "Файловое хранилище", badge: 24 },
-          { key: "settings", icon: Settings, label: "Настройки", badge: null },
-        ],
-      },
-    ]
-
-    return (
-      <div className="space-y-1">
-        {navigationGroups.map((group) => (
-          <div key={group.key} className="space-y-1">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-xs font-semibold text-muted-foreground hover:text-foreground py-2 px-3 h-auto uppercase tracking-wide"
-              onClick={() => toggleGroup(group.key)}
-            >
-              <group.icon className="w-4 h-4 mr-2 flex-shrink-0" />
-              <span className="flex-1 text-left">{group.label}</span>
-              <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  expandedGroups.includes(group.key) ? "rotate-180" : ""
-                }`}
-              />
-            </Button>
-
-            {expandedGroups.includes(group.key) && (
-              <div className="space-y-1 ml-2 border-l border-border/50 pl-2">
-                {group.items.map((item) => (
-                  <Button
-                    key={item.key}
-                    variant={activeTab === item.key ? "default" : "ghost"}
-                    className={`w-full justify-start transition-colors duration-300 ease-out text-sm py-3 px-4 h-auto cursor-pointer ${
-                      activeTab === item.key
-                        ? "bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground shadow-lg"
-                        : "text-foreground hover:bg-muted/30 hover:text-foreground"
-                    }`}
-                    onClick={() => {
-                      setActiveTab(item.key)
-                      onItemClick?.()
-                    }}
-                  >
-                    <item.icon
-                      className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors duration-300 ${activeTab === item.key ? "" : ""}`}
-                    />
-                    <span className="flex-1 text-left truncate font-medium">{item.label}</span>
-                    {item.badge && (
-                      <Badge
-                        variant={item.badge === "NEW" ? "default" : "secondary"}
-                        className={`ml-2 text-xs flex-shrink-0 min-w-[20px] justify-center transition-colors duration-300 ${
-                          activeTab === item.key
-                            ? "bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
-                            : ""
-                        }`}
-                      >
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    )
-  }
-
   const handleViewProjectDetails = (project) => {
     setSelectedProject(project)
     setShowProjectDetailsModal(true)
@@ -662,516 +567,1175 @@ export default function Dashboard() {
     setShowSettingsModal(true)
   }
 
+  const handleSaveAppearanceSettings = () => {
+    localStorage.setItem("appearance-settings", JSON.stringify(appearanceSettings))
+
+    // Применяем настройки темы
+    if (appearanceSettings.theme === "dark") {
+      document.documentElement.classList.add("dark")
+    } else if (appearanceSettings.theme === "light") {
+      document.documentElement.classList.remove("dark")
+    } else {
+      // system theme
+      const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      document.documentElement.classList.toggle("dark", systemDark)
+    }
+
+    // Применяем размер шрифта
+    document.documentElement.style.fontSize =
+      appearanceSettings.fontSize === "small" ? "14px" : appearanceSettings.fontSize === "large" ? "18px" : "16px"
+
+    setNotification({
+      type: "success",
+      message: "Настройки внешнего вида сохранены",
+    })
+    setTimeout(() => setNotification(null), 3000)
+  }
+
+  const handleAddIntegration = () => {
+    if (integrationSettings.newIntegration.name.trim()) {
+      const newIntegration = {
+        id: Date.now().toString(),
+        name: integrationSettings.newIntegration.name,
+        description: integrationSettings.newIntegration.description || "Пользовательская интеграция",
+        connected: false,
+        category: integrationSettings.newIntegration.category,
+      }
+
+      setIntegrationSettings((prev) => ({
+        ...prev,
+        availableIntegrations: [...prev.availableIntegrations, newIntegration],
+        newIntegration: { name: "", description: "", category: "Коммуникации" },
+      }))
+
+      setNotification({
+        type: "success",
+        message: `Интеграция "${newIntegration.name}" добавлена`,
+      })
+      setTimeout(() => setNotification(null), 3000)
+    }
+  }
+
+  const toggleIntegration = (integrationId: string) => {
+    setIntegrationSettings((prev) => ({
+      ...prev,
+      availableIntegrations: prev.availableIntegrations.map((integration) =>
+        integration.id === integrationId ? { ...integration, connected: !integration.connected } : integration,
+      ),
+    }))
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+
+    // Загружаем сохраненные настройки внешнего вида
+    const savedSettings = localStorage.getItem("appearance-settings")
+    if (savedSettings) {
+      setAppearanceSettings(JSON.parse(savedSettings))
+    }
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) {
+    return (
+      <TooltipProvider>
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="text-muted-foreground">Загрузка данных платформы...</p>
+          </div>
+        </div>
+      </TooltipProvider>
+    )
+  }
+
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95 relative overflow-hidden container-fix">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+      <div className="min-h-screen bg-background">
+        {notification && (
           <div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/5 rounded-full blur-3xl animate-pulse"
-            style={{ animationDelay: "2s" }}
-          ></div>
-          <div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary/3 to-accent/3 rounded-full blur-3xl animate-spin"
-            style={{ animationDuration: "20s" }}
-          ></div>
-        </div>
+            className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+              notification.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
 
-        <header className="bg-card/90 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 shadow-xl shadow-primary/10 relative">
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+        {/* Header */}
+        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
+          <div className="container flex h-16 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-semibold">Личный кабинет</h1>
+            </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden transition-colors duration-300"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
+            <div className="flex items-center gap-4">
+              <Button onClick={() => (window.location.href = "/")} variant="outline" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                На главную
+              </Button>
 
-                <Link href="/" className="flex items-center space-x-2 transition-opacity duration-300">
-                  <div className="p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl transition-colors duration-300">
-                    <Home className="h-5 w-5 text-primary" />
-                  </div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent hidden sm:block">
-                    Рефрейм Бюро
-                  </h1>
-                </Link>
-                <Badge
-                  variant="secondary"
-                  className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 text-primary border-primary/30 shadow-lg shadow-primary/10 hidden sm:flex"
-                >
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  {isDemoMode ? "Демо-режим" : "Бизнес-платформа"}
-                </Badge>
+              <Button
+                onClick={() => window.open("/guide", "_blank")}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                size="sm"
+              >
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Гид по функциям
+              </Button>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Поиск..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64"
+                />
               </div>
 
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="relative hidden md:block">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 transition-colors duration-300" />
-                  <Input
-                    placeholder="Поиск..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-48 lg:w-64 bg-background/60 border-border/50 focus:border-primary/50 focus:bg-background/80 transition-all duration-300 focus:shadow-lg focus:shadow-primary/10"
-                  />
-                </div>
+              <Button variant="ghost" size="icon" onClick={() => setShowNotificationsModal(true)} className="relative">
+                <Bell className="w-5 h-5" />
+                {notifications > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                    {notifications}
+                  </Badge>
+                )}
+              </Button>
 
-                {/* Заменяем FeatureGuide на ссылку на отдельную страницу гида */}
-                <div className="flex items-center space-x-1">
-                  <InteractiveTour />
-                  <Link href="/guide">
-                    <Button variant="outline" size="sm" className="text-xs bg-transparent">
-                      <FileText className="w-3 h-3 mr-1" />
-                      Гид по функциям
-                    </Button>
-                  </Link>
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative transition-colors duration-300"
-                  onClick={() => {
-                    setShowNotificationsModal(true)
-                    console.log("[v0] Notifications button clicked")
-                  }}
-                >
-                  <Bell className="h-5 w-5 text-foreground" />
-                  {notifications > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-background shadow-lg shadow-red-500/30">
-                      {notifications}
-                    </Badge>
-                  )}
-                </Button>
-
-                <div className="transition-opacity duration-300">
-                  <ThemeToggle />
-                </div>
-
-                <div className="hidden md:flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20 transition-all duration-300">
-                    <span className="text-xs font-bold text-white">Д</span>
-                  </div>
-                  <span className="text-foreground font-medium max-w-24 truncate transition-colors duration-300">
-                    Демо-пользователь
-                  </span>
-                </div>
-
-                <Button
-                  onClick={() => (window.location.href = "/login")}
-                  variant="outline"
-                  size="sm"
-                  className="border-border/50 transition-all duration-300"
-                >
-                  <LogOut className="w-4 h-4 sm:mr-2 text-foreground" />
-                  <span className="hidden sm:inline text-foreground">Войти</span>
-                </Button>
-              </div>
+              <Button variant="ghost" size="icon" onClick={() => handleOpenSettings("general")}>
+                <Settings className="w-5 h-5" />
+              </Button>
             </div>
           </div>
         </header>
 
-        {isMobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-xl animate-in fade-in-0 duration-300">
-            <div className="flex flex-col h-full">
-              <div className="flex justify-between items-center p-4 border-b border-border/50">
-                <h2 className="text-lg font-semibold text-foreground">Меню</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="transition-all duration-300 hover:rotate-90"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
+        <div className="container mx-auto p-6">
+          <div className="flex gap-6">
+            {/* Sidebar Navigation */}
+            <div className="w-80 bg-card rounded-lg border p-6">
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h1 className="text-lg font-semibold">Управление бизнесом</h1>
+                </div>
+                <p className="text-sm text-muted-foreground">Ваша ИИ-платформа роста</p>
               </div>
-              <div className="flex-1 overflow-y-auto p-4">
-                <NavigationMenu onItemClick={() => setIsMobileMenuOpen(false)} />
-              </div>
-            </div>
-          </div>
-        )}
 
-        <main className="max-w-7xl mx-auto mobile-padding py-2 sm:py-4 lg:py-8 relative z-10">
-          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:gap-8">
-            {/* Левая панель навигации */}
-            <div className="w-full lg:w-80 xl:w-96 lg:flex-shrink-0">
-              <Card className="enhanced-sidebar enhanced-card backdrop-blur-xl border border-border/50 shadow-2xl shadow-primary/10 lg:sticky lg:top-24 w-full overflow-hidden transition-shadow duration-500">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-0 transition-opacity duration-500"></div>
-
-                <CardHeader className="pb-3 sm:pb-4 relative z-10">
-                  <CardTitle className="text-foreground font-bold text-base sm:text-lg flex items-center">
-                    <div className="p-1.5 sm:p-2 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg sm:rounded-xl mr-2 sm:mr-3 flex-shrink-0 transition-colors duration-300">
-                      <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <div className="space-y-4">
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
+                      УПРАВЛЕНИЕ БИЗНЕСОМ
                     </div>
-                    <span className="truncate bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent text-sm sm:text-base">
-                      Управление бизнесом
-                    </span>
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-xs sm:text-sm">
-                    Ваша ИИ-платформа роста
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0 relative z-10">
-                  <NavigationMenu />
-                </CardContent>
-              </Card>
+                    <ChevronUp className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "overview" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "overview"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("overview")}
+                    >
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      Обзор бизнеса
+                    </Button>
+                    <Button
+                      variant={activeTab === "strategy" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "strategy"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("strategy")}
+                    >
+                      <Target className="w-4 h-4 mr-2" />
+                      Стратегия и цели
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "projects" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "projects"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("projects")}
+                    >
+                      <FolderOpen className="w-4 h-4 mr-2" />
+                      Активные проекты
+                      <Badge variant="outline" className="ml-auto">
+                        3
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "tasks" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "tasks"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("tasks")}
+                    >
+                      <CheckSquare className="w-4 h-4 mr-2" />
+                      Управление задачами
+                      <Badge variant="outline" className="ml-auto">
+                        8
+                      </Badge>
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4" />
+                      ФИНАНСЫ И ДОКУМЕНТООБОРОТ
+                    </div>
+                    <ChevronUp className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "finance" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "finance"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("finance")}
+                    >
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      Финансы
+                    </Button>
+                    <Button
+                      variant={activeTab === "sales" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "sales"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("sales")}
+                    >
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Продажи
+                      <Badge variant="outline" className="ml-auto">
+                        156
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "edo" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "edo"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("edo")}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      ЭДО | Документооборот
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "legal" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "legal"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("legal")}
+                    >
+                      <Scale className="w-4 h-4 mr-2" />
+                      Правовой контур
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      КАДРЫ И КОМАНДА
+                    </div>
+                    <ChevronUp className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "hr" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "hr"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("hr")}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      HR и развитие команды
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "team" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "team"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("team")}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Команда
+                    </Button>
+                    <Button
+                      variant={activeTab === "roles" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "roles"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("roles")}
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Роли и права
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4" />
+                      ИИ-ИНСТРУМЕНТЫ
+                    </div>
+                    <ChevronUp className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "ai-agent" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "ai-agent"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("ai-agent")}
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
+                      ИИ-Агент для бизнеса
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "ai-tools" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "ai-tools"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("ai-tools")}
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      ИИ-инструменты
+                      <Badge variant="outline" className="ml-auto">
+                        5
+                      </Badge>
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Megaphone className="w-4 h-4" />
+                      МАРКЕТИНГ И КЛИЕНТЫ
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "marketing" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "marketing"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("marketing")}
+                    >
+                      <Megaphone className="w-4 h-4 mr-2" />
+                      Маркетинг и клиенты
+                      <Badge variant="secondary" className="ml-auto bg-teal-100 text-teal-800">
+                        NEW
+                      </Badge>
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Collapsible>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      СИСТЕМА
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1 mt-2 ml-6">
+                    <Button
+                      variant={activeTab === "files" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "files"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("files")}
+                    >
+                      <FolderOpen className="w-4 h-4 mr-2" />
+                      Файловое хранилище
+                      <Badge variant="outline" className="ml-auto">
+                        24
+                      </Badge>
+                    </Button>
+                    <Button
+                      variant={activeTab === "settings" ? "secondary" : "ghost"}
+                      className={`w-full justify-start text-sm ${
+                        activeTab === "settings"
+                          ? "bg-teal-600 text-white hover:bg-teal-700"
+                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      }`}
+                      onClick={() => setActiveTab("settings")}
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      Настройки
+                    </Button>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+
+              {/* Main Content */}
             </div>
 
-            <div className="flex-1 min-w-0 w-full overflow-hidden">
+            <div className="flex-1">
               {activeTab === "overview" && (
-                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
-                  <div className="animate-in fade-in-0 slide-in-from-left-4 duration-500">
-                    <AnimatedMetrics />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Обзор бизнеса</h2>
                   </div>
-                  <div
-                    className="animate-in fade-in-0 slide-in-from-right-4 duration-500"
-                    style={{ animationDelay: "200ms" }}
-                  >
-                    <AIToolsShowcase />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Общая выручка</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">₽2,450,000</div>
+                        <p className="text-xs text-muted-foreground">+12% с прошлого месяца</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Активные проекты</CardTitle>
+                        <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{projects.length}</div>
+                        <p className="text-xs text-muted-foreground">2 завершены в этом месяце</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Команда</CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{employees.length}</div>
+                        <p className="text-xs text-muted-foreground">Средняя продуктивность 91%</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Лиды</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">{leads.length}</div>
+                        <p className="text-xs text-muted-foreground">+5 новых за неделю</p>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
               )}
 
-              {activeTab === "strategy" && (
-                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                  <AIBusinessAgent />
-                </div>
-              )}
-
-              {activeTab === "goals" && (
-                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                  <StrategyDashboard />
-                </div>
-              )}
-
-              {activeTab === "tools" && (
-                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-                  <AIToolsShowcase />
-                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                          <Target className="w-5 h-5 text-primary" />
-                          Активные ИИ-инструменты
-                        </CardTitle>
-                        <Button
-                          onClick={() => setShowAddProjectModal(true)}
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Новый проект
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <ContentGenerator />
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {activeTab === "tasks" && <TaskManager />}
-              {activeTab === "files" && <FileManager />}
-              {activeTab === "sales" && <SalesManager />}
-              {activeTab === "finance" && <FinanceManager />}
-
+              {activeTab === "goals" && <StrategyDashboard />}
               {activeTab === "projects" && (
-                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
-                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                          <Target className="w-5 h-5 text-primary" />
-                          Активные проекты
-                        </CardTitle>
-                        <Button
-                          onClick={() => setShowAddProjectModal(true)}
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Новый проект
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {projects.map((project) => (
-                          <Card
-                            key={project.id}
-                            className="border border-border/50 hover:border-primary/50 transition-colors"
-                          >
-                            <CardHeader className="pb-3">
-                              <div className="flex items-center justify-between">
-                                <CardTitle className="text-base">{project.name}</CardTitle>
-                                <Badge
-                                  variant={
-                                    project.status === "Завершен"
-                                      ? "default"
-                                      : project.status === "В работе"
-                                        ? "secondary"
-                                        : "outline"
-                                  }
-                                >
-                                  {project.status}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Активные проекты</h2>
+                    <Button onClick={() => setShowAddProjectModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Новый проект
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {projects.map((project) => (
+                      <Card key={project.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-lg">{project.name}</CardTitle>
+                            <Badge variant={project.status === "Завершен" ? "default" : "secondary"}>
+                              {project.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span>Прогресс</span>
+                              <span>{project.progress}%</span>
+                            </div>
+                            <Progress value={project.progress} />
+                          </div>
+
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex -space-x-2">
+                              {project.team.map((member, index) => (
+                                <Avatar key={index} className="w-6 h-6 border-2 border-background">
+                                  <AvatarFallback className="text-xs">{member}</AvatarFallback>
+                                </Avatar>
+                              ))}
+                            </div>
+                            <span className="text-muted-foreground">{project.deadline}</span>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" onClick={() => handleViewProjectDetails(project)}>
+                              <Eye className="w-4 h-4 mr-1" />
+                              Просмотр
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Edit className="w-4 h-4 mr-1" />
+                              Изменить
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">Диаграмма Ганта</h3>
+                    <GanttChart projects={projects} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "tasks" && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Управление задачами</h2>
+                    <Button onClick={() => setShowAddTaskModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Новая задача
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">К выполнению</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "К выполнению")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg">
+                                <h4 className="font-medium">{task.title}</h4>
+                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
+                                <Badge variant="outline" className="mt-2">
+                                  {task.priority}
                                 </Badge>
                               </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span>Прогресс</span>
-                                  <span>{project.progress}%</span>
-                                </div>
-                                <div className="w-full bg-secondary rounded-full h-2">
-                                  <div
-                                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${project.progress}%` }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                  <Users className="w-4 h-4 text-muted-foreground" />
-                                  <div className="flex -space-x-1">
-                                    {project.team.map((member, index) => (
-                                      <div
-                                        key={index}
-                                        className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium border-2 border-background"
-                                      >
-                                        {member}
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                                <span className="text-muted-foreground">
-                                  {new Date(project.deadline).toLocaleDateString("ru-RU")}
-                                </span>
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex-1 bg-transparent"
-                                  onClick={() =>
-                                    handleUpdateProjectProgress(project.id, Math.min(project.progress + 10, 100))
-                                  }
-                                >
-                                  Обновить
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleDeleteProject(project.id)}
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  Удалить
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
+                            ))}
+                        </div>
+                      </CardContent>
+                    </Card>
 
-                      <GanttChart projects={projects} />
-                    </CardContent>
-                  </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">В работе</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "В работе")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg">
+                                <h4 className="font-medium">{task.title}</h4>
+                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
+                                <Badge variant="outline" className="mt-2">
+                                  {task.priority}
+                                </Badge>
+                              </div>
+                            ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Завершено</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {tasks
+                            .filter((task) => task.status === "Завершено")
+                            .map((task) => (
+                              <div key={task.id} className="p-3 border rounded-lg">
+                                <h4 className="font-medium">{task.title}</h4>
+                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
+                                <Badge variant="outline" className="mt-2">
+                                  {task.priority}
+                                </Badge>
+                              </div>
+                            ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
               )}
 
+              {activeTab === "sales" && <SalesManager />}
+              {activeTab === "finance" && <FinanceManager />}
+              {activeTab === "files" && <FileManager />}
+              {activeTab === "strategy" && <AIBusinessAgent />}
+              {activeTab === "edo" && <EDODashboard />}
+              {activeTab === "legal" && <LegalDashboard />}
+              {activeTab === "hr" && <HRDashboard />}
+              {activeTab === "marketing" && <MarketingDashboard />}
+
               {activeTab === "team" && (
-                <HRDashboard
-                  employees={employees}
-                  availableRoles={availableRoles}
-                  handleAddEmployee={handleAddEmployee}
-                  handleAssignRole={handleAssignRole}
-                  handleRemoveEmployee={handleRemoveEmployee}
-                />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Управление командой</h2>
+                    <Button onClick={() => setShowAddEmployeeModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Добавить сотрудника
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {employees.map((employee) => (
+                      <Card key={employee.id}>
+                        <CardHeader>
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarFallback>{employee.avatar}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <CardTitle className="text-lg">{employee.name}</CardTitle>
+                              <p className="text-sm text-muted-foreground">{employee.role}</p>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Статус:</span>
+                            <Badge variant={employee.status === "Активен" ? "default" : "secondary"}>
+                              {employee.status}
+                            </Badge>
+                          </div>
+
+                          <div>
+                            <div className="flex justify-between text-sm mb-2">
+                              <span>Продуктивность</span>
+                              <span>{employee.productivity}%</span>
+                            </div>
+                            <Progress value={employee.productivity} />
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedEmployee(employee)
+                                setShowAssignRoleModal(true)
+                              }}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Роль
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleRemoveEmployee(employee.id)}>
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Удалить
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
               )}
 
               {activeTab === "roles" && (
-                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-lg">Роли и права</CardTitle>
-                      <CardDescription className="text-sm">Управление ролями и правами доступа</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {roles.map((role) => (
-                          <Card
-                            key={role.id}
-                            className="border border-border/50 hover:border-primary/50 transition-colors"
-                          >
-                            <CardHeader className="pb-3">
-                              <div className="flex items-center justify-between">
-                                <CardTitle className="text-base">{role.name}</CardTitle>
-                                <Badge variant="secondary">{role.users}</Badge>
-                              </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span>Описание</span>
-                                  <span>{role.description}</span>
-                                </div>
-                                <div className="flex justify-between text-sm">
-                                  <span>Права доступа</span>
-                                  <span>{role.permissions.join(", ")}</span>
-                                </div>
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex-1 bg-transparent"
-                                  onClick={() => setShowCreateRoleModal(true)}
-                                >
-                                  Создать роль
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Роли и права</h2>
+                    <Button onClick={() => setShowCreateRoleModal(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Создать роль
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {roles.map((role) => (
+                      <Card key={role.id}>
+                        <CardHeader>
+                          <CardTitle className="text-lg">{role.name}</CardTitle>
+                          <p className="text-sm text-muted-foreground">{role.description}</p>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div>
+                            <h4 className="font-medium mb-2">Права доступа:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {role.permissions.map((permission, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {permission}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Пользователей:</span>
+                            <Badge>{role.users}</Badge>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline">
+                              <Edit className="w-4 h-4 mr-1" />
+                              Изменить
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Удалить
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
               )}
-
-              {activeTab === "settings" && (
-                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-lg">Настройки</CardTitle>
-                      <CardDescription className="text-sm">Управление настройками системы</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {Object.keys(userSettings).map((category) => (
-                          <Card
-                            key={category}
-                            className="border border-border/50 hover:border-primary/50 transition-colors"
-                          >
-                            <CardHeader className="pb-3">
-                              <div className="flex items-center justify-between">
-                                <CardTitle className="text-base">{category}</CardTitle>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex-1 bg-transparent"
-                                  onClick={() => handleOpenSettings(category)}
-                                >
-                                  Настроить
-                                </Button>
-                              </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span>Настройки</span>
-                                  <span>{JSON.stringify(userSettings[category])}</span>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {activeTab === "edo" && <EDODashboard />}
-              {activeTab === "legal" && <LegalDashboard />}
-              {activeTab === "marketing" && <MarketingDashboard />}
             </div>
           </div>
-        </main>
+        </div>
 
+        {/* Modal Windows */}
         <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-primary" />
+                <Bell className="w-5 h-5" />
                 Уведомления
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {notificationsList.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Нет новых уведомлений</p>
-                </div>
+                <p className="text-center text-muted-foreground py-8">Нет новых уведомлений</p>
               ) : (
                 <>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
                       {notificationsList.filter((n) => !n.read).length} непрочитанных
                     </span>
-                    <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
+                    <Button variant="ghost" size="sm" onClick={markAllAsRead}>
                       Отметить все как прочитанные
                     </Button>
                   </div>
                   {notificationsList.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-3 rounded-lg border transition-colors cursor-pointer ${
-                        notification.read ? "bg-muted/30 border-border/50" : "bg-card border-primary/20 shadow-sm"
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        notification.read ? "bg-muted/20" : "bg-background border-primary/20"
                       }`}
                       onClick={() => markNotificationAsRead(notification.id)}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
+                        {getNotificationIcon(notification.type)}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4
-                              className={`text-sm font-medium truncate ${
-                                notification.read ? "text-muted-foreground" : "text-foreground"
-                              }`}
-                            >
-                              {notification.title}
-                            </h4>
-                            {!notification.read && (
-                              <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 ml-2" />
-                            )}
-                          </div>
-                          <p
-                            className={`text-xs mb-2 ${
-                              notification.read ? "text-muted-foreground" : "text-muted-foreground"
-                            }`}
-                          >
-                            {notification.message}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">{notification.time}</span>
-                            {notification.type === "warning" && (
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-6 px-2 text-xs bg-transparent"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleNotificationAction(notification.id, "view")
-                                  }}
-                                >
-                                  Просмотр
-                                </Button>
-                              </div>
-                            )}
-                          </div>
+                          <h4 className="font-medium text-sm">{notification.title}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
+                          <span className="text-xs text-muted-foreground">{notification.time}</span>
                         </div>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleNotificationAction(notification.id, "view")
+                          }}
+                        >
+                          Просмотр
+                        </Button>
+                        {notification.type === "warning" && (
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleNotificationAction(notification.id, "approve")
+                            }}
+                          >
+                            Одобрить
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
                 </>
               )}
             </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showAddProjectModal} onOpenChange={setShowAddProjectModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новый проект</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="project-name">Название проекта</Label>
+                <Input
+                  id="project-name"
+                  value={newProject.name}
+                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                  placeholder="Введите название проекта"
+                />
+              </div>
+              <div>
+                <Label htmlFor="project-description">Описание</Label>
+                <Textarea
+                  id="project-description"
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                  placeholder="Описание проекта"
+                />
+              </div>
+              <div>
+                <Label htmlFor="project-deadline">Срок завершения</Label>
+                <Input
+                  id="project-deadline"
+                  type="date"
+                  value={newProject.deadline}
+                  onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowAddProjectModal(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={handleAddProject} disabled={!newProject.name || !newProject.deadline}>
+                  Создать проект
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Настройки системы
+              </DialogTitle>
+            </DialogHeader>
+
+            <Tabs defaultValue="appearance" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="appearance">Внешний вид</TabsTrigger>
+                <TabsTrigger value="integrations">Интеграции</TabsTrigger>
+                <TabsTrigger value="system">Система</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="appearance" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Palette className="w-5 h-5" />
+                      Персонализация интерфейса
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Тема оформления</Label>
+                          <Select
+                            value={appearanceSettings.theme}
+                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, theme: value }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="light">Светлая</SelectItem>
+                              <SelectItem value="dark">Темная</SelectItem>
+                              <SelectItem value="system">Системная</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label>Размер шрифта</Label>
+                          <Select
+                            value={appearanceSettings.fontSize}
+                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, fontSize: value }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="small">Маленький</SelectItem>
+                              <SelectItem value="medium">Средний</SelectItem>
+                              <SelectItem value="large">Большой</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label>Плотность интерфейса</Label>
+                          <Select
+                            value={appearanceSettings.density}
+                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, density: value }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="comfortable">Комфортная</SelectItem>
+                              <SelectItem value="spacious">Просторная</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label>Цветовая схема</Label>
+                          <Select
+                            value={appearanceSettings.colorScheme}
+                            onValueChange={(value) =>
+                              setAppearanceSettings((prev) => ({ ...prev, colorScheme: value }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="default">По умолчанию</SelectItem>
+                              <SelectItem value="blue">Синяя</SelectItem>
+                              <SelectItem value="green">Зеленая</SelectItem>
+                              <SelectItem value="purple">Фиолетовая</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label>Анимации интерфейса</Label>
+                          <Switch
+                            checked={appearanceSettings.animations}
+                            onCheckedChange={(checked) =>
+                              setAppearanceSettings((prev) => ({ ...prev, animations: checked }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label>Уменьшенная анимация</Label>
+                          <Switch
+                            checked={appearanceSettings.reducedMotion}
+                            onCheckedChange={(checked) =>
+                              setAppearanceSettings((prev) => ({ ...prev, reducedMotion: checked }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label>Высокий контраст</Label>
+                          <Switch
+                            checked={appearanceSettings.highContrast}
+                            onCheckedChange={(checked) =>
+                              setAppearanceSettings((prev) => ({ ...prev, highContrast: checked }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label>Показывать подсказки</Label>
+                          <Switch
+                            checked={appearanceSettings.showTooltips}
+                            onCheckedChange={(checked) =>
+                              setAppearanceSettings((prev) => ({ ...prev, showTooltips: checked }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label>Свернуть боковую панель</Label>
+                          <Switch
+                            checked={appearanceSettings.sidebarCollapsed}
+                            onCheckedChange={(checked) =>
+                              setAppearanceSettings((prev) => ({ ...prev, sidebarCollapsed: checked }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-4 border-t">
+                      <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
+                        Отмена
+                      </Button>
+                      <Button onClick={handleSaveAppearanceSettings}>Сохранить настройки</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="integrations" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Zap className="w-5 h-5" />
+                      Управление интеграциями
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-muted/20">
+                      <div>
+                        <Label>Название интеграции</Label>
+                        <Input
+                          placeholder="Название сервиса"
+                          value={integrationSettings.newIntegration.name}
+                          onChange={(e) =>
+                            setIntegrationSettings((prev) => ({
+                              ...prev,
+                              newIntegration: { ...prev.newIntegration, name: e.target.value },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label>Категория</Label>
+                        <Select
+                          value={integrationSettings.newIntegration.category}
+                          onValueChange={(value) =>
+                            setIntegrationSettings((prev) => ({
+                              ...prev,
+                              newIntegration: { ...prev.newIntegration, category: value },
+                            }))
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Коммуникации">Коммуникации</SelectItem>
+                            <SelectItem value="Календарь">Календарь</SelectItem>
+                            <SelectItem value="Документы">Документы</SelectItem>
+                            <SelectItem value="Хранилище">Хранилище</SelectItem>
+                            <SelectItem value="Автоматизация">Автоматизация</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-end">
+                        <Button onClick={handleAddIntegration} className="w-full">
+                          Добавить интеграцию
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      {Object.entries(
+                        integrationSettings.availableIntegrations.reduce(
+                          (acc, integration) => {
+                            if (!acc[integration.category]) acc[integration.category] = []
+                            acc[integration.category].push(integration)
+                            return acc
+                          },
+                          {} as Record<string, typeof integrationSettings.availableIntegrations>,
+                        ),
+                      ).map(([category, integrations]) => (
+                        <div key={category}>
+                          <h4 className="font-semibold mb-3 text-lg">{category}</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {integrations.map((integration) => (
+                              <div
+                                key={integration.id}
+                                className="flex items-center justify-between p-4 border rounded-lg"
+                              >
+                                <div>
+                                  <h5 className="font-medium">{integration.name}</h5>
+                                  <p className="text-sm text-muted-foreground">{integration.description}</p>
+                                </div>
+                                <Switch
+                                  checked={integration.connected}
+                                  onCheckedChange={() => toggleIntegration(integration.id)}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="system" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Системные настройки</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label>Автоматические обновления</Label>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label>Сбор аналитики</Label>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label>Отладочный режим</Label>
+                        <Switch />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>

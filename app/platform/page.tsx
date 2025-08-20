@@ -14,7 +14,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Home, Bot, BarChart3, Users, FileText, Zap, TrendingUp, Target, CheckCircle, Plus, Filter } from "lucide-react"
+import {
+  Home,
+  Bot,
+  BarChart3,
+  Users,
+  FileText,
+  Zap,
+  TrendingUp,
+  Target,
+  CheckCircle,
+  Plus,
+  Filter,
+  X,
+} from "lucide-react"
 import Link from "next/link"
 
 interface Project {
@@ -62,6 +75,11 @@ export default function PlatformPage() {
   const [showAddProject, setShowAddProject] = useState(false)
   const [showAddTask, setShowAddTask] = useState(false)
   const [showAddMember, setShowAddMember] = useState(false)
+
+  const [notification, setNotification] = useState<{
+    type: "success" | "error" | "info"
+    message: string
+  } | null>(null)
 
   const [newProject, setNewProject] = useState({
     name: "",
@@ -162,18 +180,61 @@ export default function PlatformPage() {
   ])
 
   const handleAddProject = () => {
-    if (newProject.name && newProject.deadline) {
+    // Валидация обязательных полей
+    if (!newProject.name.trim()) {
+      setNotification({
+        type: "error",
+        message: "Пожалуйста, введите название проекта",
+      })
+      setTimeout(() => setNotification(null), 3000)
+      return
+    }
+
+    if (!newProject.deadline) {
+      setNotification({
+        type: "error",
+        message: "Пожалуйста, укажите дедлайн проекта",
+      })
+      setTimeout(() => setNotification(null), 3000)
+      return
+    }
+
+    // Проверка, что дедлайн не в прошлом
+    const selectedDate = new Date(newProject.deadline)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (selectedDate < today) {
+      setNotification({
+        type: "error",
+        message: "Дедлайн не может быть в прошлом",
+      })
+      setTimeout(() => setNotification(null), 3000)
+      return
+    }
+
+    try {
       const project: Project = {
-        id: projects.length + 1,
-        name: newProject.name,
-        description: newProject.description,
+        id: Math.max(...projects.map((p) => p.id), 0) + 1,
+        name: newProject.name.trim(),
+        description: newProject.description.trim(),
         status: "active",
         progress: 0,
         deadline: newProject.deadline,
         team: newProject.team,
         priority: newProject.priority as "low" | "medium" | "high",
       }
+
       setProjects([...projects, project])
+
+      // Успешное уведомление
+      setNotification({
+        type: "success",
+        message: `Проект "${newProject.name}" успешно создан`,
+      })
+      setTimeout(() => setNotification(null), 3000)
+
+      // Сброс формы
       setNewProject({
         name: "",
         description: "",
@@ -181,7 +242,14 @@ export default function PlatformPage() {
         priority: "medium",
         team: [],
       })
+
       setShowAddProject(false)
+    } catch (error) {
+      setNotification({
+        type: "error",
+        message: "Произошла ошибка при создании проекта",
+      })
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -282,6 +350,25 @@ export default function PlatformPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+            notification.type === "success"
+              ? "bg-green-100 border border-green-300 text-green-800"
+              : notification.type === "error"
+                ? "bg-red-100 border border-red-300 text-red-800"
+                : "bg-blue-100 border border-blue-300 text-blue-800"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span>{notification.message}</span>
+            <Button variant="ghost" size="sm" onClick={() => setNotification(null)} className="ml-2 h-6 w-6 p-0">
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
@@ -577,16 +664,19 @@ export default function PlatformPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Название проекта *</Label>
+              <Label htmlFor="project-name">Название проекта *</Label>
               <Input
+                id="project-name"
                 value={newProject.name}
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
                 placeholder="Введите название проекта"
+                className={!newProject.name.trim() ? "border-red-300" : ""}
               />
             </div>
             <div>
-              <Label>Описание</Label>
+              <Label htmlFor="project-description">Описание</Label>
               <Textarea
+                id="project-description"
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                 placeholder="Описание проекта"
@@ -595,7 +685,7 @@ export default function PlatformPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Приоритет</Label>
+                <Label htmlFor="project-priority">Приоритет</Label>
                 <Select
                   value={newProject.priority}
                   onValueChange={(v) => setNewProject({ ...newProject, priority: v })}
@@ -611,11 +701,14 @@ export default function PlatformPage() {
                 </Select>
               </div>
               <div>
-                <Label>Дедлайн *</Label>
+                <Label htmlFor="project-deadline">Дедлайн *</Label>
                 <Input
+                  id="project-deadline"
                   type="date"
                   value={newProject.deadline}
                   onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+                  className={!newProject.deadline ? "border-red-300" : ""}
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>

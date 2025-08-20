@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { DataAnalyzer } from "@/components/ai-tools/data-analyzer"
 import {
   Brain,
   TrendingUp,
@@ -35,6 +36,13 @@ import {
   Send,
   User,
   MessageSquare,
+  BarChart3,
+  PieChart,
+  TrendingDown,
+  DollarSign,
+  Users,
+  ShoppingCart,
+  Clock,
 } from "lucide-react"
 
 interface StrategicInsight {
@@ -85,6 +93,9 @@ export function AIBusinessAgent() {
   const [showInsightDetails, setShowInsightDetails] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
+  const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
+  const [analysisResults, setAnalysisResults] = useState<any>(null)
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   // Chat states
   const [message, setMessage] = useState("")
@@ -240,6 +251,14 @@ export function AIBusinessAgent() {
     category: "revenue" as BusinessGoal["category"],
   })
 
+  const handleImplementRecommendation = (recommendation: any) => {
+    setNotification({
+      type: "success",
+      message: `Рекомендация "${recommendation.title}" добавлена в план внедрения`,
+    })
+    setTimeout(() => setNotification(null), 3000)
+  }
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return
 
@@ -331,7 +350,58 @@ export function AIBusinessAgent() {
     }
 
     setStrategicInsights([newInsight, ...strategicInsights])
+
+    const detailedResults = {
+      businessMetrics: {
+        revenue: { current: 2400000, target: 3600000, growth: 15.2, trend: "up" },
+        customers: { current: 1247, target: 1800, growth: 8.7, trend: "up" },
+        conversion: { current: 3.2, target: 4.5, growth: -2.1, trend: "down" },
+        retention: { current: 78, target: 85, growth: 5.3, trend: "up" },
+      },
+      marketAnalysis: {
+        competitorGrowth: 12.5,
+        marketSize: 45000000,
+        marketShare: 2.8,
+        opportunities: [
+          "Рост спроса на ИИ-решения в SMB сегменте на 340%",
+          "Недостаток персонализированных решений у конкурентов",
+          "Возможность захвата 15% рынка автоматизации",
+        ],
+      },
+      recommendations: [
+        {
+          title: "Внедрить ИИ-персонализацию",
+          impact: "Увеличение конверсии на 25%",
+          effort: "2-3 месяца",
+          roi: "310%",
+        },
+        {
+          title: "Автоматизировать клиентский сервис",
+          impact: "Сокращение затрат на 40%",
+          effort: "1-2 месяца",
+          roi: "280%",
+        },
+        {
+          title: "Запустить B2B направление",
+          impact: "Рост выручки на 60%",
+          effort: "4-6 месяцев",
+          roi: "450%",
+        },
+      ],
+      riskAnalysis: [
+        { risk: "Усиление конкуренции", probability: 75, impact: "medium" },
+        { risk: "Изменение регулирования", probability: 45, impact: "low" },
+        { risk: "Экономический спад", probability: 30, impact: "high" },
+      ],
+    }
+
+    setAnalysisResults(detailedResults)
     setIsAnalyzing(false)
+  }
+
+  const runDetailedAnalysis = async () => {
+    setShowDetailedAnalysis(true)
+    await runAIAnalysis()
   }
 
   const handleInsightAction = (insightId: string, action: "implement" | "dismiss") => {
@@ -421,7 +491,7 @@ export function AIBusinessAgent() {
         <Button
           onClick={runAIAnalysis}
           disabled={isAnalyzing}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-lg"
         >
           {isAnalyzing ? (
             <>
@@ -455,10 +525,14 @@ export function AIBusinessAgent() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="chat" className="flex items-center">
             <MessageSquare className="w-4 h-4 mr-2" />
             Консультант
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Анализ
           </TabsTrigger>
           <TabsTrigger value="insights" className="flex items-center">
             <Lightbulb className="w-4 h-4 mr-2" />
@@ -478,6 +552,7 @@ export function AIBusinessAgent() {
           </TabsTrigger>
         </TabsList>
 
+        {/* ... existing TabsContent for chat ... */}
         <TabsContent value="chat" className="space-y-4">
           <Card className="bg-card/50 backdrop-blur-sm border border-border/50 h-[600px] flex flex-col">
             <CardHeader>
@@ -561,6 +636,266 @@ export function AIBusinessAgent() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="analysis" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Комплексный бизнес-анализ</h3>
+            <div className="flex gap-2">
+              <Button
+                onClick={runDetailedAnalysis}
+                disabled={isAnalyzing}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:text-white"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Activity className="w-4 h-4 mr-2 animate-spin" />
+                    Анализирую...
+                  </>
+                ) : (
+                  <>
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Запустить полный анализ
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {analysisResults && (
+            <div className="space-y-6">
+              {/* Ключевые метрики */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Выручка</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {(analysisResults.businessMetrics.revenue.current / 1000000).toFixed(1)}М ₽
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <TrendingUp className="w-3 h-3 text-green-600 mr-1" />
+                          <span className="text-xs text-green-600 font-medium">
+                            +{analysisResults.businessMetrics.revenue.growth}%
+                          </span>
+                        </div>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-green-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Клиенты</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {analysisResults.businessMetrics.customers.current.toLocaleString()}
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <TrendingUp className="w-3 h-3 text-blue-600 mr-1" />
+                          <span className="text-xs text-blue-600 font-medium">
+                            +{analysisResults.businessMetrics.customers.growth}%
+                          </span>
+                        </div>
+                      </div>
+                      <Users className="w-8 h-8 text-blue-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Конверсия</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {analysisResults.businessMetrics.conversion.current}%
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <TrendingDown className="w-3 h-3 text-red-600 mr-1" />
+                          <span className="text-xs text-red-600 font-medium">
+                            {analysisResults.businessMetrics.conversion.growth}%
+                          </span>
+                        </div>
+                      </div>
+                      <ShoppingCart className="w-8 h-8 text-red-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Удержание</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {analysisResults.businessMetrics.retention.current}%
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <TrendingUp className="w-3 h-3 text-purple-600 mr-1" />
+                          <span className="text-xs text-purple-600 font-medium">
+                            +{analysisResults.businessMetrics.retention.growth}%
+                          </span>
+                        </div>
+                      </div>
+                      <Clock className="w-8 h-8 text-purple-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Рыночный анализ */}
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <PieChart className="w-5 h-5 mr-2 text-primary" />
+                    Анализ рынка
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-primary">{analysisResults.marketAnalysis.marketShare}%</p>
+                      <p className="text-sm text-muted-foreground">Доля рынка</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-green-600">
+                        {(analysisResults.marketAnalysis.marketSize / 1000000).toFixed(0)}М ₽
+                      </p>
+                      <p className="text-sm text-muted-foreground">Размер рынка</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-blue-600">
+                        +{analysisResults.marketAnalysis.competitorGrowth}%
+                      </p>
+                      <p className="text-sm text-muted-foreground">Рост конкурентов</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h4 className="font-semibold mb-3">Рыночные возможности:</h4>
+                    <div className="space-y-2">
+                      {analysisResults.marketAnalysis.opportunities.map((opportunity: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2 p-3 bg-primary/5 rounded-lg">
+                          <Lightbulb className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-foreground">{opportunity}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* ИИ-рекомендации */}
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Sparkles className="w-5 h-5 mr-2 text-primary" />
+                    ИИ-рекомендации по росту
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {analysisResults.recommendations.map((rec: any, index: number) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg border border-primary/20"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-semibold text-foreground">{rec.title}</h4>
+                          <Badge className="bg-green-500/10 text-green-600 border-green-500/30">ROI: {rec.roi}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">{rec.impact}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Срок: {rec.effort}</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 bg-transparent"
+                            onClick={() => handleImplementRecommendation(rec)}
+                          >
+                            <ArrowRight className="w-3 h-3 mr-1" />
+                            Внедрить
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Анализ рисков */}
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Shield className="w-5 h-5 mr-2 text-primary" />
+                    Анализ рисков
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {analysisResults.riskAnalysis.map((risk: any, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/30"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <AlertTriangle
+                            className={`w-4 h-4 ${
+                              risk.impact === "high"
+                                ? "text-red-600"
+                                : risk.impact === "medium"
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                            }`}
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{risk.risk}</p>
+                            <p className="text-xs text-muted-foreground">Вероятность: {risk.probability}%</p>
+                          </div>
+                        </div>
+                        <Badge
+                          className={
+                            risk.impact === "high"
+                              ? "bg-red-500/10 text-red-600 border-red-500/30"
+                              : risk.impact === "medium"
+                                ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/30"
+                                : "bg-green-500/10 text-green-600 border-green-500/30"
+                          }
+                        >
+                          {risk.impact === "high" ? "Высокий" : risk.impact === "medium" ? "Средний" : "Низкий"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Интеграция с DataAnalyzer */}
+          {!analysisResults && (
+            <div className="space-y-6">
+              <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2 text-primary" />
+                    Анализатор данных
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Загрузите данные для получения детального анализа и персональных рекомендаций
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <DataAnalyzer />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* ... existing code for other tabs ... */}
         <TabsContent value="insights" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Стратегические рекомендации ИИ</h3>
@@ -635,6 +970,7 @@ export function AIBusinessAgent() {
           </div>
         </TabsContent>
 
+        {/* ... existing code for goals, trends, roadmap tabs ... */}
         <TabsContent value="goals" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Стратегические цели</h3>
@@ -840,7 +1176,7 @@ export function AIBusinessAgent() {
         </TabsContent>
       </Tabs>
 
-      {/* Модальное окно деталей рекомендации */}
+      {/* ... existing code for modals ... */}
       {showInsightDetails && (
         <Dialog open={!!showInsightDetails} onOpenChange={() => setShowInsightDetails(null)}>
           <DialogContent className="max-w-2xl mx-4">
@@ -921,7 +1257,6 @@ export function AIBusinessAgent() {
         </Dialog>
       )}
 
-      {/* Модальное окно добавления цели */}
       {showAddGoal && (
         <Dialog open={showAddGoal} onOpenChange={setShowAddGoal}>
           <DialogContent className="max-w-md mx-4">
@@ -997,6 +1332,17 @@ export function AIBusinessAgent() {
             </div>
           </DialogContent>
         </Dialog>
+      )}
+      {notification && (
+        <div
+          className={`fixed bottom-4 right-4 z-50 rounded-md border p-4 shadow-md ${
+            notification.type === "success"
+              ? "border-green-500 bg-green-500/10 text-green-600"
+              : "border-red-500 bg-red-500/10 text-red-600"
+          }`}
+        >
+          {notification.message}
+        </div>
       )}
     </div>
   )

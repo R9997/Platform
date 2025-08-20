@@ -497,6 +497,11 @@ export function SalesManager() {
 
   const handleSaveStage = () => {
     if (editingStage) {
+      if (!editingStage.stage || editingStage.stage.trim() === "") {
+        alert("Название этапа не может быть пустым")
+        return
+      }
+
       const updatedStages = pipelineStages.map((stage) =>
         stage.stage === editingStage.stage
           ? {
@@ -511,6 +516,7 @@ export function SalesManager() {
       setEditingStage(null)
       setShowEditPipeline(false)
 
+      alert("Этап воронки успешно обновлен!")
       console.log("[v0] Stage updated successfully:", editingStage.stage)
     }
   }
@@ -1145,7 +1151,7 @@ export function SalesManager() {
                     <Label>Цвет</Label>
                     <Select
                       value={editingStage.color || "blue"}
-                      onChange={(e) => {
+                      onValueChange={(value) => {
                         const colorMap = {
                           blue: { bgClass: "bg-blue-500", textClass: "text-blue-600" },
                           green: { bgClass: "bg-green-500", textClass: "text-green-600" },
@@ -1155,8 +1161,8 @@ export function SalesManager() {
                           red: { bgClass: "bg-red-500", textClass: "text-red-600" },
                           yellow: { bgClass: "bg-yellow-500", textClass: "text-yellow-600" },
                         }
-                        const colorClasses = colorMap[e.target.value as keyof typeof colorMap] || colorMap.blue
-                        setEditingStage({ ...editingStage, color: e.target.value, ...colorClasses })
+                        const colorClasses = colorMap[value as keyof typeof colorMap] || colorMap.blue
+                        setEditingStage({ ...editingStage, color: value, ...colorClasses })
                       }}
                     >
                       <SelectTrigger>
