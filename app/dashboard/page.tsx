@@ -452,7 +452,7 @@ const DashboardPage = () => {
                 <HelpCircle className="w-4 h-4 mr-1" />
                 Гид
               </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")}>
+              <Button variant="outline" size="sm" onClick={() => window.open("/support", "_blank")}>
                 <MessageSquare className="w-4 h-4 mr-1" />
                 Поддержка
               </Button>
@@ -570,7 +570,12 @@ const DashboardPage = () => {
                   <HelpCircle className="w-4 h-4 mr-1" />
                   Гид по функциям
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")} className="flex-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open("/support", "_blank")}
+                  className="flex-1"
+                >
                   <MessageSquare className="w-4 h-4 mr-1" />
                   Поддержка
                 </Button>
