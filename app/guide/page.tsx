@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { useTheme } from "next-themes"
 import {
   ArrowLeft,
   Search,
@@ -25,6 +26,8 @@ import {
   Gavel,
   UserCheck,
   Megaphone,
+  Sun,
+  Moon,
 } from "lucide-react"
 
 interface GuideModule {
@@ -43,6 +46,7 @@ export default function GuidePage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("Все")
   const [selectedModule, setSelectedModule] = useState<GuideModule | null>(null)
+  const { theme, setTheme } = useTheme()
 
   const modules: GuideModule[] = [
     {
@@ -260,10 +264,22 @@ export default function GuidePage() {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-6">
-            <Button variant="ghost" onClick={() => setSelectedModule(null)} className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад к списку модулей
-            </Button>
+            <div className="flex items-center justify-between mb-4">
+              <Button variant="ghost" onClick={() => setSelectedModule(null)}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Назад к списку модулей
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="h-9 w-9"
+              >
+                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Переключить тему</span>
+              </Button>
+            </div>
             <div className="flex items-center space-x-4 mb-6">
               <div className="p-3 bg-primary/10 rounded-lg">
                 <ModuleIcon className="w-8 h-8 text-primary" />
@@ -420,12 +436,24 @@ export default function GuidePage() {
               <h1 className="text-3xl font-bold text-foreground">Гид по функциям платформы</h1>
               <p className="text-muted-foreground">Изучите все возможности Рефрейм Бюро для эффективной работы</p>
             </div>
-            <Link href="/dashboard">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Вернуться в личный кабинет
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="h-9 w-9"
+              >
+                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Переключить тему</span>
               </Button>
-            </Link>
+              <Link href="/dashboard">
+                <Button variant="outline">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Вернуться в личный кабинет
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 mb-6">
