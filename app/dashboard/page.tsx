@@ -457,7 +457,7 @@ const DashboardPage = () => {
                 Поддержка
               </Button>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => {
                   const newTheme = appearanceSettings.theme === "light" ? "dark" : "light"
@@ -574,6 +574,13 @@ const DashboardPage = () => {
                   <MessageSquare className="w-4 h-4 mr-1" />
                   Поддержка
                 </Button>
+              </div>
+
+              <div className="flex gap-2 mb-6">
+                <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")} className="flex-1">
+                  <Home className="w-4 h-4 mr-1" />
+                  На главную
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -586,15 +593,11 @@ const DashboardPage = () => {
                     document.documentElement.classList.toggle("dark", newTheme === "dark")
                   }}
                   className="shrink-0 px-3"
+                  title="Переключить тему"
                 >
                   {appearanceSettings.theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                 </Button>
               </div>
-
-              <Button variant="outline" size="sm" onClick={() => (window.location.href = "/")} className="w-full mb-6">
-                <Home className="w-4 h-4 mr-2" />
-                На главную
-              </Button>
 
               {/* Navigation */}
               <div className="space-y-2">
