@@ -51,6 +51,8 @@ import { LegalDashboard } from "@/components/legal/legal-dashboard"
 import { HRDashboard } from "@/components/hr-management/hr-dashboard"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
 import { GanttChart } from "@/components/project-management/gantt-chart"
+import { StrategyDashboard } from "@/components/strategy/strategy-dashboard"
+import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -65,6 +67,105 @@ export default function Dashboard() {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false)
   const [showCreateRoleModal, setShowCreateRoleModal] = useState(false)
   const [showAddLeadModal, setShowAddLeadModal] = useState(false)
+  const [showSupportChat, setShowSupportChat] = useState(false)
+
+  const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null)
+
+  const [roles, setRoles] = useState([
+    { id: 1, name: "Администратор", description: "Полный доступ к системе", permissions: ["all"], users: 2 },
+    {
+      id: 2,
+      name: "Менеджер",
+      description: "Управление проектами и командой",
+      permissions: ["projects", "team"],
+      users: 5,
+    },
+    { id: 3, name: "Сотрудник", description: "Базовый доступ", permissions: ["basic"], users: 12 },
+  ])
+
+  const [integrationSettings, setIntegrationSettings] = useState({
+    availableIntegrations: [
+      {
+        id: "1",
+        name: "Slack",
+        description: "Корпоративный мессенджер для команды",
+        connected: true,
+        category: "Коммуникации",
+      },
+      {
+        id: "2",
+        name: "Google Calendar",
+        description: "Синхронизация календаря и событий",
+        connected: false,
+        category: "Календарь",
+      },
+      { id: "3", name: "Dropbox", description: "Облачное хранилище файлов", connected: true, category: "Хранилище" },
+      {
+        id: "4",
+        name: "Zapier",
+        description: "Автоматизация бизнес-процессов",
+        connected: false,
+        category: "Автоматизация",
+      },
+    ],
+    newIntegration: { name: "", description: "", category: "Коммуникации" },
+  })
+
+  const [appearanceSettings, setAppearanceSettings] = useState({
+    theme: "system",
+    fontSize: "medium",
+    density: "comfortable",
+    animations: true,
+    reducedMotion: false,
+    highContrast: false,
+    showTooltips: true,
+    sidebarCollapsed: false,
+    colorScheme: "default",
+  })
+
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      title: "Настроить CRM систему",
+      description: "Интеграция с внешними сервисами",
+      status: "К выполнению",
+      priority: "Высокий",
+      assignee: "Анна Петрова",
+      dueDate: "2024-02-20",
+      tags: ["CRM", "Интеграция"],
+    },
+    {
+      id: 2,
+      title: "Провести анализ конкурентов",
+      description: "Исследование рынка и конкурентов",
+      status: "В работе",
+      priority: "Средний",
+      assignee: "Михаил Сидоров",
+      dueDate: "2024-02-25",
+      tags: ["Анализ", "Маркетинг"],
+    },
+    {
+      id: 3,
+      title: "Обновить документацию",
+      description: "Актуализация технической документации",
+      status: "Завершена",
+      priority: "Низкий",
+      assignee: "Елена Козлова",
+      dueDate: "2024-02-15",
+      tags: ["Документация"],
+    },
+  ])
+
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false)
+  const [newTask, setNewTask] = useState({
+    title: "",
+    description: "",
+    priority: "Средний",
+    assignee: "",
+    dueDate: "",
+    tags: [],
+  })
+
   const [projects, setProjects] = useState([
     {
       id: 1,
@@ -94,6 +195,7 @@ export default function Dashboard() {
       description: "Описание проекта",
     },
   ])
+
   const [leads, setLeads] = useState([
     {
       id: 1,
@@ -208,95 +310,8 @@ export default function Dashboard() {
   ])
 
   const [isDemoMode, setIsDemoMode] = useState(true)
-
-  const [newTask, setNewTask] = useState({
-    title: "",
-    assignee: "",
-    priority: "Средний",
-    dueDate: "",
-    description: "",
-  })
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false)
-  const [tasks, setTasks] = useState([])
-
-  const [notification, setNotification] = useState<{ type: string; message: string } | null>(null)
-  const [roles, setRoles] = useState([
-    {
-      id: 1,
-      name: "Администратор",
-      description: "Полный доступ ко всем функциям",
-      permissions: ["read", "write", "delete", "admin"],
-      users: 2,
-    },
-    {
-      id: 2,
-      name: "Менеджер",
-      description: "Управление проектами и командой",
-      permissions: ["read", "write"],
-      users: 5,
-    },
-    {
-      id: 3,
-      name: "Сотрудник",
-      description: "Базовый доступ к функциям",
-      permissions: ["read"],
-      users: 12,
-    },
-  ])
-
-  const [integrationSettings, setIntegrationSettings] = useState({
-    availableIntegrations: [
-      {
-        id: "1",
-        name: "Slack",
-        description: "Корпоративный мессенджер для команды",
-        connected: true,
-        category: "Коммуникации",
-      },
-      {
-        id: "2",
-        name: "Google Calendar",
-        description: "Синхронизация календаря и событий",
-        connected: false,
-        category: "Календарь",
-      },
-      {
-        id: "3",
-        name: "Dropbox",
-        description: "Облачное хранилище файлов",
-        connected: true,
-        category: "Хранилище",
-      },
-      {
-        id: "4",
-        name: "Zapier",
-        description: "Автоматизация бизнес-процессов",
-        connected: false,
-        category: "Автоматизация",
-      },
-    ],
-    newIntegration: {
-      name: "",
-      description: "",
-      category: "Коммуникации",
-    },
-  })
-
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [settingsCategory, setSettingsCategory] = useState<string>("")
-  const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: "system", // light, dark, system
-    fontSize: "medium", // small, medium, large
-    density: "comfortable", // compact, comfortable, spacious
-    animations: true,
-    reducedMotion: false,
-    highContrast: false,
-    showTooltips: true,
-    sidebarCollapsed: false,
-    colorScheme: "default", // default, blue, green, purple
-  })
-
-  const [showSupportChat, setShowSupportChat] = useState(false)
 
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
@@ -313,7 +328,6 @@ export default function Dashboard() {
       setNewProject({ name: "", deadline: "", team: [], description: "" })
       setShowAddProjectModal(false)
 
-      // Показать уведомление об успешном создании
       setNotification({
         type: "success",
         message: `Проект "${newProject.name}" успешно создан`,
@@ -1502,6 +1516,32 @@ export default function Dashboard() {
                       <CardTitle>Настройки</CardTitle>
                     </CardHeader>
                     <CardContent>{/* Settings Component Here */}</CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "strategy" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Стратегия и цели</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StrategyDashboard />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "marketing" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Маркетинг и клиенты</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <MarketingDashboard />
+                    </CardContent>
                   </Card>
                 </div>
               )}
