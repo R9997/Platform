@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Users,
   TrendingUp,
@@ -21,14 +22,12 @@ import {
   LogOut,
   Menu,
   Sparkles,
-  UserPlus,
   Rocket,
   CheckSquare,
   Brain,
   X,
   Plus,
 } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Link from "next/link"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { SalesManager } from "@/components/business-tools/sales-manager"
@@ -47,6 +46,7 @@ import { ChevronDown } from "lucide-react"
 import { EDODashboard } from "@/components/edo/edo-dashboard"
 import { LegalDashboard } from "@/components/legal/legal-dashboard"
 import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
+import { GanttChart } from "@/components/project-management/gantt-chart"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -853,13 +853,20 @@ export default function Dashboard() {
                 <div className="space-y-4 sm:space-y-6 lg:space-y-8">
                   <AIToolsShowcase />
                   <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-                    <CardHeader className="pb-3 sm:pb-4">
-                      <CardTitle className="text-base sm:text-lg lg:text-xl overflow-fix">
-                        Активные ИИ-инструменты
-                      </CardTitle>
-                      <CardDescription className="text-xs sm:text-sm overflow-fix">
-                        Управление и мониторинг ИИ-инструментов
-                      </CardDescription>
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <Target className="w-5 h-5 text-primary" />
+                          Активные ИИ-инструменты
+                        </CardTitle>
+                        <Button
+                          onClick={() => setShowAddProjectModal(true)}
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Новый проект
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent className="pt-0">
                       <ContentGenerator />
@@ -873,368 +880,300 @@ export default function Dashboard() {
               {activeTab === "sales" && <SalesManager />}
               {activeTab === "finance" && <FinanceManager />}
 
-              {activeTab === "team" && (
-                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
-                        Управление командой
-                      </h2>
-                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
-                        Сотрудники, роли и права доступа
-                      </p>
-                    </div>
-                    <Button
-                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
-                      onClick={() => setShowAddEmployeeModal(true)}
-                    >
-                      <UserPlus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span>Добавить сотрудника</span>
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
-                    <div className="xl:col-span-2 2xl:col-span-2">
-                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-                            <span className="text-sm sm:text-base lg:text-lg xl:text-2xl overflow-fix">
-                              Команда ({employees.length})
-                            </span>
-                            <Badge variant="secondary" className="self-start sm:self-center text-xs px-1.5 py-0.5">
-                              {employees.filter((e) => e.status === "Активен").length} активных
-                            </Badge>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                            {employees.map((employee) => (
-                              <div
-                                key={employee.id}
-                                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:gap-4 p-2 sm:p-3 lg:p-4 bg-background/50 rounded-lg border border-border/30 overflow-fix"
-                              >
-                                <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
-                                  <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shrink-0">
-                                    <span className="text-xs sm:text-sm font-bold text-white">{employee.avatar}</span>
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-foreground truncate text-xs sm:text-sm lg:text-base">
-                                      {employee.name}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground truncate">{employee.email}</p>
-                                    <div className="flex flex-wrap items-center gap-1 mt-1">
-                                      <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                        {employee.role}
-                                      </Badge>
-                                      <Badge
-                                        variant={employee.status === "Активен" ? "default" : "secondary"}
-                                        className="text-xs px-1 py-0.5"
-                                      >
-                                        {employee.status}
-                                      </Badge>
-                                    </div>
-                                  </div>
+              {activeTab === "projects" && (
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
+                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <Target className="w-5 h-5 text-primary" />
+                          Активные проекты
+                        </CardTitle>
+                        <Button
+                          onClick={() => setShowAddProjectModal(true)}
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Новый проект
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {projects.map((project) => (
+                          <Card
+                            key={project.id}
+                            className="border border-border/50 hover:border-primary/50 transition-colors"
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base">{project.name}</CardTitle>
+                                <Badge
+                                  variant={
+                                    project.status === "Завершен"
+                                      ? "default"
+                                      : project.status === "В работе"
+                                        ? "secondary"
+                                        : "outline"
+                                  }
+                                >
+                                  {project.status}
+                                </Badge>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Прогресс</span>
+                                  <span>{project.progress}%</span>
                                 </div>
-                                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
-                                  <div className="text-left sm:text-right">
-                                    <p className="text-xs sm:text-sm font-medium">{employee.productivity}%</p>
-                                    <p className="text-xs text-muted-foreground">Продуктивность</p>
-                                  </div>
-                                  <div className="flex gap-1 sm:gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        setSelectedEmployee(employee)
-                                        setShowAssignRoleModal(true)
-                                      }}
-                                      className="text-xs px-1.5 py-1 h-auto"
-                                    >
-                                      Роль
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleRemoveEmployee(employee.id)}
-                                      className="text-red-600 hover:text-red-700 text-xs px-1.5 py-1 h-auto"
-                                    >
-                                      ×
-                                    </Button>
-                                  </div>
+                                <div className="w-full bg-secondary rounded-full h-2">
+                                  <div
+                                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${project.progress}%` }}
+                                  />
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                          <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
-                            Статистика команды
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
-                                Всего сотрудников
-                              </span>
-                              <span className="font-bold text-xs sm:text-sm lg:text-base">{employees.length}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">Активных</span>
-                              <span className="font-bold text-green-600 text-xs sm:text-sm lg:text-base">
-                                {employees.filter((e) => e.status === "Активен").length}
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs sm:text-sm text-muted-foreground overflow-fix">
-                                Средняя продуктивность
-                              </span>
-                              <span className="font-bold text-xs sm:text-sm lg:text-base">
-                                {Math.round(
-                                  employees.reduce((acc, emp) => acc + emp.productivity, 0) / employees.length,
-                                )}
-                                %
-                              </span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
-                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                          <CardTitle className="text-xs sm:text-sm lg:text-base xl:text-lg overflow-fix">
-                            Роли в команде
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <div className="space-y-1.5 sm:space-y-2">
-                            {availableRoles.map((role) => {
-                              const count = employees.filter((emp) => emp.role === role).length
-                              return (
-                                <div key={role} className="flex justify-between items-center">
-                                  <span className="text-xs sm:text-sm truncate flex-1 mr-2 overflow-fix">{role}</span>
-                                  <Badge variant="secondary" className="shrink-0 text-xs px-1 py-0.5">
-                                    {count}
-                                  </Badge>
+                              <div className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Users className="w-4 h-4 text-muted-foreground" />
+                                  <div className="flex -space-x-1">
+                                    {project.team.map((member, index) => (
+                                      <div
+                                        key={index}
+                                        className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium border-2 border-background"
+                                      >
+                                        {member}
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              )
-                            })}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
+                                <span className="text-muted-foreground">
+                                  {new Date(project.deadline).toLocaleDateString("ru-RU")}
+                                </span>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 bg-transparent"
+                                  onClick={() =>
+                                    handleUpdateProjectProgress(project.id, Math.min(project.progress + 10, 100))
+                                  }
+                                >
+                                  Обновить
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteProject(project.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  Удалить
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+
+                      <GanttChart projects={projects} />
+                    </CardContent>
+                  </Card>
                 </div>
+              )}
+
+              {activeTab === "team" && (
+                <HRDashboard
+                  employees={employees}
+                  availableRoles={availableRoles}
+                  handleAddEmployee={handleAddEmployee}
+                  handleAssignRole={handleAssignRole}
+                  handleRemoveEmployee={handleRemoveEmployee}
+                />
               )}
 
               {activeTab === "roles" && (
-                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
-                        Роли и права
-                      </h2>
-                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
-                        Управление ролями и правами доступа
-                      </p>
-                    </div>
-                    <Button
-                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
-                      onClick={() => setShowCreateRoleModal(true)}
-                    >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span>Создать роль</span>
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
-                    {roles.map((role) => (
-                      <Card
-                        key={role.id}
-                        className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive"
-                      >
-                        <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                          <CardTitle className="flex items-center justify-between gap-2">
-                            <div className="flex items-center space-x-2">
-                              <Shield className="w-4 h-4 text-primary" />
-                              <span className="text-sm sm:text-base lg:text-lg overflow-fix">{role.name}</span>
-                            </div>
-                            <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-                              {role.users} польз.
-                            </Badge>
-                          </CardTitle>
-                          <CardDescription className="text-xs sm:text-sm overflow-fix">
-                            {role.description}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <div className="space-y-2 sm:space-y-3">
-                            <div>
-                              <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
-                                Права доступа:
-                              </h4>
-                              <div className="flex flex-wrap gap-1">
-                                {role.permissions.map((permission) => (
-                                  <Badge key={permission} variant="outline" className="text-xs px-1 py-0.5">
-                                    {permission}
-                                  </Badge>
-                                ))}
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg">Роли и права</CardTitle>
+                      <CardDescription className="text-sm">Управление ролями и правами доступа</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {roles.map((role) => (
+                          <Card
+                            key={role.id}
+                            className="border border-border/50 hover:border-primary/50 transition-colors"
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base">{role.name}</CardTitle>
+                                <Badge variant="secondary">{role.users}</Badge>
                               </div>
-                            </div>
-                            <div className="flex gap-1 sm:gap-2 pt-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-xs px-2 py-1 h-auto flex-1 bg-transparent"
-                              >
-                                Редактировать
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 text-xs px-2 py-1 h-auto bg-transparent"
-                              >
-                                Удалить
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Описание</span>
+                                  <span>{role.description}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span>Права доступа</span>
+                                  <span>{role.permissions.join(", ")}</span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 bg-transparent"
+                                  onClick={() => setShowCreateRoleModal(true)}
+                                >
+                                  Создать роль
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               )}
 
-              {showAddEmployeeModal && (
-                <Dialog open={showAddEmployeeModal} onOpenChange={setShowAddEmployeeModal}>
-                  <DialogContent className="max-w-md mx-4">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center space-x-2">
-                        <UserPlus className="w-5 h-5 text-primary" />
-                        <span>Добавить сотрудника</span>
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium">Имя</label>
-                        <Input
-                          value={newEmployee.name}
-                          onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-                          placeholder="Введите имя сотрудника"
-                        />
+              {activeTab === "settings" && (
+                <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                  <Card className="enhanced-card backdrop-blur-xl border border-border/50">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg">Настройки</CardTitle>
+                      <CardDescription className="text-sm">Управление настройками системы</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Object.keys(userSettings).map((category) => (
+                          <Card
+                            key={category}
+                            className="border border-border/50 hover:border-primary/50 transition-colors"
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-base">{category}</CardTitle>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1 bg-transparent"
+                                  onClick={() => handleOpenSettings(category)}
+                                >
+                                  Настроить
+                                </Button>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Настройки</span>
+                                  <span>{JSON.stringify(userSettings[category])}</span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
-                      <div>
-                        <label className="text-sm font-medium">Email</label>
-                        <Input
-                          type="email"
-                          value={newEmployee.email}
-                          onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
-                          placeholder="Введите email"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Роль</label>
-                        <select
-                          value={newEmployee.role}
-                          onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
-                          className="w-full p-2 border rounded-md"
-                        >
-                          <option value="Сотрудник">Сотрудник</option>
-                          <option value="Менеджер">Менеджер</option>
-                          <option value="Руководитель">Руководитель</option>
-                          <option value="Администратор">Администратор</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex justify-end space-x-2 pt-4">
-                      <Button variant="outline" onClick={() => setShowAddEmployeeModal(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleAddEmployee} disabled={!newEmployee.name || !newEmployee.email}>
-                        Добавить
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-
-              {showCreateRoleModal && (
-                <Dialog open={showCreateRoleModal} onOpenChange={setShowCreateRoleModal}>
-                  <DialogContent className="max-w-md mx-4">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center space-x-2">
-                        <Shield className="w-5 h-5 text-primary" />
-                        <span>Создать роль</span>
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium">Название роли</label>
-                        <Input
-                          value={newRole.name}
-                          onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
-                          placeholder="Введите название роли"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Описание</label>
-                        <Input
-                          value={newRole.description}
-                          onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
-                          placeholder="Описание роли"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Права доступа</label>
-                        <div className="space-y-2 max-h-32 overflow-y-auto">
-                          {["Просмотр", "Редактирование", "Удаление", "Администрирование", "Финансы", "HR"].map(
-                            (permission) => (
-                              <label key={permission} className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
-                                  checked={newRole.permissions.includes(permission)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setNewRole({ ...newRole, permissions: [...newRole.permissions, permission] })
-                                    } else {
-                                      setNewRole({
-                                        ...newRole,
-                                        permissions: newRole.permissions.filter((p) => p !== permission),
-                                      })
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm">{permission}</span>
-                              </label>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end space-x-2 pt-4">
-                      <Button variant="outline" onClick={() => setShowCreateRoleModal(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleCreateRole} disabled={!newRole.name || newRole.permissions.length === 0}>
-                        Создать
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </CardContent>
+                  </Card>
+                </div>
               )}
 
               {activeTab === "edo" && <EDODashboard />}
               {activeTab === "legal" && <LegalDashboard />}
               {activeTab === "marketing" && <MarketingDashboard />}
-              {activeTab === "hr" && <HRDashboard />}
             </div>
           </div>
         </main>
+
+        <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Bell className="w-5 h-5 text-primary" />
+                Уведомления
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {notificationsList.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Нет новых уведомлений</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                      {notificationsList.filter((n) => !n.read).length} непрочитанных
+                    </span>
+                    <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
+                      Отметить все как прочитанные
+                    </Button>
+                  </div>
+                  {notificationsList.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-3 rounded-lg border transition-colors cursor-pointer ${
+                        notification.read ? "bg-muted/30 border-border/50" : "bg-card border-primary/20 shadow-sm"
+                      }`}
+                      onClick={() => markNotificationAsRead(notification.id)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4
+                              className={`text-sm font-medium truncate ${
+                                notification.read ? "text-muted-foreground" : "text-foreground"
+                              }`}
+                            >
+                              {notification.title}
+                            </h4>
+                            {!notification.read && (
+                              <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 ml-2" />
+                            )}
+                          </div>
+                          <p
+                            className={`text-xs mb-2 ${
+                              notification.read ? "text-muted-foreground" : "text-muted-foreground"
+                            }`}
+                          >
+                            {notification.message}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">{notification.time}</span>
+                            {notification.type === "warning" && (
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs bg-transparent"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleNotificationAction(notification.id, "view")
+                                  }}
+                                >
+                                  Просмотр
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   )

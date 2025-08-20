@@ -343,7 +343,7 @@ export function AIBusinessStrategist() {
         <Button
           onClick={runAIAnalysis}
           disabled={isAnalyzing}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 dark:text-white"
         >
           {isAnalyzing ? (
             <>

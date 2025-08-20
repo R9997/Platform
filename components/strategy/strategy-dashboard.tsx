@@ -82,7 +82,7 @@ export default function StrategyDashboard() {
     endDate: "",
   })
 
-  const [goals] = useState<Goal[]>([
+  const [goals, setGoals] = useState<Goal[]>([
     {
       id: "1",
       title: "Увеличить выручку на 25%",
@@ -156,7 +156,32 @@ export default function StrategyDashboard() {
   }
 
   const handleAddGoal = () => {
-    console.log("Добавление новой цели:", newGoal)
+    if (!newGoal.title || !newGoal.description || !newGoal.owner || !newGoal.endDate) {
+      alert("Пожалуйста, заполните все обязательные поля")
+      return
+    }
+
+    const newGoalObject: Goal = {
+      id: Date.now().toString(),
+      title: newGoal.title,
+      description: newGoal.description,
+      type: newGoal.type,
+      level: newGoal.level,
+      owner: newGoal.owner,
+      department: newGoal.department || "Общий",
+      progress: 0,
+      status: "on-track",
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: newGoal.endDate,
+      keyResults: [],
+      comments: [],
+    }
+
+    setGoals([...goals, newGoalObject])
+
+    // Показываем уведомление об успешном создании
+    alert(`Цель "${newGoal.title}" успешно создана!`)
+
     setShowAddGoal(false)
     setNewGoal({
       title: "",
@@ -212,26 +237,29 @@ export default function StrategyDashboard() {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Название цели</label>
+                <label className="text-sm font-medium text-foreground">Название цели *</label>
                 <Input
                   value={newGoal.title}
                   onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
                   placeholder="Введите название цели"
+                  className="mt-1"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Описание</label>
+                <label className="text-sm font-medium text-foreground">Описание *</label>
                 <Textarea
                   value={newGoal.description}
                   onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
                   placeholder="Подробное описание цели"
+                  className="mt-1"
+                  rows={3}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Тип цели</label>
+                  <label className="text-sm font-medium text-foreground">Тип цели</label>
                   <Select value={newGoal.type} onValueChange={(value: any) => setNewGoal({ ...newGoal, type: value })}>
-                    <SelectTrigger>
+                    <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -243,12 +271,12 @@ export default function StrategyDashboard() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Уровень</label>
+                  <label className="text-sm font-medium text-foreground">Уровень</label>
                   <Select
                     value={newGoal.level}
                     onValueChange={(value: any) => setNewGoal({ ...newGoal, level: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -261,27 +289,49 @@ export default function StrategyDashboard() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Ответственный</label>
+                  <label className="text-sm font-medium text-foreground">Ответственный *</label>
                   <Input
                     value={newGoal.owner}
                     onChange={(e) => setNewGoal({ ...newGoal, owner: e.target.value })}
                     placeholder="ФИО ответственного"
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Срок выполнения</label>
+                  <label className="text-sm font-medium text-foreground">Отдел</label>
                   <Input
-                    type="date"
-                    value={newGoal.endDate}
-                    onChange={(e) => setNewGoal({ ...newGoal, endDate: e.target.value })}
+                    value={newGoal.department}
+                    onChange={(e) => setNewGoal({ ...newGoal, department: e.target.value })}
+                    placeholder="Название отдела"
+                    className="mt-1"
                   />
                 </div>
               </div>
-              <div className="flex justify-end space-x-2">
+              <div>
+                <label className="text-sm font-medium text-foreground">Срок выполнения *</label>
+                <Input
+                  type="date"
+                  value={newGoal.endDate}
+                  onChange={(e) => setNewGoal({ ...newGoal, endDate: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border dark:border-blue-800 p-3 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Совет:</strong> Формулируйте цели по принципу SMART: конкретные, измеримые, достижимые,
+                  релевантные и ограниченные по времени.
+                </p>
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
                 <Button variant="outline" onClick={() => setShowAddGoal(false)}>
                   Отмена
                 </Button>
-                <Button onClick={handleAddGoal}>Создать цель</Button>
+                <Button
+                  onClick={handleAddGoal}
+                  disabled={!newGoal.title || !newGoal.description || !newGoal.owner || !newGoal.endDate}
+                >
+                  Создать цель
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -295,7 +345,7 @@ export default function StrategyDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Всего целей</p>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{goals.length}</p>
               </div>
               <Target className="w-8 h-8 text-blue-600" />
             </div>
@@ -306,7 +356,7 @@ export default function StrategyDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Выполнено</p>
-                <p className="text-2xl font-bold text-green-600">18</p>
+                <p className="text-2xl font-bold text-green-600">{goals.filter((g) => g.progress === 100).length}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
@@ -317,7 +367,9 @@ export default function StrategyDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">В процессе</p>
-                <p className="text-2xl font-bold text-yellow-600">4</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {goals.filter((g) => g.progress > 0 && g.progress < 100).length}
+                </p>
               </div>
               <Clock className="w-8 h-8 text-yellow-600" />
             </div>
@@ -328,7 +380,9 @@ export default function StrategyDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Средний прогресс</p>
-                <p className="text-2xl font-bold">67%</p>
+                <p className="text-2xl font-bold">
+                  {Math.round(goals.reduce((acc, goal) => acc + goal.progress, 0) / goals.length)}%
+                </p>
               </div>
               <TrendingUp className="w-8 h-8 text-purple-600" />
             </div>
@@ -348,59 +402,73 @@ export default function StrategyDashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {goals.map((goal) => (
-              <Card key={goal.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{goal.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">{goal.description}</p>
-                    </div>
-                    <Badge className={`ml-2 ${getStatusColor(goal.status)}`}>
-                      {getStatusIcon(goal.status)}
-                      <span className="ml-1">
-                        {goal.status === "on-track" ? "В плане" : goal.status === "at-risk" ? "Риск" : "Отстает"}
-                      </span>
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Прогресс</span>
-                        <span>{goal.progress}%</span>
+          {goals.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Target className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Пока нет целей</h3>
+                <p className="text-muted-foreground mb-4">Создайте первую цель, чтобы начать отслеживать прогресс</p>
+                <Button onClick={() => setShowAddGoal(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Создать цель
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {goals.map((goal) => (
+                <Card key={goal.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg">{goal.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">{goal.description}</p>
                       </div>
-                      <Progress value={goal.progress} className="h-2" />
+                      <Badge className={`ml-2 ${getStatusColor(goal.status)}`}>
+                        {getStatusIcon(goal.status)}
+                        <span className="ml-1">
+                          {goal.status === "on-track" ? "В плане" : goal.status === "at-risk" ? "Риск" : "Отстает"}
+                        </span>
+                      </Badge>
                     </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Прогресс</span>
+                          <span>{goal.progress}%</span>
+                        </div>
+                        <Progress value={goal.progress} className="h-2" />
+                      </div>
 
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <Users className="w-4 h-4 mr-1" />
-                        {goal.owner}
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex items-center">
+                          <Users className="w-4 h-4 mr-1" />
+                          {goal.owner}
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          {new Date(goal.endDate).toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(goal.endDate).toLocaleDateString()}
-                      </div>
-                    </div>
 
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => handleGoalDetails(goal)} className="flex-1">
-                        <Eye className="w-4 h-4 mr-1" />
-                        Подробнее
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleWeeklyReport(goal.id)}>
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        Отчет
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleGoalDetails(goal)} className="flex-1">
+                          <Eye className="w-4 h-4 mr-1" />
+                          Подробнее
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleWeeklyReport(goal.id)}>
+                          <MessageSquare className="w-4 h-4 mr-1" />
+                          Отчет
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="okr" className="space-y-6">

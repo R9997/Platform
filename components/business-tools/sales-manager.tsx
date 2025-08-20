@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   TrendingUp,
   Target,
@@ -74,6 +75,8 @@ export function SalesManager() {
   const [newStageName, setNewStageName] = useState("")
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
   const [editingStage, setEditingStage] = useState<any>(null)
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null)
+  const [showEditDeal, setShowEditDeal] = useState(false)
 
   const [newLead, setNewLead] = useState({
     name: "",
@@ -372,6 +375,31 @@ export function SalesManager() {
     }
   }
 
+  const handleEditDeal = (deal: Deal) => {
+    setEditingDeal(deal)
+    setShowEditDeal(true)
+  }
+
+  const handleSaveDeal = () => {
+    if (editingDeal) {
+      setDeals(deals.map((deal) => (deal.id === editingDeal.id ? editingDeal : deal)))
+      setEditingDeal(null)
+      setShowEditDeal(false)
+    }
+  }
+
+  const handleDeleteDeal = (dealId: number) => {
+    const dealToDelete = deals.find((deal) => deal.id === dealId)
+    if (dealToDelete) {
+      setDeals(deals.filter((deal) => deal.id !== dealId))
+      setSalesMetrics({
+        ...salesMetrics,
+        totalDeals: salesMetrics.totalDeals - 1,
+        totalValue: salesMetrics.totalValue - dealToDelete.value,
+      })
+    }
+  }
+
   const handleDeleteLead = (leadId: number) => {
     setLeads(leads.filter((lead) => lead.id !== leadId))
     setSalesMetrics({ ...salesMetrics, totalLeads: salesMetrics.totalLeads - 1 })
@@ -457,15 +485,33 @@ export function SalesManager() {
   const uniqueManagers = Array.from(new Set(deals.map((deal) => deal.assignedTo)))
 
   const handleEditStage = (stage: any) => {
-    setEditingStage({ ...stage })
+    setEditingStage({
+      ...stage,
+      color: stage.color || "blue",
+      bgClass: stage.bgClass || "bg-blue-500",
+      textClass: stage.textClass || "text-blue-600",
+      width: stage.width || 80,
+    })
     setShowEditPipeline(true)
   }
 
   const handleSaveStage = () => {
     if (editingStage) {
-      setPipelineStages(pipelineStages.map((stage) => (stage.stage === editingStage.stage ? editingStage : stage)))
+      const updatedStages = pipelineStages.map((stage) =>
+        stage.stage === editingStage.stage
+          ? {
+              ...editingStage,
+              count: Number(editingStage.count) || 0,
+              value: Number(editingStage.value) || 0,
+              width: Number(editingStage.width) || 80,
+            }
+          : stage,
+      )
+      setPipelineStages(updatedStages)
       setEditingStage(null)
       setShowEditPipeline(false)
+
+      console.log("[v0] Stage updated successfully:", editingStage.stage)
     }
   }
 
@@ -923,7 +969,7 @@ export function SalesManager() {
                     Менеджер: <span className="font-medium text-foreground">{deal.assignedTo}</span>
                   </p>
                   <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" onClick={() => alert(`Редактировать сделку: ${deal.title}`)}>
+                    <Button size="sm" variant="outline" onClick={() => handleEditDeal(deal)}>
                       <Edit className="w-4 h-4 mr-1" />
                       Ред.
                     </Button>
@@ -947,129 +993,221 @@ export function SalesManager() {
             </div>
           )}
         </TabsContent>
-
-        {/* Диалоги */}
-        <TabsContent value="deals" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Активные сделки</h3>
-            <Button onClick={() => setShowAddDeal(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Добавить сделку
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {deals.map((deal) => (
-              <Card key={deal.id}>
-                <CardContent className="p-4">
-                  <h4 className="font-medium">{deal.title}</h4>
-                  <p className="text-sm text-muted-foreground">{deal.client}</p>
-                  <p className="text-sm mt-2">
-                    Сумма: <strong>{deal.value.toLocaleString()} ₽</strong>
-                  </p>
-                  <p className="text-sm">
-                    Этап: <Badge variant="secondary">{deal.stage}</Badge>
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">Вероятность: {deal.probability}%</p>
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" onClick={() => alert(`Редактировать сделку: ${deal.title}`)}>
-                      <Edit className="w-4 h-4 mr-1" />
-                      Ред.
-                    </Button>
-                    <Button size="sm" onClick={() => alert(`Открыть сделку: ${deal.title}`)}>
-                      <Eye className="w-4 h-4 mr-1" />
-                      Открыть
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
       </Tabs>
 
-      {/* Диалоги */}
-      {showEditPipeline && editingStage && (
-        <Dialog open={showEditPipeline} onOpenChange={setShowEditPipeline}>
-          <DialogContent className="enhanced-modal">
-            <DialogHeader>
-              <DialogTitle>Редактировать этап</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label>Название</Label>
-                <Input
-                  className="enhanced-input"
-                  value={editingStage.stage}
-                  onChange={(e) => setEditingStage({ ...editingStage, stage: e.target.value })}
-                />
+      <Dialog open={showEditDeal} onOpenChange={setShowEditDeal}>
+        <DialogContent className="max-w-2xl mx-4">
+          <DialogHeader>
+            <DialogTitle>Редактировать сделку</DialogTitle>
+          </DialogHeader>
+          {editingDeal && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Название сделки</Label>
+                  <Input
+                    value={editingDeal.title}
+                    onChange={(e) => setEditingDeal({ ...editingDeal, title: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Клиент</Label>
+                  <Input
+                    value={editingDeal.client}
+                    onChange={(e) => setEditingDeal({ ...editingDeal, client: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Сумма (₽)</Label>
+                  <Input
+                    type="number"
+                    value={editingDeal.value}
+                    onChange={(e) => setEditingDeal({ ...editingDeal, value: Number(e.target.value) })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Этап</Label>
+                  <Select value={editingDeal.stage} onValueChange={(v) => setEditingDeal({ ...editingDeal, stage: v })}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Квалификация">Квалификация</SelectItem>
+                      <SelectItem value="Предложение">Предложение</SelectItem>
+                      <SelectItem value="Переговоры">Переговоры</SelectItem>
+                      <SelectItem value="Закрытие">Закрытие</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Вероятность (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={editingDeal.probability}
+                    onChange={(e) => setEditingDeal({ ...editingDeal, probability: Number(e.target.value) })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Дата закрытия</Label>
+                  <Input
+                    type="date"
+                    value={editingDeal.closeDate}
+                    onChange={(e) => setEditingDeal({ ...editingDeal, closeDate: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
               </div>
               <div>
-                <Label>Количество</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={editingStage.count}
-                  onChange={(e) => setEditingStage({ ...editingStage, count: Number(e.target.value) })}
-                />
-              </div>
-              <div>
-                <Label>Сумма (₽)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  value={editingStage.value}
-                  onChange={(e) => setEditingStage({ ...editingStage, value: Number(e.target.value) })}
-                />
-              </div>
-              <div>
-                <Label>Цвет</Label>
+                <Label>Ответственный менеджер</Label>
                 <Select
-                  value={editingStage.color}
-                  onValueChange={(v) => {
-                    const colorMap = {
-                      blue: { bgClass: "bg-blue-500", textClass: "text-blue-600" },
-                      green: { bgClass: "bg-green-500", textClass: "text-green-600" },
-                      purple: { bgClass: "bg-purple-500", textClass: "text-purple-600" },
-                      orange: { bgClass: "bg-orange-500", textClass: "text-orange-600" },
-                      emerald: { bgClass: "bg-emerald-500", textClass: "text-emerald-600" },
-                      red: { bgClass: "bg-red-500", textClass: "text-red-600" },
-                      yellow: { bgClass: "bg-yellow-500", textClass: "text-yellow-600" },
-                    }
-                    const colorClasses = colorMap[v as keyof typeof colorMap] || colorMap.blue
-                    setEditingStage({ ...editingStage, color: v, ...colorClasses })
-                  }}
+                  value={editingDeal.assignedTo}
+                  onValueChange={(v) => setEditingDeal({ ...editingDeal, assignedTo: v })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="blue">Синий</SelectItem>
-                    <SelectItem value="green">Зеленый</SelectItem>
-                    <SelectItem value="purple">Фиолетовый</SelectItem>
-                    <SelectItem value="orange">Оранжевый</SelectItem>
-                    <SelectItem value="emerald">Изумрудный</SelectItem>
-                    <SelectItem value="red">Красный</SelectItem>
-                    <SelectItem value="yellow">Желтый</SelectItem>
+                    <SelectItem value="Михаил Сидоров">Михаил Сидоров</SelectItem>
+                    <SelectItem value="Елена Козлова">Елена Козлова</SelectItem>
+                    <SelectItem value="Андрей Петров">Андрей Петров</SelectItem>
+                    <SelectItem value="Ольга Иванова">Ольга Иванова</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label>Ширина (%)</Label>
-                <Input
-                  className="enhanced-input"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={editingStage.width}
-                  onChange={(e) => setEditingStage({ ...editingStage, width: Number(e.target.value) })}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={handleSaveStage}>Сохранить</Button>
-                <Button variant="outline" onClick={() => setShowEditPipeline(false)}>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setShowEditDeal(false)}>
                   Отмена
                 </Button>
+                <Button onClick={handleSaveDeal}>
+                  <Save className="w-4 h-4 mr-2" />
+                  Сохранить
+                </Button>
               </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Диалоги */}
+      {showEditPipeline && (
+        <Dialog
+          open={showEditPipeline}
+          onOpenChange={(open) => {
+            setShowEditPipeline(open)
+            if (!open) {
+              setEditingStage(null)
+            }
+          }}
+        >
+          <DialogContent className="enhanced-modal">
+            <DialogHeader>
+              <DialogTitle>{editingStage ? "Редактировать этап" : "Настройки воронки"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {editingStage ? (
+                <>
+                  <div>
+                    <Label>Название</Label>
+                    <Input
+                      className="enhanced-input"
+                      value={editingStage.stage || ""}
+                      onChange={(e) => setEditingStage({ ...editingStage, stage: e.target.value })}
+                      placeholder="Введите название этапа"
+                    />
+                  </div>
+                  <div>
+                    <Label>Количество</Label>
+                    <Input
+                      className="enhanced-input"
+                      type="number"
+                      value={editingStage.count || 0}
+                      onChange={(e) => setEditingStage({ ...editingStage, count: Number(e.target.value) })}
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <Label>Сумма (₽)</Label>
+                    <Input
+                      className="enhanced-input"
+                      type="number"
+                      value={editingStage.value || 0}
+                      onChange={(e) => setEditingStage({ ...editingStage, value: Number(e.target.value) })}
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <Label>Цвет</Label>
+                    <Select
+                      value={editingStage.color || "blue"}
+                      onChange={(e) => {
+                        const colorMap = {
+                          blue: { bgClass: "bg-blue-500", textClass: "text-blue-600" },
+                          green: { bgClass: "bg-green-500", textClass: "text-green-600" },
+                          purple: { bgClass: "bg-purple-500", textClass: "text-purple-600" },
+                          orange: { bgClass: "bg-orange-500", textClass: "text-orange-600" },
+                          emerald: { bgClass: "bg-emerald-500", textClass: "text-emerald-600" },
+                          red: { bgClass: "bg-red-500", textClass: "text-red-600" },
+                          yellow: { bgClass: "bg-yellow-500", textClass: "text-yellow-600" },
+                        }
+                        const colorClasses = colorMap[e.target.value as keyof typeof colorMap] || colorMap.blue
+                        setEditingStage({ ...editingStage, color: e.target.value, ...colorClasses })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="blue">Синий</SelectItem>
+                        <SelectItem value="green">Зеленый</SelectItem>
+                        <SelectItem value="purple">Фиолетовый</SelectItem>
+                        <SelectItem value="orange">Оранжевый</SelectItem>
+                        <SelectItem value="emerald">Изумрудный</SelectItem>
+                        <SelectItem value="red">Красный</SelectItem>
+                        <SelectItem value="yellow">Желтый</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Ширина (%)</Label>
+                    <Input
+                      className="enhanced-input"
+                      type="number"
+                      min="10"
+                      max="100"
+                      value={editingStage.width || 80}
+                      onChange={(e) => setEditingStage({ ...editingStage, width: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSaveStage}
+                      disabled={!editingStage.stage}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      Сохранить
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowEditPipeline(false)
+                        setEditingStage(null)
+                      }}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Выберите этап для редактирования</p>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
@@ -1324,7 +1462,7 @@ export function SalesManager() {
               </div>
               <div>
                 <Label>Заметки</Label>
-                <Input
+                <Textarea
                   className="enhanced-input"
                   value={newLead.notes}
                   onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}

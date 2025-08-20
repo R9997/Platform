@@ -1,7 +1,9 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -14,24 +16,19 @@ import {
   FileText,
   Download,
   Search,
-  Filter,
   CheckCircle,
   Clock,
   AlertCircle,
-  Building,
   Eye,
   Edit,
   Plus,
-  Archive,
   Bell,
   Settings,
   FilePenLineIcon as Signature,
-  User,
-  MessageSquare,
-  Calendar,
   XCircle,
+  Upload,
+  X,
 } from "lucide-react"
-import { Switch } from "@/components/ui/switch"
 
 interface Document {
   id: string
@@ -45,6 +42,7 @@ interface Document {
   signers: string[]
   description: string
   fileName?: string
+  files?: File[]
 }
 
 interface Counterparty {
@@ -93,6 +91,18 @@ export default function EDODashboard() {
   const [showApprovalHistory, setShowApprovalHistory] = useState(false)
   const [showSendForApproval, setShowSendForApproval] = useState(false)
   const [showAddCounterparty, setShowAddCounterparty] = useState(false)
+
+  const [newDocument, setNewDocument] = useState({
+    title: "",
+    type: "invoice" as const,
+    direction: "incoming" as const,
+    counterparty: "",
+    amount: "",
+    description: "",
+    files: [] as File[],
+  })
+  const [dragActive, setDragActive] = useState(false)
+
   const [newCounterparty, setNewCounterparty] = useState({
     name: "",
     inn: "",
@@ -268,7 +278,7 @@ export default function EDODashboard() {
     },
   ])
 
-  const [documents] = useState<Document[]>([
+  const [documents, setDocuments] = useState<Document[]>([
     {
       id: "1",
       title: 'Счет №001 от ООО "Партнер"',
@@ -399,6 +409,92 @@ export default function EDODashboard() {
     const matchesFilter = filterStatus === "all" || doc.status === filterStatus
     return matchesSearch && matchesFilter
   })
+
+  const handleFileUpload = (files: FileList | null) => {
+    if (files) {
+      const fileArray = Array.from(files)
+      setNewDocument((prev) => ({
+        ...prev,
+        files: [...prev.files, ...fileArray],
+      }))
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(false)
+    handleFileUpload(e.dataTransfer.files)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(false)
+  }
+
+  const removeFile = (index: number) => {
+    setNewDocument((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, i) => i !== index),
+    }))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const handleAddDocument = () => {
+    if (!newDocument.title || !newDocument.counterparty) {
+      setNotification({
+        type: "error",
+        message: "Пожалуйста, заполните обязательные поля: название и контрагент",
+      })
+      return
+    }
+
+    const document: Document = {
+      id: Date.now().toString(),
+      title: newDocument.title,
+      type: newDocument.type,
+      direction: newDocument.direction,
+      counterparty: newDocument.counterparty,
+      amount: newDocument.amount ? Number.parseInt(newDocument.amount) : undefined,
+      date: new Date().toISOString().split("T")[0],
+      status: "draft",
+      signers: [],
+      description: newDocument.description,
+      fileName: newDocument.files[0]?.name,
+      files: newDocument.files,
+    }
+
+    setDocuments([document, ...documents])
+
+    setNotification({
+      type: "success",
+      message: `Документ "${newDocument.title}" успешно создан`,
+    })
+
+    // Сброс формы
+    setNewDocument({
+      title: "",
+      type: "invoice",
+      direction: "incoming",
+      counterparty: "",
+      amount: "",
+      description: "",
+      files: [],
+    })
+
+    setShowAddDocument(false)
+  }
 
   const handleSendForApproval = () => {
     const newDoc: ApprovalDocument = {
@@ -546,6 +642,28 @@ export default function EDODashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+            notification.type === "success"
+              ? "bg-green-100 border border-green-300 text-green-800"
+              : notification.type === "error"
+                ? "bg-red-100 border border-red-300 text-red-800"
+                : notification.type === "warning"
+                  ? "bg-yellow-100 border border-yellow-300 text-yellow-800"
+                  : "bg-blue-100 border border-blue-300 text-blue-800"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span>{notification.message}</span>
+            <Button variant="ghost" size="sm" onClick={() => setNotification(null)} className="ml-2 h-6 w-6 p-0">
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -641,7 +759,7 @@ export default function EDODashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Всего документов</p>
-                <p className="text-2xl font-bold">127</p>
+                <p className="text-2xl font-bold">{documents.length}</p>
               </div>
               <FileText className="w-8 h-8 text-blue-500" />
             </div>
@@ -652,7 +770,7 @@ export default function EDODashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">На подписании</p>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-2xl font-bold">{documents.filter((d) => d.status === "pending").length}</p>
               </div>
               <Signature className="w-8 h-8 text-yellow-500" />
             </div>
@@ -663,7 +781,7 @@ export default function EDODashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Подписано сегодня</p>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{documents.filter((d) => d.status === "signed").length}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>
@@ -725,15 +843,18 @@ export default function EDODashboard() {
                   Добавить документ
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Новый документ</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="doc-type">Тип документа</Label>
-                      <Select>
+                      <Label htmlFor="doc-type">Тип документа *</Label>
+                      <Select
+                        value={newDocument.type}
+                        onValueChange={(value: any) => setNewDocument({ ...newDocument, type: value })}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Выберите тип" />
                         </SelectTrigger>
@@ -747,8 +868,11 @@ export default function EDODashboard() {
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="direction">Направление</Label>
-                      <Select>
+                      <Label htmlFor="direction">Направление *</Label>
+                      <Select
+                        value={newDocument.direction}
+                        onValueChange={(value: any) => setNewDocument({ ...newDocument, direction: value })}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Выберите направление" />
                         </SelectTrigger>
@@ -760,31 +884,106 @@ export default function EDODashboard() {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="title">Название документа</Label>
-                    <Input id="title" placeholder="Введите название документа" />
+                    <Label htmlFor="title">Название документа *</Label>
+                    <Input
+                      id="title"
+                      placeholder="Введите название документа"
+                      value={newDocument.title}
+                      onChange={(e) => setNewDocument({ ...newDocument, title: e.target.value })}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="counterparty">Контрагент</Label>
-                    <Input id="counterparty" placeholder="Название организации" />
+                    <Label htmlFor="counterparty">Контрагент *</Label>
+                    <Input
+                      id="counterparty"
+                      placeholder="Название организации"
+                      value={newDocument.counterparty}
+                      onChange={(e) => setNewDocument({ ...newDocument, counterparty: e.target.value })}
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="amount">Сумма</Label>
-                    <Input id="amount" type="number" placeholder="0" />
+                    <Label htmlFor="amount">Сумма (₽)</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder="0"
+                      value={newDocument.amount}
+                      onChange={(e) => setNewDocument({ ...newDocument, amount: e.target.value })}
+                    />
                   </div>
                   <div>
                     <Label htmlFor="description">Описание</Label>
-                    <Textarea id="description" placeholder="Краткое описание документа" />
+                    <Textarea
+                      id="description"
+                      placeholder="Краткое описание документа"
+                      value={newDocument.description}
+                      onChange={(e) => setNewDocument({ ...newDocument, description: e.target.value })}
+                    />
                   </div>
+
                   <div>
-                    <Label htmlFor="file">Файл документа</Label>
-                    <Input id="file" type="file" accept=".pdf,.doc,.docx" />
+                    <Label>Файлы документа</Label>
+                    <div
+                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                        dragActive ? "border-primary bg-primary/5" : "border-border"
+                      }`}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                    >
+                      <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground mb-2">Перетащите файлы сюда или нажмите для выбора</p>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Поддерживаются форматы: PDF, DOC, DOCX, XLS, XLSX
+                      </p>
+                      <input
+                        type="file"
+                        multiple
+                        onChange={(e) => handleFileUpload(e.target.files)}
+                        className="hidden"
+                        id="file-upload"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("file-upload")?.click()}
+                      >
+                        Выбрать файлы
+                      </Button>
+                    </div>
+
+                    {newDocument.files.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        <Label className="text-sm font-medium">Прикрепленные файлы:</Label>
+                        {newDocument.files.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <FileText className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">({formatFileSize(file.size)})</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setShowAddDocument(false)}>
                     Отмена
                   </Button>
-                  <Button onClick={() => setShowAddDocument(false)}>Создать документ</Button>
+                  <Button onClick={handleAddDocument}>Создать документ</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -848,810 +1047,7 @@ export default function EDODashboard() {
             ))}
           </div>
         </TabsContent>
-
-        <TabsContent value="incoming" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Входящие документы</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Документы от контрагентов: акты, накладные, счета, договоры</p>
-              <div className="mt-4 space-y-2">
-                {documents
-                  .filter((doc) => doc.direction === "incoming")
-                  .map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{doc.title}</p>
-                        <p className="text-sm text-muted-foreground">{doc.counterparty}</p>
-                      </div>
-                      <Badge className={getStatusColor(doc.status)}>
-                        {doc.status === "signed" && "Подписано"}
-                        {doc.status === "pending" && "На подписании"}
-                        {doc.status === "draft" && "Черновик"}
-                      </Badge>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="outgoing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Исходящие документы</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Документы для отправки: счета, акты, оферты, договоры, счета-фактуры
-              </p>
-              <div className="mt-4 space-y-2">
-                {documents
-                  .filter((doc) => doc.direction === "outgoing")
-                  .map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{doc.title}</p>
-                        <p className="text-sm text-muted-foreground">{doc.counterparty}</p>
-                      </div>
-                      <Badge className={getStatusColor(doc.status)}>
-                        {doc.status === "signed" && "Подписано"}
-                        {doc.status === "pending" && "На подписании"}
-                        {doc.status === "draft" && "Черновик"}
-                      </Badge>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="approval" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Согласование документов</span>
-                <Dialog open={showSendForApproval} onOpenChange={setShowSendForApproval}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Отправить на согласование
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Отправить документ на согласование</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Название документа</Label>
-                        <Input
-                          value={newApprovalDoc.title}
-                          onChange={(e) => setNewApprovalDoc({ ...newApprovalDoc, title: e.target.value })}
-                          placeholder="Введите название документа"
-                        />
-                      </div>
-                      <div>
-                        <Label>Тип документа</Label>
-                        <Select
-                          value={newApprovalDoc.type}
-                          onValueChange={(value) => setNewApprovalDoc({ ...newApprovalDoc, type: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Выберите тип" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Договор">Договор</SelectItem>
-                            <SelectItem value="Соглашение">Соглашение</SelectItem>
-                            <SelectItem value="Счет">Счет</SelectItem>
-                            <SelectItem value="Акт">Акт</SelectItem>
-                            <SelectItem value="Приказ">Приказ</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Описание</Label>
-                        <Textarea
-                          value={newApprovalDoc.description}
-                          onChange={(e) => setNewApprovalDoc({ ...newApprovalDoc, description: e.target.value })}
-                          placeholder="Краткое описание документа"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Сумма (если применимо)</Label>
-                          <Input
-                            type="number"
-                            value={newApprovalDoc.amount}
-                            onChange={(e) => setNewApprovalDoc({ ...newApprovalDoc, amount: e.target.value })}
-                            placeholder="0"
-                          />
-                        </div>
-                        <div>
-                          <Label>Срок согласования</Label>
-                          <Input
-                            type="date"
-                            value={newApprovalDoc.deadline}
-                            onChange={(e) => setNewApprovalDoc({ ...newApprovalDoc, deadline: e.target.value })}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label>Согласующие лица</Label>
-                        {newApprovalDoc.approvers.map((approver, index) => (
-                          <div key={index} className="flex gap-2 mt-2">
-                            <Input
-                              value={approver}
-                              onChange={(e) => {
-                                const newApprovers = [...newApprovalDoc.approvers]
-                                newApprovers[index] = e.target.value
-                                setNewApprovalDoc({ ...newApprovalDoc, approvers: newApprovers })
-                              }}
-                              placeholder="ФИО согласующего"
-                            />
-                            {index === newApprovalDoc.approvers.length - 1 && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  setNewApprovalDoc({
-                                    ...newApprovalDoc,
-                                    approvers: [...newApprovalDoc.approvers, ""],
-                                  })
-                                }
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <Label>Файл документа</Label>
-                        <Input type="file" accept=".pdf,.doc,.docx" />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setShowSendForApproval(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleSendForApproval}>Отправить на согласование</Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-6">Внутренний процесс визирования документов</p>
-
-              <div className="space-y-4">
-                {approvalDocuments.map((doc) => (
-                  <Card key={doc.id} className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                            <h4 className="font-semibold text-lg truncate">{doc.title}</h4>
-                            <Badge className={getApprovalStatusColor(doc.status)}>
-                              {doc.status === "in-progress" && "На согласовании"}
-                              {doc.status === "approved" && "Согласовано"}
-                              {doc.status === "rejected" && "Отклонено"}
-                              {doc.status === "completed" && "Завершено"}
-                            </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
-                            <div className="flex items-center gap-1">
-                              <User className="w-4 h-4" />
-                              <span>{doc.initiator}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              <span>Создан: {doc.created}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              <span>Срок: {doc.deadline}</span>
-                            </div>
-                            {doc.amount && (
-                              <div className="font-medium text-foreground">{doc.amount.toLocaleString()} ₽</div>
-                            )}
-                          </div>
-
-                          {/* Прогресс согласования */}
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                              <span>Прогресс согласования</span>
-                              <span>
-                                {doc.steps.filter((s) => s.status === "approved").length} из {doc.steps.length}
-                              </span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                                style={{
-                                  width: `${(doc.steps.filter((s) => s.status === "approved").length / doc.steps.length) * 100}%`,
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          {/* Текущие согласующие */}
-                          <div className="mt-4">
-                            <p className="text-sm font-medium mb-2">Этапы согласования:</p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                              {doc.steps.map((step) => (
-                                <div key={step.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                                  {getApprovalStatusIcon(step.status)}
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium truncate">{step.approver}</p>
-                                    <p className="text-xs text-muted-foreground">{step.role}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-auto w-full">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full sm:w-auto bg-transparent"
-                            onClick={() => {
-                              setSelectedApprovalDoc(doc)
-                              setShowApprovalHistory(true)
-                            }}
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            История
-                          </Button>
-                          <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
-                            <DialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                className="w-full sm:w-auto"
-                                onClick={() => setSelectedApprovalDoc(doc)}
-                                disabled={doc.status !== "in-progress"}
-                              >
-                                <MessageSquare className="w-4 h-4 mr-2" />
-                                Согласовать
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Согласование документа</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div>
-                                  <p className="font-medium">{selectedApprovalDoc?.title}</p>
-                                  <p className="text-sm text-muted-foreground">{selectedApprovalDoc?.description}</p>
-                                </div>
-                                <div>
-                                  <Label>Решение</Label>
-                                  <Select
-                                    value={approvalAction.action}
-                                    onValueChange={(value: "approve" | "reject") =>
-                                      setApprovalAction({ ...approvalAction, action: value })
-                                    }
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="approve">Согласовать</SelectItem>
-                                      <SelectItem value="reject">Отклонить</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div>
-                                  <Label>Комментарий</Label>
-                                  <Textarea
-                                    value={approvalAction.comment}
-                                    onChange={(e) => setApprovalAction({ ...approvalAction, comment: e.target.value })}
-                                    placeholder="Добавьте комментарий к решению"
-                                  />
-                                </div>
-                              </div>
-                              <div className="flex justify-end gap-2">
-                                <Button variant="outline" onClick={() => setShowApprovalDialog(false)}>
-                                  Отмена
-                                </Button>
-                                <Button
-                                  onClick={() => selectedApprovalDoc && handleApprovalAction(selectedApprovalDoc.id)}
-                                >
-                                  {approvalAction.action === "approve" ? "Согласовать" : "Отклонить"}
-                                </Button>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="archive" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Архив документов</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Все документы с поиском по реквизитам и тегам</p>
-              <div className="mt-4">
-                <div className="flex gap-4 mb-4">
-                  <Input placeholder="Поиск по реквизитам..." className="flex-1" />
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Фильтры
-                  </Button>
-                </div>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Archive className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p>Архивные документы будут отображаться здесь</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="counterparties" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Контрагенты</span>
-                <Dialog open={showAddCounterparty} onOpenChange={setShowAddCounterparty}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Добавить контрагента
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Новый контрагент</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Наименование организации *</Label>
-                          <Input
-                            value={newCounterparty.name}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, name: e.target.value })}
-                            placeholder="ООО 'Название компании'"
-                          />
-                        </div>
-                        <div>
-                          <Label>ИНН *</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              value={newCounterparty.inn}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, inn: e.target.value })}
-                              placeholder="1234567890"
-                              maxLength={12}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleCheckCounterparty(newCounterparty.inn)}
-                              disabled={!newCounterparty.inn}
-                            >
-                              Проверить
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>КПП</Label>
-                          <Input
-                            value={newCounterparty.kpp}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, kpp: e.target.value })}
-                            placeholder="123456789"
-                            maxLength={9}
-                          />
-                        </div>
-                        <div>
-                          <Label>Контактное лицо</Label>
-                          <Input
-                            value={newCounterparty.contactPerson}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, contactPerson: e.target.value })}
-                            placeholder="Иванов Иван Иванович"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label>Юридический адрес</Label>
-                        <Textarea
-                          value={newCounterparty.address}
-                          onChange={(e) => setNewCounterparty({ ...newCounterparty, address: e.target.value })}
-                          placeholder="123456, г. Москва, ул. Примерная, д. 1, оф. 100"
-                          rows={2}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Телефон</Label>
-                          <Input
-                            value={newCounterparty.phone}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, phone: e.target.value })}
-                            placeholder="+7 (999) 123-45-67"
-                          />
-                        </div>
-                        <div>
-                          <Label>Email</Label>
-                          <Input
-                            type="email"
-                            value={newCounterparty.email}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, email: e.target.value })}
-                            placeholder="info@company.ru"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <h4 className="font-medium mb-3">Банковские реквизиты</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label>Расчетный счет</Label>
-                            <Input
-                              value={newCounterparty.bankAccount}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, bankAccount: e.target.value })}
-                              placeholder="40702810000000000000"
-                              maxLength={20}
-                            />
-                          </div>
-                          <div>
-                            <Label>БИК банка</Label>
-                            <Input
-                              value={newCounterparty.bik}
-                              onChange={(e) => setNewCounterparty({ ...newCounterparty, bik: e.target.value })}
-                              placeholder="044525225"
-                              maxLength={9}
-                            />
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <Label>Наименование банка</Label>
-                          <Input
-                            value={newCounterparty.bankName}
-                            onChange={(e) => setNewCounterparty({ ...newCounterparty, bankName: e.target.value })}
-                            placeholder="ПАО Сбербанк"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setShowAddCounterparty(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleAddCounterparty} disabled={!newCounterparty.name || !newCounterparty.inn}>
-                        Добавить контрагента
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Поиск по названию или ИНН..." className="pl-10" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {counterparties.map((counterparty) => (
-                  <div key={counterparty.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <Building className="w-8 h-8 text-blue-500" />
-                      <div>
-                        <h4 className="font-medium">{counterparty.name}</h4>
-                        <p className="text-sm text-muted-foreground">ИНН: {counterparty.inn}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Последняя активность: {counterparty.lastActivity}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge
-                        className={
-                          counterparty.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : counterparty.status === "debt"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-gray-100 text-gray-800"
-                        }
-                      >
-                        {counterparty.status === "active" && "Активный"}
-                        {counterparty.status === "debt" && "Задолженность"}
-                        {counterparty.status === "blocked" && "Заблокирован"}
-                      </Badge>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleCheckCounterparty(counterparty.inn)}>
-                          Проверить статус
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
-
-      <Dialog open={showApprovalHistory} onOpenChange={setShowApprovalHistory}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>История согласования</DialogTitle>
-          </DialogHeader>
-          {selectedApprovalDoc && (
-            <div className="space-y-6">
-              <div className="border-b pb-4">
-                <h3 className="text-lg font-semibold">{selectedApprovalDoc.title}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 text-sm text-muted-foreground">
-                  <div>Инициатор: {selectedApprovalDoc.initiator}</div>
-                  <div>Создан: {selectedApprovalDoc.created}</div>
-                  <div>Срок: {selectedApprovalDoc.deadline}</div>
-                  {selectedApprovalDoc.amount && <div>Сумма: {selectedApprovalDoc.amount.toLocaleString()} ₽</div>}
-                </div>
-                <p className="mt-2 text-sm">{selectedApprovalDoc.description}</p>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">Этапы согласования</h4>
-                <div className="space-y-4">
-                  {selectedApprovalDoc.steps.map((step, index) => (
-                    <div key={step.id} className="flex gap-4 p-4 border rounded-lg">
-                      <div className="flex-shrink-0">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            step.status === "approved"
-                              ? "bg-green-100"
-                              : step.status === "rejected"
-                                ? "bg-red-100"
-                                : step.status === "pending"
-                                  ? "bg-yellow-100"
-                                  : "bg-gray-100"
-                          }`}
-                        >
-                          {getApprovalStatusIcon(step.status)}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                          <div>
-                            <p className="font-medium">{step.approver}</p>
-                            <p className="text-sm text-muted-foreground">{step.role}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className={getApprovalStatusColor(step.status)}>
-                              {step.status === "approved" && "Одобрено"}
-                              {step.status === "rejected" && "Отклонено"}
-                              {step.status === "pending" && "Ожидает"}
-                            </Badge>
-                            {step.date && <span className="text-sm text-muted-foreground">{step.date}</span>}
-                          </div>
-                        </div>
-                        {step.comment && (
-                          <div className="mt-2 p-3 bg-muted/50 rounded-lg">
-                            <p className="text-sm">{step.comment}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setShowApprovalHistory(false)}>
-                  Закрыть
-                </Button>
-                <Button>Скачать документ</Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Sign Dialog */}
-      <Dialog open={showSignDialog} onOpenChange={setShowSignDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Подписание документа</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <p className="font-medium">{selectedDocument?.title}</p>
-              <p className="text-sm text-muted-foreground">{selectedDocument?.counterparty}</p>
-            </div>
-            <div>
-              <Label>Квалифицированная электронная подпись</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите сертификат" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cert1">Иванов И.И. (действует до 15.12.2024)</SelectItem>
-                  <SelectItem value="cert2">Петров П.П. (действует до 20.11.2024)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Комментарий</Label>
-              <Textarea placeholder="Дополнительный комментарий к подписи" />
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowSignDialog(false)}>
-              Отмена
-            </Button>
-            <Button onClick={() => setShowSignDialog(false)}>Подписать документ</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-      {showEDOSettings && (
-        <Dialog open={showEDOSettings} onOpenChange={setShowEDOSettings}>
-          <DialogContent className="max-w-2xl mx-4">
-            <DialogHeader>
-              <DialogTitle className="flex items-center space-x-2">
-                <Settings className="w-5 h-5 text-primary" />
-                <span>Настройки ЭДО</span>
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label>Тип электронной подписи</Label>
-                  <Select defaultValue="qualified">
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="simple">Простая ЭП</SelectItem>
-                      <SelectItem value="enhanced">Усиленная неквалифицированная ЭП</SelectItem>
-                      <SelectItem value="qualified">Усиленная квалифицированная ЭП</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Удостоверяющий центр</Label>
-                  <Select defaultValue="cryptopro">
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cryptopro">КриптоПро УЦ</SelectItem>
-                      <SelectItem value="skb">СКБ Контур</SelectItem>
-                      <SelectItem value="tensor">Тензор</SelectItem>
-                      <SelectItem value="sbis">СБИС</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Срок хранения документов (лет)</Label>
-                  <Input type="number" defaultValue="5" className="mt-1" />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label>Настройки уведомлений</Label>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Уведомления о новых документах</Label>
-                    <p className="text-xs text-muted-foreground">Получать уведомления при поступлении документов</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Напоминания о подписании</Label>
-                    <p className="text-xs text-muted-foreground">Напоминать о документах, ожидающих подписи</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Отчеты о статусе документов</Label>
-                    <p className="text-xs text-muted-foreground">Еженедельные отчеты о состоянии документооборота</p>
-                  </div>
-                  <Switch />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label>Безопасность</Label>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Двухфакторная аутентификация</Label>
-                    <p className="text-xs text-muted-foreground">Дополнительная защита при подписании</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Автоматическое архивирование</Label>
-                    <p className="text-xs text-muted-foreground">Автоматически архивировать старые документы</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-sm">Журналирование действий</Label>
-                    <p className="text-xs text-muted-foreground">Ведение подробного журнала всех операций</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label>Интеграции</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">1С:Предприятие</h4>
-                        <p className="text-sm text-muted-foreground">Синхронизация документов</p>
-                      </div>
-                      <Switch />
-                    </div>
-                  </Card>
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">СЭД Directum</h4>
-                        <p className="text-sm text-muted-foreground">Интеграция с СЭД</p>
-                      </div>
-                      <Switch />
-                    </div>
-                  </Card>
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">Росреестр</h4>
-                        <p className="text-sm text-muted-foreground">Подача документов в Росреестр</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                  </Card>
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">ФНС России</h4>
-                        <p className="text-sm text-muted-foreground">Электронная отчетность</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                  </Card>
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setShowEDOSettings(false)}>
-                  Отмена
-                </Button>
-                <Button onClick={() => setShowEDOSettings(false)}>Сохранить настройки</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   )
 }
