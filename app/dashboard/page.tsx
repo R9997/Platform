@@ -5,15 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import {
   Users,
   TrendingUp,
   FileText,
   Settings,
   Bell,
-  Plus,
   Search,
   Target,
   DollarSign,
@@ -29,13 +26,7 @@ import {
   CheckSquare,
   Brain,
   X,
-  User,
-  Zap,
-  Palette,
-  Database,
-  Download,
-  Mail,
-  Calendar,
+  Plus,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Link from "next/link"
@@ -51,7 +42,6 @@ import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 import { AIToolsShowcase } from "@/components/interactive/ai-tools-showcase"
 import { InteractiveTour } from "@/components/guide/interactive-tour"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
-import { GanttChart } from "@/components/project-management/gantt-chart"
 import StrategyDashboard from "@/components/strategy/strategy-dashboard"
 import { ChevronDown } from "lucide-react"
 import { EDODashboard } from "@/components/edo/edo-dashboard"
@@ -127,7 +117,7 @@ export default function Dashboard() {
   const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false)
   const [selectedProject, setSelectedProject] = useState(null)
 
-  const [newRole, setNewRole] = useState({ name: "", permissions: [] })
+  const [newRole, setNewRole] = useState({ name: "", description: "", permissions: [] as string[] })
   const [newLead, setNewLead] = useState({ name: "", email: "", phone: "", value: "", source: "Сайт" })
   const [userSettings, setUserSettings] = useState({
     name: "Пользователь",
@@ -225,6 +215,51 @@ export default function Dashboard() {
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [settingsCategory, setSettingsCategory] = useState<string>("")
 
+  const [roles, setRoles] = useState([
+    {
+      id: 1,
+      name: "Администратор",
+      description: "Имеет полный доступ к системе",
+      permissions: ["Просмотр", "Редактирование", "Удаление", "Администрирование", "Финансы", "HR"],
+      users: 2,
+    },
+    {
+      id: 2,
+      name: "Менеджер",
+      description: "Отвечает за управление проектами и задачами",
+      permissions: ["Просмотр", "Редактирование"],
+      users: 3,
+    },
+    {
+      id: 3,
+      name: "Разработчик",
+      description: "Отвечает за разработку программного обеспечения",
+      permissions: ["Просмотр", "Редактирование"],
+      users: 4,
+    },
+    {
+      id: 4,
+      name: "Дизайнер",
+      description: "Отвечает за дизайн и визуальное оформление",
+      permissions: ["Просмотр", "Редактирование"],
+      users: 1,
+    },
+    {
+      id: 5,
+      name: "Аналитик",
+      description: "Отвечает за анализ данных и отчетность",
+      permissions: ["Просмотр", "Редактирование"],
+      users: 2,
+    },
+    {
+      id: 6,
+      name: "Сотрудник",
+      description: "Обычный сотрудник с ограниченными правами",
+      permissions: ["Просмотр"],
+      users: 10,
+    },
+  ])
+
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
       const project = {
@@ -242,10 +277,16 @@ export default function Dashboard() {
   }
 
   const handleCreateRole = () => {
-    if (newRole.name) {
-      setAvailableRoles([...availableRoles, newRole.name])
-      console.log("Создана новая роль:", newRole)
-      setNewRole({ name: "", permissions: [] })
+    if (newRole.name && newRole.permissions.length > 0) {
+      const role = {
+        id: roles.length + 1,
+        name: newRole.name,
+        description: newRole.description,
+        permissions: newRole.permissions,
+        users: 0,
+      }
+      setRoles([...roles, role])
+      setNewRole({ name: "", description: "", permissions: [] })
       setShowCreateRoleModal(false)
     }
   }
@@ -857,7 +898,7 @@ export default function Dashboard() {
                       <Card className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive">
                         <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
                           <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
-                            <span className="text-sm sm:text-base lg:text-lg xl:text-xl overflow-fix">
+                            <span className="text-sm sm:text-base lg:text-lg xl:text-2xl overflow-fix">
                               Команда ({employees.length})
                             </span>
                             <Badge variant="secondary" className="self-start sm:self-center text-xs px-1.5 py-0.5">
@@ -991,83 +1032,74 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {activeTab === "hr" && <HRDashboard />}
-
-              {activeTab === "projects" && (
+              {activeTab === "roles" && (
                 <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                   <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
-                        Активные проекты
+                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground overflow-fix">
+                        Роли и права
                       </h2>
-                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
-                        Отслеживайте прогресс ваших ИИ-проектов
+                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 overflow-fix">
+                        Управление ролями и правами доступа
                       </p>
                     </div>
                     <Button
-                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
-                      onClick={() => setShowAddProjectModal(true)}
+                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base button-responsive px-3 py-2 h-auto"
+                      onClick={() => setShowCreateRoleModal(true)}
                     >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      Новый проект
+                      <span>Создать роль</span>
                     </Button>
                   </div>
 
-                  <GanttChart projects={projects} />
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-                    {projects.map((project) => (
-                      <Card key={project.id} className="enhanced-card backdrop-blur-xl border border-border/50">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 grid-responsive">
+                    {roles.map((role) => (
+                      <Card
+                        key={role.id}
+                        className="enhanced-card backdrop-blur-sm border border-border/50 card-responsive"
+                      >
                         <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                          <CardTitle className="text-sm sm:text-base lg:text-lg truncate">{project.name}</CardTitle>
-                          <div className="flex items-center justify-between gap-1 sm:gap-2">
-                            <Badge
-                              variant={
-                                project.status === "Завершен"
-                                  ? "default"
-                                  : project.status === "В работе"
-                                    ? "secondary"
-                                    : "outline"
-                              }
-                              className="text-xs px-1 py-0.5"
-                            >
-                              {project.status}
+                          <CardTitle className="flex items-center justify-between gap-2">
+                            <div className="flex items-center space-x-2">
+                              <Shield className="w-4 h-4 text-primary" />
+                              <span className="text-sm sm:text-base lg:text-lg overflow-fix">{role.name}</span>
+                            </div>
+                            <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                              {role.users} польз.
                             </Badge>
-                            <span className="text-xs text-muted-foreground">до {project.deadline}</span>
-                          </div>
+                          </CardTitle>
+                          <CardDescription className="text-xs sm:text-sm overflow-fix">
+                            {role.description}
+                          </CardDescription>
                         </CardHeader>
                         <CardContent className="pt-0">
-                          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                          <div className="space-y-2 sm:space-y-3">
                             <div>
-                              <div className="flex justify-between text-xs sm:text-sm mb-1">
-                                <span>Прогресс</span>
-                                <span>{project.progress}%</span>
-                              </div>
-                              <div className="w-full bg-secondary rounded-full h-1.5 sm:h-2">
-                                <div
-                                  className="bg-primary h-1.5 sm:h-2 rounded-full transition-all duration-300"
-                                  style={{ width: `${project.progress}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex -space-x-1">
-                                {project.team.map((member, index) => (
-                                  <div
-                                    key={index}
-                                    className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center border-2 border-background"
-                                  >
-                                    <span className="text-xs font-bold text-white">{member}</span>
-                                  </div>
+                              <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
+                                Права доступа:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {role.permissions.map((permission) => (
+                                  <Badge key={permission} variant="outline" className="text-xs px-1 py-0.5">
+                                    {permission}
+                                  </Badge>
                                 ))}
                               </div>
+                            </div>
+                            <div className="flex gap-1 sm:gap-2 pt-2">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleViewProjectDetails(project)}
-                                className="text-xs px-1.5 py-1 h-auto"
+                                className="text-xs px-2 py-1 h-auto flex-1 bg-transparent"
                               >
-                                Подробнее
+                                Редактировать
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 text-xs px-2 py-1 h-auto bg-transparent"
+                              >
+                                Удалить
                               </Button>
                             </div>
                           </div>
@@ -1078,577 +1110,118 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {activeTab === "roles" && (
-                <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                  <div className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <h2 className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-foreground">
-                        Роли и права доступа
-                      </h2>
-                      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1">
-                        Управление правами пользователей и безопасностью
-                      </p>
-                    </div>
-                    <Button
-                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm lg:text-base px-3 py-2 h-auto"
-                      onClick={() => setShowCreateRoleModal(true)}
-                    >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      Создать роль
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                    {availableRoles.map((role) => {
-                      const userCount = employees.filter((emp) => emp.role === role).length
-                      return (
-                        <Card key={role} className="enhanced-card backdrop-blur-sm border border-border/50">
-                          <CardHeader className="pb-2 sm:pb-3 lg:pb-4">
-                            <CardTitle className="flex items-center justify-between">
-                              <span className="text-sm sm:text-base lg:text-lg truncate mr-2">{role}</span>
-                              <Badge variant="secondary" className="text-xs px-1 py-0.5">
-                                {userCount} польз.
-                              </Badge>
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-2 sm:space-y-3">
-                              <div className="text-xs sm:text-sm text-muted-foreground">
-                                Права доступа для роли "{role}"
-                              </div>
-                              <div className="flex flex-wrap gap-1">
-                                {role === "Администратор" && (
-                                  <>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Полный доступ
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Управление пользователями
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Настройки системы
-                                    </Badge>
-                                  </>
-                                )}
-                                {role === "Менеджер" && (
-                                  <>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Управление проектами
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Просмотр отчетов
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Управление командой
-                                    </Badge>
-                                  </>
-                                )}
-                                {role === "Сотрудник" && (
-                                  <>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Базовый доступ
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs px-1 py-0.5">
-                                      Просмотр задач
-                                    </Badge>
-                                  </>
-                                )}
-                              </div>
-                              <Button variant="outline" size="sm" className="w-full bg-transparent text-xs h-7">
-                                Редактировать права
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "settings" && (
-                <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                  <Card className="bg-card/50 backdrop-blur-sm border border-border/50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-foreground">
-                        <Settings className="w-5 h-5 mr-2 text-primary" />
-                        Настройки системы
-                      </CardTitle>
-                      <CardDescription>Управление параметрами платформы и персонализация</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("profile")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-blue-500/10 rounded-lg">
-                                <User className="w-5 h-5 text-blue-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Профиль</h3>
-                                <p className="text-sm text-muted-foreground">Личные данные и аватар</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("notifications")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-green-500/10 rounded-lg">
-                                <Bell className="w-5 h-5 text-green-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Уведомления</h3>
-                                <p className="text-sm text-muted-foreground">Email и push-уведомления</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("security")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-red-500/10 rounded-lg">
-                                <Shield className="w-5 h-5 text-red-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Безопасность</h3>
-                                <p className="text-sm text-muted-foreground">Пароль и двухфакторная аутентификация</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("integrations")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-purple-500/10 rounded-lg">
-                                <Zap className="w-5 h-5 text-purple-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Интеграции</h3>
-                                <p className="text-sm text-muted-foreground">API и внешние сервисы</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("appearance")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-orange-500/10 rounded-lg">
-                                <Palette className="w-5 h-5 text-orange-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Внешний вид</h3>
-                                <p className="text-sm text-muted-foreground">Тема и персонализация</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card
-                          className="bg-background/50 border border-border/30 hover:border-primary/30 transition-colors cursor-pointer"
-                          onClick={() => handleOpenSettings("data")}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="p-2 bg-teal-500/10 rounded-lg">
-                                <Database className="w-5 h-5 text-teal-600" />
-                              </div>
-                              <div>
-                                <h3 className="font-medium text-foreground">Данные</h3>
-                                <p className="text-sm text-muted-foreground">Экспорт и резервное копирование</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {showSettingsModal && (
-                <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
-                  <DialogContent className="max-w-2xl mx-4">
+              {showAddEmployeeModal && (
+                <Dialog open={showAddEmployeeModal} onOpenChange={setShowAddEmployeeModal}>
+                  <DialogContent className="max-w-md mx-4">
                     <DialogHeader>
                       <DialogTitle className="flex items-center space-x-2">
-                        <Settings className="w-5 h-5 text-primary" />
-                        <span>
-                          {settingsCategory === "profile" && "Настройки профиля"}
-                          {settingsCategory === "notifications" && "Настройки уведомлений"}
-                          {settingsCategory === "security" && "Настройки безопасности"}
-                          {settingsCategory === "integrations" && "Настройки интеграций"}
-                          {settingsCategory === "appearance" && "Настройки внешнего вида"}
-                          {settingsCategory === "data" && "Управление данными"}
-                        </span>
+                        <UserPlus className="w-5 h-5 text-primary" />
+                        <span>Добавить сотрудника</span>
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-6">
-                      {settingsCategory === "profile" && (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <Label>Имя</Label>
-                              <Input defaultValue="Иван Петров" className="mt-1" />
-                            </div>
-                            <div>
-                              <Label>Email</Label>
-                              <Input defaultValue="ivan@company.com" className="mt-1" />
-                            </div>
-                          </div>
-                          <div>
-                            <Label>Должность</Label>
-                            <Input defaultValue="Генеральный директор" className="mt-1" />
-                          </div>
-                          <div>
-                            <Label>Компания</Label>
-                            <Input defaultValue="ООО 'Инновации'" className="mt-1" />
-                          </div>
-                        </div>
-                      )}
-
-                      {settingsCategory === "notifications" && (
-                        <div className="space-y-4">
-                          <div className="space-y-3">
-                            <Label>Уведомления по email</Label>
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <Label className="text-sm">Новые задачи</Label>
-                                  <p className="text-xs text-muted-foreground">Уведомления о назначенных задачах</p>
-                                </div>
-                                <Switch
-                                  checked={userSettings.notifications?.newTasks ?? true}
-                                  onCheckedChange={(checked) =>
-                                    setUserSettings((prev) => ({
-                                      ...prev,
-                                      notifications: { ...prev.notifications, newTasks: checked },
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <Label className="text-sm">Просроченные задачи</Label>
-                                  <p className="text-xs text-muted-foreground">Напоминания о просроченных задачах</p>
-                                </div>
-                                <Switch
-                                  checked={userSettings.notifications?.overdueTasks ?? true}
-                                  onCheckedChange={(checked) =>
-                                    setUserSettings((prev) => ({
-                                      ...prev,
-                                      notifications: { ...prev.notifications, overdueTasks: checked },
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <Label className="text-sm">Системные уведомления</Label>
-                                  <p className="text-xs text-muted-foreground">Важные системные сообщения</p>
-                                </div>
-                                <Switch
-                                  checked={userSettings.notifications?.system ?? true}
-                                  onCheckedChange={(checked) =>
-                                    setUserSettings((prev) => ({
-                                      ...prev,
-                                      notifications: { ...prev.notifications, system: checked },
-                                    }))
-                                  }
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {settingsCategory === "security" && (
-                        <div className="space-y-4">
-                          <div>
-                            <Label>Изменить пароль</Label>
-                            <div className="space-y-2 mt-2">
-                              <Input type="password" placeholder="Текущий пароль" />
-                              <Input type="password" placeholder="Новый пароль" />
-                              <Input type="password" placeholder="Подтвердите новый пароль" />
-                            </div>
-                          </div>
-                          <div className="space-y-3">
-                            <Label>Настройки безопасности</Label>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <Label className="text-sm">Двухфакторная аутентификация</Label>
-                                <p className="text-xs text-muted-foreground">Дополнительная защита аккаунта</p>
-                              </div>
-                              <Switch
-                                checked={userSettings.security?.twoFactor ?? false}
-                                onCheckedChange={(checked) =>
-                                  setUserSettings((prev) => ({
-                                    ...prev,
-                                    security: { ...prev.security, twoFactor: checked },
-                                  }))
-                                }
-                              />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <Label className="text-sm">Автоматический выход</Label>
-                                <p className="text-xs text-muted-foreground">Выход после 30 минут неактивности</p>
-                              </div>
-                              <Switch
-                                checked={userSettings.security?.autoLogout ?? true}
-                                onCheckedChange={(checked) =>
-                                  setUserSettings((prev) => ({
-                                    ...prev,
-                                    security: { ...prev.security, autoLogout: checked },
-                                  }))
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {settingsCategory === "integrations" && (
-                        <div className="space-y-4">
-                          <div className="space-y-3">
-                            <Label>Подключенные интеграции</Label>
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                                    <Mail className="w-4 h-4 text-blue-600" />
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm">Email интеграция</Label>
-                                    <p className="text-xs text-muted-foreground">Подключено к Gmail</p>
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleModuleSettings("email", "configure")}
-                                >
-                                  Настроить
-                                </Button>
-                              </div>
-                              <div className="flex items-center justify-between p-3 border rounded-lg">
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                                    <Calendar className="w-4 h-4 text-green-600" />
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm">Календарь</Label>
-                                    <p className="text-xs text-muted-foreground">Подключено к Google Calendar</p>
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleModuleSettings("calendar", "configure")}
-                                >
-                                  Настроить
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {settingsCategory === "appearance" && (
-                        <div className="space-y-4">
-                          <div className="space-y-3">
-                            <Label>Внешний вид</Label>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <Label className="text-sm">Темная тема</Label>
-                                <p className="text-xs text-muted-foreground">
-                                  Переключение между светлой и темной темой
-                                </p>
-                              </div>
-                              <Switch
-                                checked={userSettings.appearance?.darkMode ?? false}
-                                onCheckedChange={(checked) =>
-                                  setUserSettings((prev) => ({
-                                    ...prev,
-                                    appearance: { ...prev.appearance, darkMode: checked },
-                                  }))
-                                }
-                              />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <Label className="text-sm">Компактный режим</Label>
-                                <p className="text-xs text-muted-foreground">Уменьшенные отступы и размеры элементов</p>
-                              </div>
-                              <Switch
-                                checked={userSettings.appearance?.compact ?? false}
-                                onCheckedChange={(checked) =>
-                                  setUserSettings((prev) => ({
-                                    ...prev,
-                                    appearance: { ...prev.appearance, compact: checked },
-                                  }))
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {settingsCategory === "data" && (
-                        <div className="space-y-4">
-                          <div className="space-y-3">
-                            <Label>Управление данными</Label>
-                            <div className="grid grid-cols-2 gap-4">
-                              <Button variant="outline" onClick={() => handleModuleSettings("data", "export")}>
-                                <Download className="w-4 h-4 mr-2" />
-                                Экспорт данных
-                              </Button>
-                              <Button variant="outline" onClick={() => handleModuleSettings("data", "backup")}>
-                                <Shield className="w-4 h-4 mr-2" />
-                                Создать резервную копию
-                              </Button>
-                            </div>
-                            <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
-                              <Label className="text-sm text-red-600">Опасная зона</Label>
-                              <p className="text-xs text-muted-foreground mt-1">Необратимые действия с данными</p>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                className="mt-2"
-                                onClick={() => {
-                                  if (confirm("Вы уверены, что хотите удалить все данные? Это действие необратимо!")) {
-                                    alert("Функция удаления данных будет реализована в следующих версиях")
-                                  }
-                                }}
-                              >
-                                Удалить все данные
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex justify-end space-x-2 pt-4 border-t">
-                        <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
-                          Отмена
-                        </Button>
-                        <Button onClick={() => handleSaveSettings(settingsCategory, userSettings[settingsCategory])}>
-                          Сохранить изменения
-                        </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium">Имя</label>
+                        <Input
+                          value={newEmployee.name}
+                          onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                          placeholder="Введите имя сотрудника"
+                        />
                       </div>
+                      <div>
+                        <label className="text-sm font-medium">Email</label>
+                        <Input
+                          type="email"
+                          value={newEmployee.email}
+                          onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                          placeholder="Введите email"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Роль</label>
+                        <select
+                          value={newEmployee.role}
+                          onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
+                          className="w-full p-2 border rounded-md"
+                        >
+                          <option value="Сотрудник">Сотрудник</option>
+                          <option value="Менеджер">Менеджер</option>
+                          <option value="Руководитель">Руководитель</option>
+                          <option value="Администратор">Администратор</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button variant="outline" onClick={() => setShowAddEmployeeModal(false)}>
+                        Отмена
+                      </Button>
+                      <Button onClick={handleAddEmployee} disabled={!newEmployee.name || !newEmployee.email}>
+                        Добавить
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
               )}
 
-              {showNotificationsModal && (
-                <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
+              {showCreateRoleModal && (
+                <Dialog open={showCreateRoleModal} onOpenChange={setShowCreateRoleModal}>
                   <DialogContent className="max-w-md mx-4">
                     <DialogHeader>
-                      <DialogTitle className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Bell className="w-5 h-5 text-primary" />
-                          <span>Уведомления</span>
-                        </div>
-                        {notifications > 0 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={markAllAsRead}
-                            className="text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Отметить все как прочитанные
-                          </Button>
-                        )}
+                      <DialogTitle className="flex items-center space-x-2">
+                        <Shield className="w-5 h-5 text-primary" />
+                        <span>Создать роль</span>
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {notificationsList.length > 0 ? (
-                        notificationsList.map((notification) => (
-                          <div
-                            key={notification.id}
-                            className={`p-3 rounded-lg border transition-colors ${
-                              notification.read
-                                ? "bg-muted/30 border-border/50"
-                                : "bg-card border-border hover:bg-muted/50"
-                            }`}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0 mt-0.5">{getNotificationIcon(notification.type)}</div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <h4
-                                      className={`text-sm font-medium ${notification.read ? "text-muted-foreground" : "text-foreground"}`}
-                                    >
-                                      {notification.title}
-                                    </h4>
-                                    <p
-                                      className={`text-xs mt-1 ${notification.read ? "text-muted-foreground/70" : "text-muted-foreground"}`}
-                                    >
-                                      {notification.message}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground/60 mt-2">{notification.time}</p>
-                                  </div>
-                                  {!notification.read && (
-                                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1"></div>
-                                  )}
-                                </div>
-                                <div className="flex space-x-2 mt-3">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-xs h-7 bg-transparent"
-                                    onClick={() => handleNotificationAction(notification.id, "view")}
-                                  >
-                                    Просмотреть
-                                  </Button>
-                                  {!notification.read && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-xs h-7"
-                                      onClick={() => markNotificationAsRead(notification.id)}
-                                    >
-                                      Отметить как прочитанное
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-8">
-                          <Bell className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
-                          <p className="text-sm text-muted-foreground">Нет новых уведомлений</p>
-                          <p className="text-xs text-muted-foreground/70 mt-1">
-                            Все уведомления будут отображаться здесь
-                          </p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium">Название роли</label>
+                        <Input
+                          value={newRole.name}
+                          onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
+                          placeholder="Введите название роли"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Описание</label>
+                        <Input
+                          value={newRole.description}
+                          onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
+                          placeholder="Описание роли"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Права доступа</label>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {["Просмотр", "Редактирование", "Удаление", "Администрирование", "Финансы", "HR"].map(
+                            (permission) => (
+                              <label key={permission} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={newRole.permissions.includes(permission)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setNewRole({ ...newRole, permissions: [...newRole.permissions, permission] })
+                                    } else {
+                                      setNewRole({
+                                        ...newRole,
+                                        permissions: newRole.permissions.filter((p) => p !== permission),
+                                      })
+                                    }
+                                  }}
+                                />
+                                <span className="text-sm">{permission}</span>
+                              </label>
+                            ),
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
-                    <div className="flex justify-end pt-3 border-t">
-                      <Button variant="outline" onClick={() => setShowNotificationsModal(false)}>
-                        Закрыть
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button variant="outline" onClick={() => setShowCreateRoleModal(false)}>
+                        Отмена
+                      </Button>
+                      <Button onClick={handleCreateRole} disabled={!newRole.name || newRole.permissions.length === 0}>
+                        Создать
                       </Button>
                     </div>
                   </DialogContent>
