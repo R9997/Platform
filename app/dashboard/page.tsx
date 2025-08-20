@@ -42,7 +42,7 @@ import Link from "next/link"
 import { ContentGenerator } from "@/components/ai-tools/content-generator"
 import { SalesManager } from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
-import { FeatureGuide } from "@/components/help/feature-guide"
+import { HRDashboard } from "@/components/hr-management/hr-dashboard"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TaskManager } from "@/components/task-tracker/task-manager"
@@ -679,9 +679,15 @@ export default function Dashboard() {
                   />
                 </div>
 
+                {/* Заменяем FeatureGuide на ссылку на отдельную страницу гида */}
                 <div className="flex items-center space-x-1">
                   <InteractiveTour />
-                  <FeatureGuide />
+                  <Link href="/guide">
+                    <Button variant="outline" size="sm" className="text-xs bg-transparent">
+                      <FileText className="w-3 h-3 mr-1" />
+                      Гид по функциям
+                    </Button>
+                  </Link>
                 </div>
 
                 <Button
@@ -984,6 +990,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+
+              {activeTab === "hr" && <HRDashboard />}
 
               {activeTab === "projects" && (
                 <div className="space-y-3 sm:space-y-4 lg:space-y-6">
@@ -1650,6 +1658,7 @@ export default function Dashboard() {
               {activeTab === "edo" && <EDODashboard />}
               {activeTab === "legal" && <LegalDashboard />}
               {activeTab === "marketing" && <MarketingDashboard />}
+              {activeTab === "hr" && <HRDashboard />}
             </div>
           </div>
         </main>

@@ -815,9 +815,9 @@ export function SalesManager() {
                           {lead.notes && <p className="text-xs text-muted-foreground mt-1">Заметки: {lead.notes}</p>}
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleEditLead(lead)}>
+                          <Button size="sm" variant="outline" onClick={() => setEditingLead(lead)}>
                             <Edit className="w-4 h-4 mr-1" />
-                            Ред.
+                            Редактировать
                           </Button>
                           <Button
                             size="sm"
@@ -826,7 +826,7 @@ export function SalesManager() {
                             className="text-red-600"
                           >
                             <Trash2 className="w-4 h-4 mr-1" />
-                            Уд.
+                            Удалить
                           </Button>
                         </div>
                       </div>

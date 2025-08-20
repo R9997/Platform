@@ -261,12 +261,26 @@ export default function RoleManager() {
   }
 
   const handleCreateRole = () => {
-    if (!newRole.name || newRole.permissions.length === 0) return
+    if (!newRole.name.trim()) {
+      alert("Пожалуйста, введите название роли")
+      return
+    }
+
+    if (newRole.permissions.length === 0) {
+      alert("Пожалуйста, выберите хотя бы одно право доступа")
+      return
+    }
+
+    // Проверка на дублирование названий ролей
+    if (roles.some((role) => role.name.toLowerCase() === newRole.name.toLowerCase())) {
+      alert("Роль с таким названием уже существует")
+      return
+    }
 
     const role: Role = {
       id: Date.now().toString(),
-      name: newRole.name,
-      description: newRole.description,
+      name: newRole.name.trim(),
+      description: newRole.description.trim(),
       color: newRole.color,
       permissions: newRole.permissions,
       userCount: 0,
@@ -277,6 +291,9 @@ export default function RoleManager() {
     setRoles([...roles, role])
     setNewRole({ name: "", description: "", color: "blue", permissions: [] })
     setShowCreateRoleDialog(false)
+
+    // Уведомление об успешном создании
+    alert(`Роль "${role.name}" успешно создана!`)
   }
 
   const handleDeleteRole = (roleId: string) => {
@@ -396,7 +413,11 @@ export default function RoleManager() {
                   ))}
                 </div>
               </div>
-              <Button onClick={handleCreateRole} className="w-full">
+              <Button
+                onClick={handleCreateRole}
+                className="w-full"
+                disabled={!newRole.name.trim() || newRole.permissions.length === 0}
+              >
                 Создать роль
               </Button>
             </div>

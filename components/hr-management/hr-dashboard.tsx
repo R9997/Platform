@@ -1420,3 +1420,5 @@ export function HRDashboard() {
     </div>
   )
 }
+
+export default HRDashboard

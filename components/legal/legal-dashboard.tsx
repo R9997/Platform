@@ -59,6 +59,32 @@ interface Notification {
   read: boolean
 }
 
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "bg-red-100 text-red-800"
+    case "medium":
+      return "bg-yellow-100 text-yellow-800"
+    case "low":
+      return "bg-green-100 text-green-800"
+    default:
+      return "bg-gray-100 text-gray-800"
+  }
+}
+
+const getPriorityLabel = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "Высокий"
+    case "medium":
+      return "Средний"
+    case "low":
+      return "Низкий"
+    default:
+      return priority
+  }
+}
+
 export default function LegalDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [showNotifications, setShowNotifications] = useState(false)
@@ -202,16 +228,32 @@ export default function LegalDashboard() {
     }
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800"
-      case "medium":
-        return "bg-yellow-100 text-yellow-800"
-      case "low":
-        return "bg-green-100 text-green-800"
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "draft":
+        return "Черновик"
+      case "review":
+        return "На рассмотрении"
+      case "signed":
+        return "Подписан"
+      case "executed":
+        return "Исполнен"
+      case "pending":
+        return "Ожидает"
+      case "in-progress":
+        return "В работе"
+      case "completed":
+        return "Завершено"
+      case "active":
+        return "Активный"
+      case "expiring":
+        return "Истекает"
+      case "expired":
+        return "Истек"
+      case "closed":
+        return "Закрыто"
       default:
-        return "bg-gray-100 text-gray-800"
+        return status
     }
   }
 
@@ -521,7 +563,7 @@ export default function LegalDashboard() {
                       {contract.startDate} - {contract.endDate}
                     </p>
                   </div>
-                  <Badge className={getStatusColor(contract.status)}>{contract.status}</Badge>
+                  <Badge className={getStatusColor(contract.status)}>{getStatusLabel(contract.status)}</Badge>
                 </div>
               </div>
             ))}
@@ -529,7 +571,6 @@ export default function LegalDashboard() {
         </div>
       )}
 
-      {/* Add other tab content as needed */}
       {activeTab === "tasks" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -550,8 +591,8 @@ export default function LegalDashboard() {
                     <p className="text-sm text-muted-foreground">Срок: {task.dueDate}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
-                    <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
+                    <Badge className={getPriorityColor(task.priority)}>{getPriorityLabel(task.priority)}</Badge>
+                    <Badge className={getStatusColor(task.status)}>{getStatusLabel(task.status)}</Badge>
                   </div>
                 </div>
               </div>
