@@ -24,7 +24,6 @@ import { GanttChart } from "@/components/project-management/gantt-chart"
 import { StrategyDashboard } from "@/components/strategy/strategy-dashboard"
 import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
-import { SupportChat } from "@/components/support/support-chat"
 
 import {
   Building2,
@@ -52,6 +51,8 @@ import {
   CheckCircle,
   AlertTriangle,
   Info,
+  Moon,
+  Sun,
 } from "lucide-react"
 
 const DashboardPage = () => {
@@ -70,7 +71,6 @@ const DashboardPage = () => {
   const [isMobile, setIsMobile] = useState(false)
 
   // Modal states
-  const [showSupportChat, setShowSupportChat] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [showNotificationsModal, setShowNotificationsModal] = useState(false)
   const [showAddProjectModal, setShowAddProjectModal] = useState(false)
@@ -452,11 +452,31 @@ const DashboardPage = () => {
                 <HelpCircle className="w-4 h-4 mr-1" />
                 Гид
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setShowSupportChat(true)}>
+              <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")}>
                 <MessageSquare className="w-4 h-4 mr-1" />
                 Поддержка
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newTheme = appearanceSettings.theme === "light" ? "dark" : "light"
+                  setAppearanceSettings({
+                    ...appearanceSettings,
+                    theme: newTheme,
+                  })
+                  document.documentElement.classList.toggle("dark", newTheme === "dark")
+                }}
+                className="shrink-0"
+              >
+                {appearanceSettings.theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="shrink-0"
+              >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
             </div>
@@ -550,9 +570,24 @@ const DashboardPage = () => {
                   <HelpCircle className="w-4 h-4 mr-1" />
                   Гид по функциям
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowSupportChat(true)} className="flex-1">
+                <Button variant="outline" size="sm" onClick={() => window.open("/", "_blank")} className="flex-1">
                   <MessageSquare className="w-4 h-4 mr-1" />
                   Поддержка
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newTheme = appearanceSettings.theme === "light" ? "dark" : "light"
+                    setAppearanceSettings({
+                      ...appearanceSettings,
+                      theme: newTheme,
+                    })
+                    document.documentElement.classList.toggle("dark", newTheme === "dark")
+                  }}
+                  className="shrink-0 px-3"
+                >
+                  {appearanceSettings.theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                 </Button>
               </div>
 
@@ -1083,14 +1118,6 @@ const DashboardPage = () => {
         </div>
 
         {/* Modals */}
-        <Dialog open={showSupportChat} onOpenChange={setShowSupportChat}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Поддержка</DialogTitle>
-            </DialogHeader>
-            <SupportChat />
-          </DialogContent>
-        </Dialog>
 
         <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
           <DialogContent className="sm:max-w-[500px]">
