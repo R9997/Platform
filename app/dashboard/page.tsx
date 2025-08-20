@@ -43,210 +43,110 @@ import { Label } from "@/components/ui/label"
 import { SupportChat } from "@/components/support/support-chat"
 import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 
-import { SalesManager } from "@/components/business-tools/sales-manager"
+import SalesManager from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
-import { FileManager } from "@/components/file-storage/file-manager"
-import { EDODashboard } from "@/components/edo/edo-dashboard"
-import { LegalDashboard } from "@/components/legal/legal-dashboard"
-import { HRDashboard } from "@/components/hr-management/hr-dashboard"
-import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
+import EDODashboard from "@/components/edo/edo-dashboard"
+import LegalDashboard from "@/components/legal/legal-dashboard"
+import HRDashboard from "@/components/hr-management/hr-dashboard"
 import { GanttChart } from "@/components/project-management/gantt-chart"
-import { StrategyDashboard } from "@/components/strategy/strategy-dashboard"
-import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
+import StrategyDashboard from "@/components/strategy/strategy-dashboard"
+import MarketingDashboard from "@/components/marketing/marketing-dashboard"
+import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
+import { FileManager } from "@/components/file-storage/file-manager"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [isLoading, setIsLoading] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [notifications, setNotifications] = useState(3)
-  const [showNotificationsModal, setShowNotificationsModal] = useState(false)
-  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false)
-  const [showAssignRoleModal, setShowAssignRoleModal] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState(null)
-  const [showAddProjectModal, setShowAddProjectModal] = useState(false)
-  const [showCreateRoleModal, setShowCreateRoleModal] = useState(false)
-  const [showAddLeadModal, setShowAddLeadModal] = useState(false)
+
   const [showSupportChat, setShowSupportChat] = useState(false)
-
-  const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null)
-
-  const [roles, setRoles] = useState([
-    { id: 1, name: "Администратор", description: "Полный доступ к системе", permissions: ["all"], users: 2 },
-    {
-      id: 2,
-      name: "Менеджер",
-      description: "Управление проектами и командой",
-      permissions: ["projects", "team"],
-      users: 5,
-    },
-    { id: 3, name: "Сотрудник", description: "Базовый доступ", permissions: ["basic"], users: 12 },
+  const [notification, setNotification] = useState<{ type: string; message: string } | null>(null)
+  const [notifications, setNotifications] = useState(3)
+  const [notificationsList, setNotificationsList] = useState([
+    { id: 1, message: "Новый проект требует утверждения", type: "info", read: false },
+    { id: 2, message: "Отчет по продажам готов", type: "success", read: false },
+    { id: 3, message: "Требуется обновление системы", type: "warning", read: false },
   ])
 
-  const [integrationSettings, setIntegrationSettings] = useState({
-    availableIntegrations: [
-      {
-        id: "1",
-        name: "Slack",
-        description: "Корпоративный мессенджер для команды",
-        connected: true,
-        category: "Коммуникации",
-      },
-      {
-        id: "2",
-        name: "Google Calendar",
-        description: "Синхронизация календаря и событий",
-        connected: false,
-        category: "Календарь",
-      },
-      { id: "3", name: "Dropbox", description: "Облачное хранилище файлов", connected: true, category: "Хранилище" },
-      {
-        id: "4",
-        name: "Zapier",
-        description: "Автоматизация бизнес-процессов",
-        connected: false,
-        category: "Автоматизация",
-      },
-    ],
-    newIntegration: { name: "", description: "", category: "Коммуникации" },
-  })
+  // Project management states
+  const [projects, setProjects] = useState([
+    {
+      id: 1,
+      name: "Разработка мобильного приложения",
+      status: "В работе",
+      progress: 65,
+      team: ["Анна", "Михаил"],
+      deadline: "2024-03-15",
+      description: "Создание iOS и Android приложения",
+    },
+    {
+      id: 2,
+      name: "Редизайн веб-сайта",
+      status: "Планирование",
+      progress: 20,
+      team: ["Елена", "Дмитрий"],
+      deadline: "2024-04-01",
+      description: "Обновление дизайна корпоративного сайта",
+    },
+    {
+      id: 3,
+      name: "Интеграция CRM системы",
+      status: "Завершен",
+      progress: 100,
+      team: ["Сергей"],
+      deadline: "2024-02-28",
+      description: "Подключение новой CRM системы",
+    },
+  ])
+  const [newProject, setNewProject] = useState({ name: "", deadline: "", team: [], description: "" })
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false)
+  const [selectedProject, setSelectedProject] = useState(null)
+  const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false)
 
-  const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: "system",
-    fontSize: "medium",
-    density: "comfortable",
-    animations: true,
-    reducedMotion: false,
-    highContrast: false,
-    showTooltips: true,
-    sidebarCollapsed: false,
-    colorScheme: "default",
-  })
-
+  // Task management states
   const [tasks, setTasks] = useState([
     {
       id: 1,
-      title: "Настроить CRM систему",
-      description: "Интеграция с внешними сервисами",
-      status: "К выполнению",
-      priority: "Высокий",
-      assignee: "Анна Петрова",
-      dueDate: "2024-02-20",
-      tags: ["CRM", "Интеграция"],
+      title: "Подготовить презентацию",
+      status: "todo",
+      priority: "high",
+      assignee: "Анна Иванова",
+      dueDate: "2024-03-20",
     },
     {
       id: 2,
-      title: "Провести анализ конкурентов",
-      description: "Исследование рынка и конкурентов",
-      status: "В работе",
-      priority: "Средний",
-      assignee: "Михаил Сидоров",
-      dueDate: "2024-02-25",
-      tags: ["Анализ", "Маркетинг"],
+      title: "Провести интервью с кандидатами",
+      status: "in-progress",
+      priority: "medium",
+      assignee: "Михаил Петров",
+      dueDate: "2024-03-18",
     },
     {
       id: 3,
       title: "Обновить документацию",
-      description: "Актуализация технической документации",
-      status: "Завершена",
-      priority: "Низкий",
-      assignee: "Елена Козлова",
-      dueDate: "2024-02-15",
-      tags: ["Документация"],
+      status: "done",
+      priority: "low",
+      assignee: "Елена Сидорова",
+      dueDate: "2024-03-15",
     },
   ])
-
+  const [newTask, setNewTask] = useState({ title: "", description: "", priority: "medium", assignee: "", dueDate: "" })
   const [showAddTaskModal, setShowAddTaskModal] = useState(false)
-  const [newTask, setNewTask] = useState({
-    title: "",
-    description: "",
-    priority: "Средний",
-    assignee: "",
-    dueDate: "",
-    tags: [],
-  })
 
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      name: "Автоматизация продаж",
-      status: "В работе",
-      progress: 75,
-      team: ["А", "М"],
-      deadline: "2024-02-15",
-      description: "Описание проекта",
-    },
-    {
-      id: 2,
-      name: "ИИ-чатбот поддержки",
-      status: "Планирование",
-      progress: 25,
-      team: ["Е", "Д"],
-      deadline: "2024-03-01",
-      description: "Описание проекта",
-    },
-    {
-      id: 3,
-      name: "Аналитика клиентов",
-      status: "Завершен",
-      progress: 100,
-      team: ["А", "Д"],
-      deadline: "2024-01-30",
-      description: "Описание проекта",
-    },
-  ])
-
-  const [leads, setLeads] = useState([
-    {
-      id: 1,
-      name: "ООО Технологии",
-      email: "contact@tech.com",
-      phone: "+7 (999) 123-45-67",
-      status: "Новый",
-      value: 150000,
-      source: "Сайт",
-    },
-    {
-      id: 2,
-      name: "ИП Иванов",
-      email: "ivanov@mail.com",
-      phone: "+7 (999) 765-43-21",
-      status: "В работе",
-      value: 75000,
-      source: "Реклама",
-    },
-  ])
-
-  const [newProject, setNewProject] = useState({
-    name: "",
-    deadline: "",
-    team: [],
-    description: "",
-  })
-  const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false)
-  const [selectedProject, setSelectedProject] = useState(null)
-
-  const [newRole, setNewRole] = useState({ name: "", description: "", permissions: [] as string[] })
-  const [newLead, setNewLead] = useState({ name: "", email: "", phone: "", value: "", source: "Сайт" })
-  const [userSettings, setUserSettings] = useState({
-    name: "Пользователь",
-    email: "user@example.com",
-    company: "Моя компания",
-  })
-
+  // Employee management states
   const [employees, setEmployees] = useState([
     {
       id: 1,
-      name: "Анна Петрова",
+      name: "Анна Иванова",
       email: "anna@company.com",
-      role: "Менеджер",
+      role: "Менеджер проектов",
       status: "Активен",
       avatar: "А",
       productivity: 95,
     },
     {
       id: 2,
-      name: "Михаил Сидоров",
+      name: "Михаил Петров",
       email: "mikhail@company.com",
       role: "Разработчик",
       status: "Активен",
@@ -255,24 +155,88 @@ export default function Dashboard() {
     },
     {
       id: 3,
-      name: "Елена Козлова",
+      name: "Елена Сидорова",
       email: "elena@company.com",
       role: "Дизайнер",
-      status: "Отпуск",
+      status: "Активен",
       avatar: "Е",
       productivity: 92,
     },
-    {
-      id: 4,
-      name: "Дмитрий Волков",
-      email: "dmitry@company.com",
-      role: "Аналитик",
-      status: "Активен",
-      avatar: "Д",
-      productivity: 90,
-    },
   ])
   const [newEmployee, setNewEmployee] = useState({ name: "", email: "", role: "Сотрудник" })
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [showAssignRoleModal, setShowAssignRoleModal] = useState(false)
+
+  // Role management states
+  const [roles, setRoles] = useState([
+    {
+      id: 1,
+      name: "Администратор",
+      description: "Полный доступ к системе",
+      permissions: ["read", "write", "delete", "admin"],
+      users: 2,
+    },
+    {
+      id: 2,
+      name: "Менеджер",
+      description: "Управление проектами и командой",
+      permissions: ["read", "write"],
+      users: 5,
+    },
+    { id: 3, name: "Сотрудник", description: "Базовый доступ к системе", permissions: ["read"], users: 15 },
+  ])
+  const [newRole, setNewRole] = useState({ name: "", description: "", permissions: [] })
+  const [showCreateRoleModal, setShowCreateRoleModal] = useState(false)
+
+  // Lead management states
+  const [leads, setLeads] = useState([
+    {
+      id: 1,
+      name: "ООО Технологии",
+      email: "info@tech.com",
+      phone: "+7 (495) 123-45-67",
+      status: "Новый",
+      value: 150000,
+      source: "Сайт",
+    },
+    {
+      id: 2,
+      name: "ИП Смирнов",
+      email: "smirnov@mail.ru",
+      phone: "+7 (495) 987-65-43",
+      status: "В работе",
+      value: 75000,
+      source: "Реклама",
+    },
+  ])
+  const [newLead, setNewLead] = useState({ name: "", email: "", phone: "", value: "", source: "Сайт" })
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false)
+
+  // Settings states
+  const [userSettings, setUserSettings] = useState({})
+  const [settingsCategory, setSettingsCategory] = useState("")
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [appearanceSettings, setAppearanceSettings] = useState({
+    theme: "system",
+    fontSize: "medium",
+    density: "comfortable",
+    colorScheme: "blue",
+    animations: true,
+    accessibility: false,
+  })
+  const [integrationSettings, setIntegrationSettings] = useState({
+    availableIntegrations: [
+      { id: "1", name: "Slack", description: "Командное общение", connected: true, category: "Коммуникации" },
+      { id: "2", name: "Google Drive", description: "Облачное хранилище", connected: false, category: "Хранилище" },
+      { id: "3", name: "Zoom", description: "Видеоконференции", connected: true, category: "Коммуникации" },
+    ],
+    newIntegration: { name: "", description: "", category: "Коммуникации" },
+  })
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false)
+
   const [availableRoles, setAvailableRoles] = useState([
     "Администратор",
     "Менеджер",
@@ -282,36 +246,7 @@ export default function Dashboard() {
     "Сотрудник",
   ])
 
-  const [notificationsList, setNotificationsList] = useState([
-    {
-      id: 1,
-      title: "Новый проект создан",
-      message: "Проект 'Автоматизация продаж' был успешно создан",
-      time: "5 минут назад",
-      type: "success",
-      read: false,
-    },
-    {
-      id: 2,
-      title: "Задача просрочена",
-      message: "Задача 'Настройка CRM' просрочена на 2 дня",
-      time: "1 час назад",
-      type: "warning",
-      read: false,
-    },
-    {
-      id: 3,
-      title: "Новое сообщение",
-      message: "Получено сообщение от клиента ООО Технологии",
-      time: "3 часа назад",
-      type: "info",
-      read: false,
-    },
-  ])
-
   const [isDemoMode, setIsDemoMode] = useState(true)
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [settingsCategory, setSettingsCategory] = useState<string>("")
 
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
@@ -1062,9 +997,10 @@ export default function Dashboard() {
                           Последние уведомления
                         </CardTitle>
                       </CardHeader>
+
                       <CardContent>
                         <div className="space-y-3">
-                          {notifications.slice(0, 3).map((notification) => (
+                          {notificationsList.slice(0, 3).map((notification) => (
                             <div
                               key={notification.id}
                               className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
@@ -1454,9 +1390,67 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Команда</CardTitle>
+                      <CardTitle className="flex items-center justify-between">
+                        Команда
+                        <Button onClick={() => setShowAddEmployeeModal(true)}>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Добавить сотрудника
+                        </Button>
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>{/* Team Management Component Here */}</CardContent>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {employees.map((employee) => (
+                          <Card key={employee.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-3 mb-3">
+                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                  <span className="font-semibold text-primary">{employee.avatar}</span>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="font-medium">{employee.name}</h4>
+                                  <p className="text-sm text-muted-foreground">{employee.role}</p>
+                                </div>
+                                <Badge variant={employee.status === "Активен" ? "default" : "secondary"}>
+                                  {employee.status}
+                                </Badge>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Email:</span>
+                                  <span className="text-muted-foreground">{employee.email}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span>Продуктивность:</span>
+                                  <span className="font-medium">{employee.productivity}%</span>
+                                </div>
+                                <div className="flex gap-2 pt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedEmployee(employee)
+                                      setShowAssignRoleModal(true)
+                                    }}
+                                  >
+                                    <Edit className="w-3 h-3 mr-1" />
+                                    Роль
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleRemoveEmployee(employee.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3 mr-1" />
+                                    Удалить
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
                   </Card>
                 </div>
               )}
@@ -1465,9 +1459,53 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Роли и права</CardTitle>
+                      <CardTitle className="flex items-center justify-between">
+                        Роли и права
+                        <Button onClick={() => setShowCreateRoleModal(true)}>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Создать роль
+                        </Button>
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>{/* Role Management Component Here */}</CardContent>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {roles.map((role) => (
+                          <Card key={role.id} className="hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <div>
+                                  <h4 className="font-medium">{role.name}</h4>
+                                  <p className="text-sm text-muted-foreground">{role.description}</p>
+                                </div>
+                                <div className="text-right">
+                                  <Badge variant="outline">{role.users} пользователей</Badge>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {role.permissions.map((permission) => (
+                                  <Badge key={permission} variant="secondary" className="text-xs">
+                                    {permission === "read" && "Чтение"}
+                                    {permission === "write" && "Запись"}
+                                    {permission === "delete" && "Удаление"}
+                                    {permission === "admin" && "Администратор"}
+                                  </Badge>
+                                ))}
+                              </div>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Edit className="w-3 h-3 mr-1" />
+                                  Редактировать
+                                </Button>
+                                <Button variant="destructive" size="sm">
+                                  <Trash2 className="w-3 h-3 mr-1" />
+                                  Удалить
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
                   </Card>
                 </div>
               )}
@@ -1485,17 +1523,6 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {activeTab === "ai-tools" && (
-                <div className="space-y-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>ИИ-инструменты</CardTitle>
-                    </CardHeader>
-                    <CardContent>{/* AI Tools Component Here */}</CardContent>
-                  </Card>
-                </div>
-              )}
-
               {activeTab === "files" && (
                 <div className="space-y-4">
                   <Card>
@@ -1505,17 +1532,6 @@ export default function Dashboard() {
                     <CardContent>
                       <FileManager />
                     </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {activeTab === "settings" && (
-                <div className="space-y-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Настройки</CardTitle>
-                    </CardHeader>
-                    <CardContent>{/* Settings Component Here */}</CardContent>
                   </Card>
                 </div>
               )}
@@ -1658,6 +1674,341 @@ export default function Dashboard() {
 
         {/* Support Chat */}
         {showSupportChat && <SupportChat onClose={() => setShowSupportChat(false)} />}
+
+        {/* Add Project Modal */}
+        <Dialog open={showAddProjectModal} onOpenChange={setShowAddProjectModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новый проект</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="projectName">Название проекта</Label>
+                <Input
+                  id="projectName"
+                  value={newProject.name}
+                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                  placeholder="Введите название проекта"
+                />
+              </div>
+              <div>
+                <Label htmlFor="projectDescription">Описание</Label>
+                <Input
+                  id="projectDescription"
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                  placeholder="Введите описание проекта"
+                />
+              </div>
+              <div>
+                <Label htmlFor="projectDeadline">Срок завершения</Label>
+                <Input
+                  id="projectDeadline"
+                  type="date"
+                  value={newProject.deadline}
+                  onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAddProjectModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddProject}>Создать проект</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Employee Modal */}
+        <Dialog open={showAddEmployeeModal} onOpenChange={setShowAddEmployeeModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Добавить сотрудника</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="employeeName">Имя сотрудника</Label>
+                <Input
+                  id="employeeName"
+                  value={newEmployee.name}
+                  onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                  placeholder="Введите имя сотрудника"
+                />
+              </div>
+              <div>
+                <Label htmlFor="employeeEmail">Email</Label>
+                <Input
+                  id="employeeEmail"
+                  type="email"
+                  value={newEmployee.email}
+                  onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                  placeholder="Введите email сотрудника"
+                />
+              </div>
+              <div>
+                <Label htmlFor="employeeRole">Роль</Label>
+                <Select
+                  value={newEmployee.role}
+                  onValueChange={(value) => setNewEmployee({ ...newEmployee, role: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAddEmployeeModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddEmployee}>Добавить сотрудника</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Role Modal */}
+        <Dialog open={showCreateRoleModal} onOpenChange={setShowCreateRoleModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новую роль</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="roleName">Название роли</Label>
+                <Input
+                  id="roleName"
+                  value={newRole.name}
+                  onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
+                  placeholder="Введите название роли"
+                />
+              </div>
+              <div>
+                <Label htmlFor="roleDescription">Описание</Label>
+                <Input
+                  id="roleDescription"
+                  value={newRole.description}
+                  onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
+                  placeholder="Введите описание роли"
+                />
+              </div>
+              <div>
+                <Label>Права доступа</Label>
+                <div className="space-y-2">
+                  {["read", "write", "delete", "admin"].map((permission) => (
+                    <div key={permission} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={permission}
+                        checked={newRole.permissions.includes(permission)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewRole({ ...newRole, permissions: [...newRole.permissions, permission] })
+                          } else {
+                            setNewRole({ ...newRole, permissions: newRole.permissions.filter((p) => p !== permission) })
+                          }
+                        }}
+                      />
+                      <Label htmlFor={permission}>
+                        {permission === "read" && "Чтение"}
+                        {permission === "write" && "Запись"}
+                        {permission === "delete" && "Удаление"}
+                        {permission === "admin" && "Администратор"}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCreateRoleModal(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleCreateRole}>Создать роль</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Assign Role Modal */}
+        <Dialog open={showAssignRoleModal} onOpenChange={setShowAssignRoleModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Назначить роль</DialogTitle>
+            </DialogHeader>
+            {selectedEmployee && (
+              <div className="space-y-4">
+                <p>
+                  Назначить роль для: <strong>{selectedEmployee.name}</strong>
+                </p>
+                <div>
+                  <Label>Выберите роль</Label>
+                  <Select onValueChange={(value) => handleAssignRole(selectedEmployee.id, value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите роль" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableRoles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAssignRoleModal(false)}>
+                Отмена
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Settings Modal */}
+        <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Настройки системы</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Внешний вид</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Тема</Label>
+                      <Select
+                        value={appearanceSettings.theme}
+                        onValueChange={(value) => setAppearanceSettings({ ...appearanceSettings, theme: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="light">Светлая</SelectItem>
+                          <SelectItem value="dark">Темная</SelectItem>
+                          <SelectItem value="system">Системная</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Размер шрифта</Label>
+                      <Select
+                        value={appearanceSettings.fontSize}
+                        onValueChange={(value) => setAppearanceSettings({ ...appearanceSettings, fontSize: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Маленький</SelectItem>
+                          <SelectItem value="medium">Средний</SelectItem>
+                          <SelectItem value="large">Большой</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button onClick={handleSaveAppearanceSettings} className="w-full">
+                      Сохранить настройки внешнего вида
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Интеграции</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      {integrationSettings.availableIntegrations.map((integration) => (
+                        <div key={integration.id} className="flex items-center justify-between p-2 border rounded">
+                          <div>
+                            <p className="font-medium">{integration.name}</p>
+                            <p className="text-xs text-muted-foreground">{integration.description}</p>
+                          </div>
+                          <Button
+                            variant={integration.connected ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => toggleIntegration(integration.id)}
+                          >
+                            {integration.connected ? "Отключить" : "Подключить"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2 pt-4 border-t">
+                      <Input
+                        placeholder="Название интеграции"
+                        value={integrationSettings.newIntegration.name}
+                        onChange={(e) =>
+                          setIntegrationSettings({
+                            ...integrationSettings,
+                            newIntegration: { ...integrationSettings.newIntegration, name: e.target.value },
+                          })
+                        }
+                      />
+                      <Input
+                        placeholder="Описание"
+                        value={integrationSettings.newIntegration.description}
+                        onChange={(e) =>
+                          setIntegrationSettings({
+                            ...integrationSettings,
+                            newIntegration: { ...integrationSettings.newIntegration, description: e.target.value },
+                          })
+                        }
+                      />
+                      <Button onClick={handleAddIntegration} className="w-full">
+                        Добавить интеграцию
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Общие настройки</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Анимации</Label>
+                      <input
+                        type="checkbox"
+                        checked={appearanceSettings.animations}
+                        onChange={(e) => setAppearanceSettings({ ...appearanceSettings, animations: e.target.checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Режим доступности</Label>
+                      <input
+                        type="checkbox"
+                        checked={appearanceSettings.accessibility}
+                        onChange={(e) =>
+                          setAppearanceSettings({ ...appearanceSettings, accessibility: e.target.checked })
+                        }
+                      />
+                    </div>
+                    <Button onClick={() => handleSaveSettings("general", appearanceSettings)} className="w-full">
+                      Сохранить общие настройки
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
+                Закрыть
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   )
