@@ -793,7 +793,7 @@ const DashboardPage = () => {
                     <CardTitle>Диаграмма Ганта</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <GanttChart />
+                    <GanttChart projects={projects} />
                   </CardContent>
                 </Card>
               </div>

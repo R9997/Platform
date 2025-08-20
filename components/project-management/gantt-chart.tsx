@@ -29,11 +29,11 @@ interface GanttProject {
 }
 
 interface GanttChartProps {
-  projects: any[]
+  projects?: any[]
   tasks?: any[]
 }
 
-export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
+export function GanttChart({ projects = [], tasks = [] }: GanttChartProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<"week" | "month">("month")
   const [showProjectDetails, setShowProjectDetails] = useState(false)
@@ -50,6 +50,10 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
   })
 
   const ganttData: GanttProject[] = useMemo(() => {
+    if (!projects || !Array.isArray(projects)) {
+      return []
+    }
+
     return projects.map((project, index) => ({
       id: project.id || index.toString(),
       name: project.name,

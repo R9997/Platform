@@ -35,7 +35,6 @@ import {
   Lock,
   Unlock,
 } from "lucide-react"
-import { format } from "date-fns"
 
 interface FileItem {
   id: string
@@ -593,7 +592,7 @@ function FileManager() {
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-foreground truncate">{file.name}</h3>
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span>{format(file.modifiedAt, "dd.MM.yyyy")}</span>
+                          <span>{file.modifiedAt.toLocaleDateString()}</span>
                           {file.size && <span>{formatFileSize(file.size)}</span>}
                           <div className="flex items-center space-x-1">
                             <Avatar className="w-4 h-4">
@@ -686,7 +685,7 @@ function FileManager() {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{format(file.modifiedAt, "dd.MM")}</span>
+                    <span>{file.modifiedAt.toLocaleDateString()}</span>
                     {file.size && <span>{formatFileSize(file.size)}</span>}
                   </div>
                   {file.tags.length > 0 && (
