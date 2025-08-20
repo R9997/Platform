@@ -9,9 +9,6 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DataAnalyzer } from "@/components/ai-tools/data-analyzer"
 import {
@@ -491,7 +488,7 @@ export function AIBusinessAgent() {
         <Button
           onClick={runAIAnalysis}
           disabled={isAnalyzing}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-600 text-white shadow-lg"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 dark:from-purple-500 dark:to-blue-500 dark:hover:from-purple-600 dark:hover:to-blue-500 text-white shadow-lg"
         >
           {isAnalyzing ? (
             <>
@@ -1123,7 +1120,14 @@ export function AIBusinessAgent() {
         <TabsContent value="roadmap" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Стратегическая дорожная карта</h3>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Открываем модальное окно настроек дорожной карты
+                alert("Настройки дорожной карты: здесь можно настроить временные периоды, приоритеты и категории задач")
+              }}
+            >
               <Settings className="w-4 h-4 mr-2" />
               Настроить
             </Button>
@@ -1175,175 +1179,6 @@ export function AIBusinessAgent() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* ... existing code for modals ... */}
-      {showInsightDetails && (
-        <Dialog open={!!showInsightDetails} onOpenChange={() => setShowInsightDetails(null)}>
-          <DialogContent className="max-w-2xl mx-4">
-            {(() => {
-              const insight = strategicInsights.find((i) => i.id === showInsightDetails)
-              if (!insight) return null
-
-              return (
-                <>
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center space-x-2">
-                      <div className={`p-2 rounded-lg ${getCategoryColor(insight.category)}`}>
-                        {getCategoryIcon(insight.category)}
-                      </div>
-                      <span>{insight.title}</span>
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Влияние на бизнес</Label>
-                        <Badge className={getImpactColor(insight.impact)}>
-                          {insight.impact === "high" ? "Высокое" : insight.impact === "medium" ? "Среднее" : "Низкое"}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Сложность внедрения</Label>
-                        <Badge className={getImpactColor(insight.effort)}>
-                          {insight.effort === "high" ? "Высокая" : insight.effort === "medium" ? "Средняя" : "Низкая"}
-                        </Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Ожидаемый ROI</Label>
-                        <p className="text-lg font-bold text-green-600">{insight.estimatedROI}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Временные рамки</Label>
-                        <p className="text-sm font-medium">{insight.timeframe}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Подробное описание</Label>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{insight.description}</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Уверенность ИИ</Label>
-                      <div className="flex items-center space-x-2">
-                        <Progress value={insight.aiConfidence} className="flex-1" />
-                        <span className="text-sm font-medium">{insight.aiConfidence}%</span>
-                      </div>
-                    </div>
-
-                    <div className="flex space-x-2 pt-4">
-                      <Button
-                        onClick={() => handleInsightAction(insight.id, "implement")}
-                        className="flex-1"
-                        disabled={insight.status !== "new"}
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Внедрить
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleInsightAction(insight.id, "dismiss")}
-                        className="flex-1"
-                        disabled={insight.status !== "new"}
-                      >
-                        Отклонить
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )
-            })()}
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {showAddGoal && (
-        <Dialog open={showAddGoal} onOpenChange={setShowAddGoal}>
-          <DialogContent className="max-w-md mx-4">
-            <DialogHeader>
-              <DialogTitle>Добавить стратегическую цель</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="goal-title">Название цели</Label>
-                <Input
-                  id="goal-title"
-                  value={newGoal.title}
-                  onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                  placeholder="Увеличить выручку на 30%"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="goal-description">Описание</Label>
-                <Textarea
-                  id="goal-description"
-                  value={newGoal.description}
-                  onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
-                  placeholder="Подробное описание цели и способов её достижения"
-                  className="mt-1"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="goal-target">Целевое значение</Label>
-                  <Input
-                    id="goal-target"
-                    type="number"
-                    value={newGoal.targetValue}
-                    onChange={(e) => setNewGoal({ ...newGoal, targetValue: e.target.value })}
-                    placeholder="1000000"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="goal-deadline">Срок достижения</Label>
-                  <Input
-                    id="goal-deadline"
-                    type="date"
-                    value={newGoal.deadline}
-                    onChange={(e) => setNewGoal({ ...newGoal, deadline: e.target.value })}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="goal-category">Категория</Label>
-                <select
-                  id="goal-category"
-                  value={newGoal.category}
-                  onChange={(e) => setNewGoal({ ...newGoal, category: e.target.value as BusinessGoal["category"] })}
-                  className="w-full mt-1 p-2 border border-border rounded-md bg-background text-sm"
-                >
-                  <option value="revenue">Выручка</option>
-                  <option value="customers">Клиенты</option>
-                  <option value="efficiency">Эффективность</option>
-                  <option value="market">Рынок</option>
-                </select>
-              </div>
-              <div className="flex space-x-2">
-                <Button onClick={handleAddGoal} className="flex-1">
-                  Добавить цель
-                </Button>
-                <Button variant="outline" onClick={() => setShowAddGoal(false)} className="flex-1">
-                  Отмена
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-      {notification && (
-        <div
-          className={`fixed bottom-4 right-4 z-50 rounded-md border p-4 shadow-md ${
-            notification.type === "success"
-              ? "border-green-500 bg-green-500/10 text-green-600"
-              : "border-red-500 bg-red-500/10 text-red-600"
-          }`}
-        >
-          {notification.message}
-        </div>
-      )}
     </div>
   )
 }

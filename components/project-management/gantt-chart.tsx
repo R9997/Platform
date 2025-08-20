@@ -3,7 +3,11 @@ import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, ChevronLeft, ChevronRight, BarChart3, Users } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Calendar, ChevronLeft, ChevronRight, BarChart3, Users, Eye, Edit, Plus } from "lucide-react"
 
 interface GanttTask {
   id: string
@@ -32,6 +36,18 @@ interface GanttChartProps {
 export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<"week" | "month">("month")
+  const [showProjectDetails, setShowProjectDetails] = useState(false)
+  const [showEditProject, setShowEditProject] = useState(false)
+  const [showAddProject, setShowAddProject] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [editingProject, setEditingProject] = useState<any>(null)
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    deadline: "",
+    team: [] as string[],
+    priority: "medium",
+  })
 
   const ganttData: GanttProject[] = useMemo(() => {
     return projects.map((project, index) => ({
@@ -120,162 +136,386 @@ export function GanttChart({ projects, tasks = [] }: GanttChartProps) {
     setCurrentDate(newDate)
   }
 
+  const handleViewProject = (project: any) => {
+    setSelectedProject(project)
+    setShowProjectDetails(true)
+  }
+
+  const handleEditProject = (project: any) => {
+    setEditingProject({ ...project })
+    setShowEditProject(true)
+  }
+
+  const handleSaveProject = () => {
+    // Здесь будет логика сохранения изменений проекта
+    console.log("Сохранение проекта:", editingProject)
+    setShowEditProject(false)
+    setEditingProject(null)
+  }
+
+  const handleAddProject = () => {
+    // Здесь будет логика добавления нового проекта
+    console.log("Добавление проекта:", newProject)
+    setShowAddProject(false)
+    setNewProject({
+      name: "",
+      description: "",
+      deadline: "",
+      team: [],
+      priority: "medium",
+    })
+  }
+
   return (
-    <Card className="enhanced-card backdrop-blur-xl border border-border/50">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <BarChart3 className="w-5 h-5 text-primary" />
-            Диаграмма Ганта
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-card/50 rounded-lg p-1">
-              <Button
-                variant={viewMode === "week" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("week")}
-                className="text-xs px-2 py-1 h-auto"
-              >
-                Неделя
-              </Button>
-              <Button
-                variant={viewMode === "month" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("month")}
-                className="text-xs px-2 py-1 h-auto"
-              >
-                Месяц
-              </Button>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span className="text-sm font-medium min-w-[120px] text-center">
-                {currentDate.toLocaleDateString("ru-RU", { month: "long", year: "numeric" })}
-              </span>
-              <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Активные проекты</h3>
+        <Button
+          onClick={() => setShowAddProject(true)}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Новый проект
+        </Button>
+      </div>
+
+      <Card className="enhanced-card backdrop-blur-xl border border-border/50">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              Диаграмма Ганта
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-card/50 rounded-lg p-1">
+                <Button
+                  variant={viewMode === "week" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("week")}
+                  className="text-xs px-2 py-1 h-auto"
+                >
+                  Неделя
+                </Button>
+                <Button
+                  variant={viewMode === "month" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("month")}
+                  className="text-xs px-2 py-1 h-auto"
+                >
+                  Месяц
+                </Button>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-medium min-w-[120px] text-center">
+                  {currentDate.toLocaleDateString("ru-RU", { month: "long", year: "numeric" })}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
-          <div className="min-w-[1200px]">
-            <div className="flex border-b border-border/50 sticky top-0 bg-background z-20">
-              <div className="w-80 p-4 bg-card/50 border-r border-border/50">
-                <span className="text-sm font-medium text-foreground">Проекты и задачи</span>
-              </div>
-              <div className="flex-1 relative">
-                <div className="flex h-14">
-                  {timeScale.map((date, index) => (
-                    <div key={index} className="flex-1 border-r border-border/30 p-3 text-center bg-card/30">
-                      <div className="text-xs font-medium text-foreground">
-                        {viewMode === "week"
-                          ? date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })
-                          : `${date.getDate()}-${date.getDate() + 6} ${date.toLocaleDateString("ru-RU", { month: "short" })}`}
-                      </div>
-                    </div>
-                  ))}
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+            <div className="min-w-[1200px]">
+              <div className="flex border-b border-border/50 sticky top-0 bg-background z-20">
+                <div className="w-80 p-4 bg-card/50 border-r border-border/50">
+                  <span className="text-sm font-medium text-foreground">Проекты и задачи</span>
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              {ganttData.map((project) => (
-                <div key={project.id}>
-                  {project.tasks.map((task, taskIndex) => (
-                    <div key={task.id} className="flex border-b border-border/20 hover:bg-card/30 min-h-[60px]">
-                      <div className="w-80 p-4 border-r border-border/50 flex items-center">
-                        <div className="flex items-center gap-3 w-full">
-                          <div
-                            className="w-4 h-4 rounded-full flex-shrink-0 border-2 border-white dark:border-gray-800"
-                            style={{ backgroundColor: project.color }}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-foreground mb-1 leading-tight">{task.name}</div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Badge
-                                className={`${getPriorityColor(task.priority)} text-white text-xs px-2 py-1 font-medium`}
-                              >
-                                {task.priority === "urgent"
-                                  ? "Срочно"
-                                  : task.priority === "high"
-                                    ? "Высокий"
-                                    : task.priority === "medium"
-                                      ? "Средний"
-                                      : "Низкий"}
-                              </Badge>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                                <Users className="w-3 h-3" />
-                                <span className="truncate max-w-[100px]">{task.assignee}</span>
-                              </div>
-                            </div>
-                          </div>
+                <div className="flex-1 relative">
+                  <div className="flex h-14">
+                    {timeScale.map((date, index) => (
+                      <div key={index} className="flex-1 border-r border-border/30 p-3 text-center bg-card/30">
+                        <div className="text-xs font-medium text-foreground">
+                          {viewMode === "week"
+                            ? date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })
+                            : `${date.getDate()}-${date.getDate() + 6} ${date.toLocaleDateString("ru-RU", { month: "short" })}`}
                         </div>
                       </div>
-                      <div className="flex-1 relative p-4 flex items-center">
-                        <div className="relative h-8 w-full">
-                          <div
-                            className="absolute top-1 h-6 rounded-lg flex items-center px-3 text-xs font-semibold text-white shadow-lg border border-white/20"
-                            style={{
-                              backgroundColor: project.color,
-                              ...getTaskPosition(task),
-                            }}
-                          >
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="font-bold">{task.progress}%</span>
-                              <div className="text-xs opacity-90">
-                                {task.startDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })} -
-                                {task.endDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
-                              </div>
-                            </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                {ganttData.map((project) => (
+                  <div key={project.id}>
+                    {project.tasks.map((task, taskIndex) => (
+                      <div key={task.id} className="flex border-b border-border/20 hover:bg-card/30 min-h-[60px]">
+                        <div className="w-80 p-4 border-r border-border/50 flex items-center">
+                          <div className="flex items-center gap-3 w-full">
                             <div
-                              className="absolute top-0 left-0 h-full bg-white/40 dark:bg-black/20 rounded-lg border-r border-white/30"
-                              style={{ width: `${task.progress}%` }}
+                              className="w-4 h-4 rounded-full flex-shrink-0 border-2 border-white dark:border-gray-800"
+                              style={{ backgroundColor: project.color }}
                             />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-foreground mb-1 leading-tight">{task.name}</div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Badge
+                                  className={`${getPriorityColor(task.priority)} text-white text-xs px-2 py-1 font-medium`}
+                                >
+                                  {task.priority === "urgent"
+                                    ? "Срочно"
+                                    : task.priority === "high"
+                                      ? "Высокий"
+                                      : task.priority === "medium"
+                                        ? "Средний"
+                                        : "Низкий"}
+                                </Badge>
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                                  <Users className="w-3 h-3" />
+                                  <span className="truncate max-w-[100px]">{task.assignee}</span>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 px-2"
+                                    onClick={() => handleViewProject(projects.find((p) => p.id === project.id))}
+                                  >
+                                    <Eye className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 px-2"
+                                    onClick={() => handleEditProject(projects.find((p) => p.id === project.id))}
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex-1 relative p-4 flex items-center">
+                          <div className="relative h-8 w-full">
+                            <div
+                              className="absolute top-1 h-6 rounded-lg flex items-center px-3 text-xs font-semibold text-white shadow-lg border border-white/20"
+                              style={{
+                                backgroundColor: project.color,
+                                ...getTaskPosition(task),
+                              }}
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                <span className="font-bold">{task.progress}%</span>
+                                <div className="text-xs opacity-90">
+                                  {task.startDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })} -
+                                  {task.endDate.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
+                                </div>
+                              </div>
+                              <div
+                                className="absolute top-0 left-0 h-full bg-white/40 dark:bg-black/20 rounded-lg border-r border-white/30"
+                                style={{ width: `${task.progress}%` }}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              <div
+                className="absolute top-14 bottom-0 w-1 bg-red-500 dark:bg-red-400 z-10 pointer-events-none shadow-lg"
+                style={{
+                  left: `${
+                    320 +
+                    (
+                      (new Date().getTime() - timeScale[0].getTime()) /
+                        (timeScale[timeScale.length - 1].getTime() - timeScale[0].getTime())
+                    ) *
+                      (100 - 26.67)
+                  }%`,
+                }}
+              >
+                <div className="absolute -top-3 -left-2 w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-2 h-2 bg-white rounded-full" />
                 </div>
-              ))}
-            </div>
-
-            <div
-              className="absolute top-14 bottom-0 w-1 bg-red-500 dark:bg-red-400 z-10 pointer-events-none shadow-lg"
-              style={{
-                left: `${
-                  320 +
-                  (
-                    (new Date().getTime() - timeScale[0].getTime()) /
-                      (timeScale[timeScale.length - 1].getTime() - timeScale[0].getTime())
-                  ) *
-                    (100 - 26.67)
-                }%`,
-              }}
-            >
-              <div className="absolute -top-3 -left-2 w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full flex items-center justify-center shadow-lg">
-                <div className="w-2 h-2 bg-white rounded-full" />
-              </div>
-              <div className="absolute -top-8 -left-8 text-xs font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 px-2 py-1 rounded shadow-lg border">
-                Сегодня
+                <div className="absolute -top-8 -left-8 text-xs font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-800 px-2 py-1 rounded shadow-lg border">
+                  Сегодня
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {ganttData.length === 0 && (
-          <div className="text-center py-12">
-            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Нет проектов для отображения</p>
-            <p className="text-sm text-muted-foreground mt-1">Создайте проект, чтобы увидеть диаграмму Ганта</p>
+          {ganttData.length === 0 && (
+            <div className="text-center py-12">
+              <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">Нет проектов для отображения</p>
+              <p className="text-sm text-muted-foreground mt-1">Создайте проект, чтобы увидеть диаграмму Ганта</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Модальное окно просмотра проекта */}
+      <Dialog open={showProjectDetails} onOpenChange={setShowProjectDetails}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Детали проекта</DialogTitle>
+          </DialogHeader>
+          {selectedProject && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg">{selectedProject.name}</h3>
+                <p className="text-muted-foreground">{selectedProject.description}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Прогресс</label>
+                  <p className="text-2xl font-bold text-primary">{selectedProject.progress}%</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Статус</label>
+                  <Badge className="ml-2">{selectedProject.status}</Badge>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Команда</label>
+                  <p>{selectedProject.team?.join(", ") || "Не назначена"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Дедлайн</label>
+                  <p>{new Date(selectedProject.deadline).toLocaleDateString("ru-RU")}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Модальное окно редактирования проекта */}
+      <Dialog open={showEditProject} onOpenChange={setShowEditProject}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Редактировать проект</DialogTitle>
+          </DialogHeader>
+          {editingProject && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Название проекта</label>
+                <Input
+                  value={editingProject.name}
+                  onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Описание</label>
+                <Textarea
+                  value={editingProject.description}
+                  onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Дедлайн</label>
+                  <Input
+                    type="date"
+                    value={editingProject.deadline}
+                    onChange={(e) => setEditingProject({ ...editingProject, deadline: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Статус</label>
+                  <Select
+                    value={editingProject.status}
+                    onValueChange={(value) => setEditingProject({ ...editingProject, status: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="В работе">В работе</SelectItem>
+                      <SelectItem value="Планирование">Планирование</SelectItem>
+                      <SelectItem value="Завершен">Завершен</SelectItem>
+                      <SelectItem value="Приостановлен">Приостановлен</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setShowEditProject(false)}>
+                  Отмена
+                </Button>
+                <Button onClick={handleSaveProject}>Сохранить изменения</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Модальное окно создания проекта */}
+      <Dialog open={showAddProject} onOpenChange={setShowAddProject}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Создать новый проект</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Название проекта</label>
+              <Input
+                value={newProject.name}
+                onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                placeholder="Введите название проекта"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Описание</label>
+              <Textarea
+                value={newProject.description}
+                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                placeholder="Описание проекта"
+                className="mt-1"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Дедлайн</label>
+                <Input
+                  type="date"
+                  value={newProject.deadline}
+                  onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Приоритет</label>
+                <Select
+                  value={newProject.priority}
+                  onValueChange={(value) => setNewProject({ ...newProject, priority: value })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Низкий</SelectItem>
+                    <SelectItem value="medium">Средний</SelectItem>
+                    <SelectItem value="high">Высокий</SelectItem>
+                    <SelectItem value="urgent">Срочный</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setShowAddProject(false)}>
+                Отмена
+              </Button>
+              <Button onClick={handleAddProject} disabled={!newProject.name || !newProject.deadline}>
+                Создать проект
+              </Button>
+            </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </DialogContent>
+      </Dialog>
+    </div>
   )
 }

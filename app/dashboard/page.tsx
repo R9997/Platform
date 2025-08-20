@@ -6,15 +6,11 @@ import {
   MessageSquare,
   CheckSquare,
   Settings,
-  Palette,
   Zap,
   Users,
   FileText,
-  Briefcase,
   Target,
   Search,
-  Plus,
-  Edit,
   Eye,
   Shield,
   TrendingUp,
@@ -29,22 +25,14 @@ import {
   BarChart3,
   Brain,
   Scale,
-  Trash2,
   MessageCircle,
 } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
-import { Textarea } from "@/components/ui/textarea"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 import { SupportChat } from "@/components/support/support-chat"
@@ -58,7 +46,6 @@ import { EDODashboard } from "@/components/edo/edo-dashboard"
 import { LegalDashboard } from "@/components/legal/legal-dashboard"
 import { HRDashboard } from "@/components/hr-management/hr-dashboard"
 import { AIBusinessAgent } from "@/components/ai-agent/ai-business-agent"
-import { MarketingDashboard } from "@/components/marketing/marketing-dashboard"
 import { GanttChart } from "@/components/project-management/gantt-chart"
 
 export default function Dashboard() {
@@ -738,7 +725,7 @@ export default function Dashboard() {
 
               <div className="space-y-4">
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4" />
                       УПРАВЛЕНИЕ БИЗНЕСОМ
@@ -751,7 +738,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "overview"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("overview")}
                     >
@@ -763,7 +750,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "strategy"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("strategy")}
                     >
@@ -778,7 +765,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "projects"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("projects")}
                     >
@@ -793,7 +780,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "tasks"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("tasks")}
                     >
@@ -807,7 +794,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4" />
                       ФИНАНСЫ И ДОКУМЕНТООБОРОТ
@@ -820,7 +807,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "finance"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("finance")}
                     >
@@ -832,7 +819,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "sales"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("sales")}
                     >
@@ -847,7 +834,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "edo"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("edo")}
                     >
@@ -862,7 +849,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "legal"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("legal")}
                     >
@@ -876,7 +863,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4" />
                       КАДРЫ И КОМАНДА
@@ -889,7 +876,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "hr"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("hr")}
                     >
@@ -904,7 +891,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "team"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("team")}
                     >
@@ -916,7 +903,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "roles"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("roles")}
                     >
@@ -927,7 +914,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <Brain className="w-4 h-4" />
                       ИИ-ИНСТРУМЕНТЫ
@@ -940,7 +927,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "ai-agent"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("ai-agent")}
                     >
@@ -955,7 +942,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "ai-tools"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("ai-tools")}
                     >
@@ -969,7 +956,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <Megaphone className="w-4 h-4" />
                       МАРКЕТИНГ И КЛИЕНТЫ
@@ -982,7 +969,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "marketing"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("marketing")}
                     >
@@ -996,7 +983,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-all duration-300">
                     <div className="flex items-center gap-2">
                       <Settings className="w-4 h-4" />
                       СИСТЕМА
@@ -1009,7 +996,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "files"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("files")}
                     >
@@ -1024,7 +1011,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "settings"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
+                          : "hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-emerald-900/20 dark:hover:to-teal-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300"
                       }`}
                       onClick={() => setActiveTab("settings")}
                     >
@@ -1034,731 +1021,240 @@ export default function Dashboard() {
                   </CollapsibleContent>
                 </Collapsible>
               </div>
-
-              {/* Main Content */}
             </div>
 
+            {/* Main Content */}
             <div className="flex-1">
               {activeTab === "overview" && (
-                <div className="space-y-6">
-                  <div className="mb-8">
-                    <AnimatedMetrics />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Обзор бизнеса</h2>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Общая выручка</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">₽2,450,000</div>
-                        <p className="text-xs text-muted-foreground">+12% с прошлого месяца</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Активные проекты</CardTitle>
-                        <Briefcase className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{projects.length}</div>
-                        <p className="text-xs text-muted-foreground">2 завершены в этом месяце</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Команда</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{employees.length}</div>
-                        <p className="text-xs text-muted-foreground">Средняя продуктивность 91%</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Лиды</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{leads.length}</div>
-                        <p className="text-xs text-muted-foreground">+5 новых за неделю</p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Обзор бизнеса</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <AnimatedMetrics />
+                    </CardContent>
+                  </Card>
                 </div>
               )}
 
-              {activeTab === "goals" && <StrategyDashboard />}
+              {activeTab === "strategy" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Стратегия и цели</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StrategyDashboard />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
               {activeTab === "projects" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Активные проекты</h2>
-                    <Button onClick={() => setShowAddProjectModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Новый проект
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {projects.map((project) => (
-                      <Card key={project.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg">{project.name}</CardTitle>
-                            <Badge variant={project.status === "Завершен" ? "default" : "secondary"}>
-                              {project.status}
-                            </Badge>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span>Прогресс</span>
-                              <span>{project.progress}%</span>
-                            </div>
-                            <Progress value={project.progress} />
-                          </div>
-
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex -space-x-2">
-                              {project.team.map((member, index) => (
-                                <Avatar key={index} className="w-6 h-6 border-2 border-background">
-                                  <AvatarFallback className="text-xs">{member}</AvatarFallback>
-                                </Avatar>
-                              ))}
-                            </div>
-                            <span className="text-muted-foreground">{project.deadline}</span>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => handleViewProjectDetails(project)}>
-                              <Eye className="w-4 h-4 mr-1" />
-                              Просмотр
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Изменить
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-
-                  <div className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">Диаграмма Ганта</h3>
-                    <GanttChart projects={projects} />
-                  </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Активные проекты</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <GanttChart projects={projects} />
+                    </CardContent>
+                  </Card>
                 </div>
               )}
 
               {activeTab === "tasks" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Управление задачами</h2>
-                    <Button onClick={() => setShowAddTaskModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Новая задача
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">К выполнению</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {tasks
-                            .filter((task) => task.status === "К выполнению")
-                            .map((task) => (
-                              <div key={task.id} className="p-3 border rounded-lg">
-                                <h4 className="font-medium">{task.title}</h4>
-                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
-                                <Badge variant="outline" className="mt-2">
-                                  {task.priority}
-                                </Badge>
-                              </div>
-                            ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">В работе</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {tasks
-                            .filter((task) => task.status === "В работе")
-                            .map((task) => (
-                              <div key={task.id} className="p-3 border rounded-lg">
-                                <h4 className="font-medium">{task.title}</h4>
-                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
-                                <Badge variant="outline" className="mt-2">
-                                  {task.priority}
-                                </Badge>
-                              </div>
-                            ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Завершено</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {tasks
-                            .filter((task) => task.status === "Завершено")
-                            .map((task) => (
-                              <div key={task.id} className="p-3 border rounded-lg">
-                                <h4 className="font-medium">{task.title}</h4>
-                                <p className="text-sm text-muted-foreground">{task.assignee}</p>
-                                <Badge variant="outline" className="mt-2">
-                                  {task.priority}
-                                </Badge>
-                              </div>
-                            ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Управление задачами</CardTitle>
+                    </CardHeader>
+                    <CardContent>{/* Task Management Component Here */}</CardContent>
+                  </Card>
                 </div>
               )}
 
-              {activeTab === "sales" && <SalesManager />}
-              {activeTab === "finance" && <FinanceManager />}
-              {activeTab === "files" && <FileManager />}
-              {activeTab === "strategy" && <AIBusinessAgent />}
-              {activeTab === "edo" && <EDODashboard />}
-              {activeTab === "legal" && <LegalDashboard />}
-              {activeTab === "hr" && <HRDashboard />}
-              {activeTab === "marketing" && <MarketingDashboard />}
+              {activeTab === "finance" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Финансы</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <FinanceManager />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "sales" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Продажи</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <SalesManager leads={leads} />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "edo" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>ЭДО | Документооборот</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <EDODashboard />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "legal" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Правовой контур</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <LegalDashboard />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "hr" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>HR и развитие команды</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <HRDashboard employees={employees} />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
               {activeTab === "team" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Управление командой</h2>
-                    <Button onClick={() => setShowAddEmployeeModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Добавить сотрудника
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {employees.map((employee) => (
-                      <Card key={employee.id}>
-                        <CardHeader>
-                          <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarFallback>{employee.avatar}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-lg">{employee.name}</CardTitle>
-                              <p className="text-sm text-muted-foreground">{employee.role}</p>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm">Статус:</span>
-                            <Badge variant={employee.status === "Активен" ? "default" : "secondary"}>
-                              {employee.status}
-                            </Badge>
-                          </div>
-
-                          <div>
-                            <div className="flex justify-between text-sm mb-2">
-                              <span>Продуктивность</span>
-                              <span>{employee.productivity}%</span>
-                            </div>
-                            <Progress value={employee.productivity} />
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedEmployee(employee)
-                                setShowAssignRoleModal(true)
-                              }}
-                            >
-                              <Edit className="w-4 h-4 mr-1" />
-                              Роль
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleRemoveEmployee(employee.id)}>
-                              <Trash2 className="w-4 h-4 mr-1" />
-                              Удалить
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Команда</CardTitle>
+                    </CardHeader>
+                    <CardContent>{/* Team Management Component Here */}</CardContent>
+                  </Card>
                 </div>
               )}
 
               {activeTab === "roles" && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Роли и права</h2>
-                    <Button onClick={() => setShowCreateRoleModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Создать роль
-                    </Button>
-                  </div>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Роли и права</CardTitle>
+                    </CardHeader>
+                    <CardContent>{/* Role Management Component Here */}</CardContent>
+                  </Card>
+                </div>
+              )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {roles.map((role) => (
-                      <Card key={role.id}>
-                        <CardHeader>
-                          <CardTitle className="text-lg">{role.name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{role.description}</p>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <h4 className="font-medium mb-2">Права доступа:</h4>
-                            <div className="flex flex-wrap gap-1">
-                              {role.permissions.map((permission, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {permission}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
+              {activeTab === "ai-agent" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>ИИ-Агент для бизнеса</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <AIBusinessAgent />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm">Пользователей:</span>
-                            <Badge>{role.users}</Badge>
-                          </div>
+              {activeTab === "ai-tools" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>ИИ-инструменты</CardTitle>
+                    </CardHeader>
+                    <CardContent>{/* AI Tools Component Here */}</CardContent>
+                  </Card>
+                </div>
+              )}
 
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Изменить
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Trash2 className="w-4 h-4 mr-1" />
-                              Удалить
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+              {activeTab === "files" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Файловое хранилище</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <FileManager />
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {activeTab === "settings" && (
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Настройки</CardTitle>
+                    </CardHeader>
+                    <CardContent>{/* Settings Component Here */}</CardContent>
+                  </Card>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Modal Windows */}
-        <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                Уведомления
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {notificationsList.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">Нет новых уведомлений</p>
-              ) : (
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
-                      {notificationsList.filter((n) => !n.read).length} непрочитанных
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                      Отметить все как прочитанные
+        {/* Notifications Modal */}
+        {showNotificationsModal && (
+          <Dialog open={showNotificationsModal} onOpenChange={setShowNotificationsModal}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Уведомления</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {notificationsList.map((notification) => (
+                  <div key={notification.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getNotificationIcon(notification.type)}
+                      <div>
+                        <p className="font-semibold">{notification.title}</p>
+                        <p className="text-sm text-muted-foreground">{notification.message}</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => markNotificationAsRead(notification.id)}
+                      className="relative"
+                    >
+                      {notification.read ? (
+                        <Eye className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <Bell className="w-4 h-4 text-primary" />
+                      )}
                     </Button>
                   </div>
-                  {notificationsList.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        notification.read ? "bg-muted/20" : "bg-background border-primary/20"
-                      }`}
-                      onClick={() => markNotificationAsRead(notification.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        {getNotificationIcon(notification.type)}
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm">{notification.title}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-                          <span className="text-xs text-muted-foreground">{notification.time}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2 mt-3">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleNotificationAction(notification.id, "view")
-                          }}
-                        >
-                          Просмотр
-                        </Button>
-                        {notification.type === "warning" && (
-                          <Button
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleNotificationAction(notification.id, "approve")
-                            }}
-                          >
-                            Одобрить
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={showAddProjectModal} onOpenChange={setShowAddProjectModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Создать новый проект</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="project-name">Название проекта</Label>
-                <Input
-                  id="project-name"
-                  value={newProject.name}
-                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                  placeholder="Введите название проекта"
-                />
-              </div>
-              <div>
-                <Label htmlFor="project-description">Описание</Label>
-                <Textarea
-                  id="project-description"
-                  value={newProject.description}
-                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                  placeholder="Описание проекта"
-                />
-              </div>
-              <div>
-                <Label htmlFor="project-deadline">Срок завершения</Label>
-                <Input
-                  id="project-deadline"
-                  type="date"
-                  value={newProject.deadline}
-                  onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowAddProjectModal(false)}>
-                  Отмена
-                </Button>
-                <Button onClick={handleAddProject} disabled={!newProject.name || !newProject.deadline}>
-                  Создать проект
+                ))}
+                <Button onClick={markAllAsRead} variant="outline" className="w-full bg-transparent">
+                  Пометить все как прочитанные
                 </Button>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
 
-        <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                Настройки системы
-              </DialogTitle>
-            </DialogHeader>
-
-            <Tabs defaultValue="appearance" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="appearance">Внешний вид</TabsTrigger>
-                <TabsTrigger value="integrations">Интеграции</TabsTrigger>
-                <TabsTrigger value="system">Система</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="appearance" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Palette className="w-5 h-5" />
-                      Персонализация интерфейса
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <Label>Тема оформления</Label>
-                          <Select
-                            value={appearanceSettings.theme}
-                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, theme: value }))}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="light">Светлая</SelectItem>
-                              <SelectItem value="dark">Темная</SelectItem>
-                              <SelectItem value="system">Системная</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <Label>Размер шрифта</Label>
-                          <Select
-                            value={appearanceSettings.fontSize}
-                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, fontSize: value }))}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="small">Маленький</SelectItem>
-                              <SelectItem value="medium">Средний</SelectItem>
-                              <SelectItem value="large">Большой</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <Label>Плотность интерфейса</Label>
-                          <Select
-                            value={appearanceSettings.density}
-                            onValueChange={(value) => setAppearanceSettings((prev) => ({ ...prev, density: value }))}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="comfortable">Комфортная</SelectItem>
-                              <SelectItem value="spacious">Просторная</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <Label>Цветовая схема</Label>
-                          <Select
-                            value={appearanceSettings.colorScheme}
-                            onValueChange={(value) =>
-                              setAppearanceSettings((prev) => ({ ...prev, colorScheme: value }))
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="default">По умолчанию</SelectItem>
-                              <SelectItem value="blue">Синяя</SelectItem>
-                              <SelectItem value="green">Зеленая</SelectItem>
-                              <SelectItem value="purple">Фиолетовая</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label>Анимации интерфейса</Label>
-                          <Switch
-                            checked={appearanceSettings.animations}
-                            onCheckedChange={(checked) =>
-                              setAppearanceSettings((prev) => ({ ...prev, animations: checked }))
-                            }
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <Label>Уменьшенная анимация</Label>
-                          <Switch
-                            checked={appearanceSettings.reducedMotion}
-                            onCheckedChange={(checked) =>
-                              setAppearanceSettings((prev) => ({ ...prev, reducedMotion: checked }))
-                            }
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <Label>Высокий контраст</Label>
-                          <Switch
-                            checked={appearanceSettings.highContrast}
-                            onCheckedChange={(checked) =>
-                              setAppearanceSettings((prev) => ({ ...prev, highContrast: checked }))
-                            }
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <Label>Показывать подсказки</Label>
-                          <Switch
-                            checked={appearanceSettings.showTooltips}
-                            onCheckedChange={(checked) =>
-                              setAppearanceSettings((prev) => ({ ...prev, showTooltips: checked }))
-                            }
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <Label>Свернуть боковую панель</Label>
-                          <Switch
-                            checked={appearanceSettings.sidebarCollapsed}
-                            onCheckedChange={(checked) =>
-                              setAppearanceSettings((prev) => ({ ...prev, sidebarCollapsed: checked }))
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-4 border-t">
-                      <Button variant="outline" onClick={() => setShowSettingsModal(false)}>
-                        Отмена
-                      </Button>
-                      <Button onClick={handleSaveAppearanceSettings}>Сохранить настройки</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="integrations" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Zap className="w-5 h-5" />
-                      Управление интеграциями
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-muted/20">
-                      <div>
-                        <Label>Название интеграции</Label>
-                        <Input
-                          placeholder="Название сервиса"
-                          value={integrationSettings.newIntegration.name}
-                          onChange={(e) =>
-                            setIntegrationSettings((prev) => ({
-                              ...prev,
-                              newIntegration: { ...prev.newIntegration, name: e.target.value },
-                            }))
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label>Категория</Label>
-                        <Select
-                          value={integrationSettings.newIntegration.category}
-                          onValueChange={(value) =>
-                            setIntegrationSettings((prev) => ({
-                              ...prev,
-                              newIntegration: { ...prev.newIntegration, category: value },
-                            }))
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Коммуникации">Коммуникации</SelectItem>
-                            <SelectItem value="Календарь">Календарь</SelectItem>
-                            <SelectItem value="Документы">Документы</SelectItem>
-                            <SelectItem value="Хранилище">Хранилище</SelectItem>
-                            <SelectItem value="Автоматизация">Автоматизация</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-end">
-                        <Button onClick={handleAddIntegration} className="w-full">
-                          Добавить интеграцию
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {Object.entries(
-                        integrationSettings.availableIntegrations.reduce(
-                          (acc, integration) => {
-                            if (!acc[integration.category]) acc[integration.category] = []
-                            acc[integration.category].push(integration)
-                            return acc
-                          },
-                          {} as Record<string, typeof integrationSettings.availableIntegrations>,
-                        ),
-                      ).map(([category, integrations]) => (
-                        <div key={category}>
-                          <h4 className="font-semibold mb-3 text-lg">{category}</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {integrations.map((integration) => (
-                              <div
-                                key={integration.id}
-                                className="flex items-center justify-between p-4 border rounded-lg"
-                              >
-                                <div>
-                                  <h5 className="font-medium">{integration.name}</h5>
-                                  <p className="text-sm text-muted-foreground">{integration.description}</p>
-                                </div>
-                                <Switch
-                                  checked={integration.connected}
-                                  onCheckedChange={() => toggleIntegration(integration.id)}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="system" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Системные настройки</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label>Автоматические обновления</Label>
-                        <Switch defaultChecked />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label>Сбор аналитики</Label>
-                        <Switch defaultChecked />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label>Отладочный режим</Label>
-                        <Switch />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </DialogContent>
-        </Dialog>
+        {/* Support Chat */}
+        {showSupportChat && <SupportChat onClose={() => setShowSupportChat(false)} />}
       </div>
-      {/* Support Chat Modal */}
-      {showSupportChat && <SupportChat onClose={() => setShowSupportChat(false)} />}
     </TooltipProvider>
   )
 }
