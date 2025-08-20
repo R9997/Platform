@@ -30,6 +30,7 @@ import {
   Brain,
   Scale,
   Trash2,
+  MessageCircle,
 } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -45,6 +46,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { Textarea } from "@/components/ui/textarea"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+
+import { SupportChat } from "@/components/support/support-chat"
+import { AnimatedMetrics } from "@/components/interactive/animated-metrics"
 
 import { SalesManager } from "@/components/business-tools/sales-manager"
 import { FinanceManager } from "@/components/business-tools/finance-manager"
@@ -300,6 +304,8 @@ export default function Dashboard() {
     sidebarCollapsed: false,
     colorScheme: "default", // default, blue, green, purple
   })
+
+  const [showSupportChat, setShowSupportChat] = useState(false)
 
   const handleAddProject = () => {
     if (newProject.name && newProject.deadline) {
@@ -678,11 +684,19 @@ export default function Dashboard() {
 
               <Button
                 onClick={() => window.open("/guide", "_blank")}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
               >
                 <HelpCircle className="w-4 h-4 mr-2" />
                 Гид по функциям
+              </Button>
+
+              <Button
+                onClick={() => setShowSupportChat(true)}
+                variant="outline"
+                className="border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-900/20"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Поддержка
               </Button>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -724,7 +738,7 @@ export default function Dashboard() {
 
               <div className="space-y-4">
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4" />
                       УПРАВЛЕНИЕ БИЗНЕСОМ
@@ -737,7 +751,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "overview"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("overview")}
                     >
@@ -749,7 +763,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "strategy"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("strategy")}
                     >
@@ -764,7 +778,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "projects"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("projects")}
                     >
@@ -779,7 +793,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "tasks"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("tasks")}
                     >
@@ -793,7 +807,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4" />
                       ФИНАНСЫ И ДОКУМЕНТООБОРОТ
@@ -806,7 +820,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "finance"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("finance")}
                     >
@@ -818,7 +832,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "sales"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("sales")}
                     >
@@ -833,7 +847,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "edo"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("edo")}
                     >
@@ -848,7 +862,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "legal"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("legal")}
                     >
@@ -862,7 +876,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4" />
                       КАДРЫ И КОМАНДА
@@ -875,7 +889,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "hr"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("hr")}
                     >
@@ -890,7 +904,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "team"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("team")}
                     >
@@ -902,7 +916,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "roles"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("roles")}
                     >
@@ -913,7 +927,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible defaultOpen>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <Brain className="w-4 h-4" />
                       ИИ-ИНСТРУМЕНТЫ
@@ -926,7 +940,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "ai-agent"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("ai-agent")}
                     >
@@ -941,7 +955,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "ai-tools"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("ai-tools")}
                     >
@@ -955,7 +969,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <Megaphone className="w-4 h-4" />
                       МАРКЕТИНГ И КЛИЕНТЫ
@@ -968,7 +982,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "marketing"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("marketing")}
                     >
@@ -982,7 +996,7 @@ export default function Dashboard() {
                 </Collapsible>
 
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 text-sm font-medium text-left hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300 rounded-md transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <Settings className="w-4 h-4" />
                       СИСТЕМА
@@ -995,7 +1009,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "files"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("files")}
                     >
@@ -1010,7 +1024,7 @@ export default function Dashboard() {
                       className={`w-full justify-start text-sm ${
                         activeTab === "settings"
                           ? "bg-teal-600 text-white hover:bg-teal-700"
-                          : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                          : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-blue-900/20 dark:hover:to-indigo-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                       }`}
                       onClick={() => setActiveTab("settings")}
                     >
@@ -1027,6 +1041,10 @@ export default function Dashboard() {
             <div className="flex-1">
               {activeTab === "overview" && (
                 <div className="space-y-6">
+                  <div className="mb-8">
+                    <AnimatedMetrics />
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Обзор бизнеса</h2>
                   </div>
@@ -1739,6 +1757,8 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
       </div>
+      {/* Support Chat Modal */}
+      {showSupportChat && <SupportChat onClose={() => setShowSupportChat(false)} />}
     </TooltipProvider>
   )
 }
