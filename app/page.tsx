@@ -1,6 +1,5 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
-import { AIToolsSection } from "@/components/ai-tools-section"
 import { AboutSection } from "@/components/about-section"
 import { PersonalizedSection } from "@/components/personalized-section"
 import { SolutionsSection } from "@/components/solutions-section"
@@ -24,11 +23,10 @@ export default function HomePage() {
         <SolutionsSection />
         <ProcessSection />
         <ROICalculator />
-        <AIToolsSection />
         <AboutSection />
         <TeamSection />
-        <PartnersSection />
         <TestimonialsSection />
+        <PartnersSection />
         <NeedsAssessment />
         <PersonalizedSection />
       </main>

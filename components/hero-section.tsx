@@ -14,8 +14,9 @@ export function HeroSection() {
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-2 sm:px-4">
-            Полноценная бизнес-платформа с ИИ-инструментами: автоматизация процессов, анализ данных, генерация контента
-            и персональный консультант. Управляйте ростом компании из единого интерфейса
+            Мы создали полноценную бизнес-платформу с ИИ-инструментами: автоматизируем ваши процессы, анализируем
+            данные, генерируем контент и предоставляем персонального консультанта. Помогаем управлять ростом вашей
+            компании из единого интерфейса
           </p>
 
           <div className="flex flex-col gap-3 sm:gap-4 justify-center items-stretch sm:items-center px-2 sm:px-4 max-w-4xl mx-auto">
@@ -74,7 +75,7 @@ export function HeroSection() {
                   ИИ-инструменты
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
-                  Генерация контента, анализ данных, автоматизация процессов
+                  Мы предоставляем генерацию контента, анализ данных и автоматизацию процессов
                 </p>
                 <div className="inline-flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
                   Попробовать бесплатно
@@ -92,7 +93,7 @@ export function HeroSection() {
                   Управление проектами
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
-                  Отслеживание прогресса и ROI в реальном времени
+                  Мы обеспечиваем отслеживание прогресса и ROI в реальном времени
                 </p>
                 <div className="inline-flex items-center text-sm font-medium text-accent group-hover:translate-x-1 transition-transform">
                   Начать управлять
@@ -110,7 +111,7 @@ export function HeroSection() {
                   Персональный консультант
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-4">
-                  ИИ-помощник для стратегических решений
+                  Наш ИИ-помощник предоставляет поддержку для стратегических решений
                 </p>
                 <div className="inline-flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
                   Получить консультацию
